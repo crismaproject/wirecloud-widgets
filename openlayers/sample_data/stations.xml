@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<mapobjects project="ResMan" layer="stations">
+  <mapobject entity="POI" code="47" layercode="12" state="0" visibility="True">
+    <name>Fire_Station_1</name>
+    <typename>Firestation</typename>
+    <layername>stations</layername>
+    <attributes>
+      <markername>Redhouse</markername>
+    </attributes>
+    <latlng lonX="34.72092" latY="31.81719" />
+    <properties>
+      <property name="Capacity" type="number" value="20" />
+    </properties>
+  </mapobject>
+  <mapobject entity="POI" code="48" layercode="12" state="0" visibility="True">
+    <name>Fire_Station_2</name>
+    <typename>Firestation</typename>
+    <layername>stations</layername>
+    <attributes>
+      <markername>Redhouse</markername>
+    </attributes>
+    <latlng lonX="34.63200" latY="31.77065" />
+    <properties>
+      <property name="Capacity" type="number" value="10" />
+    </properties>
+  </mapobject>
+  <mapobject entity="POI" code="49" layercode="12" state="0" visibility="True">
+    <name>Ambulance_Station_2</name>
+    <typename>Ambulances</typename>
+    <layername>stations</layername>
+    <attributes>
+      <markername>Bluehouse</markername>
+    </attributes>
+    <latlng lonX="34.62822" latY="31.77050" />
+    <properties>
+      <property name="Capacity" type="number" value="5" />
+    </properties>
+  </mapobject>
+  <mapobject entity="POI" code="50" layercode="12" state="0" visibility="True">
+    <name>Ambulance_Station_1</name>
+    <typename>Ambulances</typename>
+    <layername>stations</layername>
+    <attributes>
+      <markername>Bluehouse</markername>
+    </attributes>
+    <latlng lonX="34.71680" latY="31.81485" />
+    <properties>
+      <property name="Capacity" type="number" value="15" />
+    </properties>
+  </mapobject>
+  <mapobject entity="POI" code="51" layercode="12" state="0" visibility="True">
+    <name>Hospital2</name>
+    <typename>Hospitals</typename>
+    <layername>stations</layername>
+    <attributes>
+      <markername>Hospitals</markername>
+    </attributes>
+    <latlng lonX="34.64453" latY="31.77371" />
+    <properties>
+      <property name="Free_beds" type="number" value="100" />
+    </properties>
+  </mapobject>
+  <mapobject entity="POI" code="52" layercode="12" state="0" visibility="True">
+    <name>Hospital1</name>
+    <typename>Hospitals</typename>
+    <layername>stations</layername>
+    <attributes>
+      <markername>Hospitals</markername>
+    </attributes>
+    <latlng lonX="34.70830" latY="31.79385" />
+    <properties>
+      <property name="Free_beds" type="number" value="200" />
+    </properties>
+  </mapobject>
+</mapobjects>

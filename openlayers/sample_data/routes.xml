@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<mapobjects project="ResMan" layer="Routes">
+  <mapobject entity="Path" code="54" layercode="13" state="0" visibility="True">
+    <name>Access_Route1</name>
+    <typename>Route</typename>
+    <layername>Routes</layername>
+    <attributes>
+      <fillcolor>#33CC00</fillcolor>
+      <fillopacity>30.00</fillopacity>
+      <strokecolor>#3366FF</strokecolor>
+      <strokeopacity>60.00</strokeopacity>
+      <strokeweight>3</strokeweight>
+    </attributes>
+    <contour nc="14">
+      <latlng lonX="34.72049" latY="31.81887" />
+      <latlng lonX="34.71310" latY="31.82149" />
+      <latlng lonX="34.70650" latY="31.82266" />
+      <latlng lonX="34.70058" latY="31.82689" />
+      <latlng lonX="34.69276" latY="31.83119" />
+      <latlng lonX="34.68367" latY="31.82857" />
+      <latlng lonX="34.67165" latY="31.82667" />
+      <latlng lonX="34.67083" latY="31.82623" />
+      <latlng lonX="34.66985" latY="31.82127" />
+      <latlng lonX="34.66444" latY="31.80957" />
+      <latlng lonX="34.65955" latY="31.80399" />
+      <latlng lonX="34.65422" latY="31.79884" />
+      <latlng lonX="34.64775" latY="31.80264" />
+      <latlng lonX="34.64659" latY="31.80132" />
+    </contour>
+  </mapobject>
+  <mapobject entity="Path" code="55" layercode="13" state="0" visibility="True">
+    <name>Access_Route2</name>
+    <typename>Route</typename>
+    <layername>Routes</layername>
+    <attributes>
+      <fillcolor>#33CC00</fillcolor>
+      <fillopacity>30.00</fillopacity>
+      <strokecolor>#3366FF</strokecolor>
+      <strokeopacity>60.00</strokeopacity>
+      <strokeweight>3</strokeweight>
+    </attributes>
+    <contour nc="8">
+      <latlng lonX="34.63200" latY="31.77065" />
+      <latlng lonX="34.63285" latY="31.77276" />
+      <latlng lonX="34.63448" latY="31.77510" />
+      <latlng lonX="34.63139" latY="31.77678" />
+      <latlng lonX="34.63594" latY="31.78298" />
+      <latlng lonX="34.64032" latY="31.78910" />
+      <latlng lonX="34.64221" latY="31.79436" />
+      <latlng lonX="34.64521" latY="31.79976" />
+    </contour>
+  </mapobject>
+  <mapobject entity="Path" code="56" layercode="13" state="0" visibility="True">
+    <name>Hospital2_Route</name>
+    <typename>Route</typename>
+    <layername>Routes</layername>
+    <attributes>
+      <fillcolor>#33CC00</fillcolor>
+      <fillopacity>30.00</fillopacity>
+      <strokecolor>#CC0000</strokecolor>
+      <strokeopacity>60.00</strokeopacity>
+      <strokeweight>3</strokeweight>
+    </attributes>
+    <contour nc="10">
+      <latlng lonX="34.64599" latY="31.79983" />
+      <latlng lonX="34.64281" latY="31.79479" />
+      <latlng lonX="34.64041" latY="31.79129" />
+      <latlng lonX="34.64109" latY="31.78867" />
+      <latlng lonX="34.64521" latY="31.78670" />
+      <latlng lonX="34.64650" latY="31.78597" />
+      <latlng lonX="34.64324" latY="31.78130" />
+      <latlng lonX="34.64066" latY="31.77802" />
+      <latlng lonX="34.64238" latY="31.77634" />
+      <latlng lonX="34.64410" latY="31.77371" />
+    </contour>
+  </mapobject>
+  <mapobject entity="Path" code="57" layercode="13" state="0" visibility="True">
+    <name>Hospital1_Route</name>
+    <typename>Route</typename>
+    <layername>Routes</layername>
+    <attributes>
+      <fillcolor>#33CC00</fillcolor>
+      <fillopacity>30.00</fillopacity>
+      <strokecolor>#CC0000</strokecolor>
+      <strokeopacity>60.00</strokeopacity>
+      <strokeweight>3</strokeweight>
+    </attributes>
+    <contour nc="15">
+      <latlng lonX="34.64667" latY="31.79998" />
+      <latlng lonX="34.64307" latY="31.79458" />
+      <latlng lonX="34.64161" latY="31.79064" />
+      <latlng lonX="34.64161" latY="31.78881" />
+      <latlng lonX="34.64804" latY="31.78538" />
+      <latlng lonX="34.66341" latY="31.77787" />
+      <latlng lonX="34.66633" latY="31.77626" />
+      <latlng lonX="34.66856" latY="31.77955" />
+      <latlng lonX="34.67319" latY="31.78341" />
+      <latlng lonX="34.68384" latY="31.78254" />
+      <latlng lonX="34.68839" latY="31.78356" />
+      <latlng lonX="34.69508" latY="31.78706" />
+      <latlng lonX="34.70126" latY="31.79020" />
+      <latlng lonX="34.70418" latY="31.79494" />
+      <latlng lonX="34.70830" latY="31.79385" />
+    </contour>
+  </mapobject>
+</mapobjects>

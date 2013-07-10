@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<mapobjects project="ResMan" layer="zones">
+  <mapobject entity="POI" code="53" layercode="11" state="0" visibility="True">
+    <name>Patients</name>
+    <typename>Human</typename>
+    <layername>zones</layername>
+    <description>ca 20 people poisoned by bromine</description>
+    <attributes>
+      <markername>Hiker</markername>
+    </attributes>
+    <latlng lonX="34.64667" latY="31.79998" />
+    <properties>
+      <property name="Life%" type="number" value="75" />
+    </properties>
+  </mapobject>
+  <mapobject entity="POI" code="58" layercode="11" state="0" visibility="True">
+    <name>Field_informator</name>
+    <typename>info</typename>
+    <layername>zones</layername>
+    <attributes>
+      <markername>Info</markername>
+    </attributes>
+    <latlng lonX="34.63560" latY="31.79925" />
+  </mapobject>
+  <mapobject entity="POI" code="59" layercode="11" state="0" visibility="True">
+    <name>Commander</name>
+    <typename>CM</typename>
+    <layername>zones</layername>
+    <attributes>
+      <markername>headquarters</markername>
+    </attributes>
+    <latlng lonX="34.62770" latY="31.77276" />
+  </mapobject>
+  <mapobject entity="POI" code="60" layercode="11" state="0" visibility="True">
+    <name>Overall_information</name>
+    <typename>info</typename>
+    <layername>zones</layername>
+    <attributes>
+      <markername>Info</markername>
+    </attributes>
+    <latlng lonX="34.62599" latY="31.77123" />
+  </mapobject>
+  <mapobject entity="Circle" code="45" layercode="11" state="0" visibility="True">
+    <name>Red_zone</name>
+    <typename>area</typename>
+    <layername>zones</layername>
+    <attributes>
+      <fillcolor>#FF0000</fillcolor>
+      <fillopacity>30.00</fillopacity>
+      <strokecolor>#CC0000</strokecolor>
+      <strokeopacity>60.00</strokeopacity>
+      <strokeweight>2</strokeweight>
+    </attributes>
+    <latlng lonX="34.64745" latY="31.79968" />
+    <radius>1021.71</radius>
+  </mapobject>
+</mapobjects>

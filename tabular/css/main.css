@@ -1,0 +1,8 @@
+#table_container {
+    overflow-y: scroll;
+}
+
+
+#table_container thead th {
+    background-color: rgb(244, 244, 244);
+}

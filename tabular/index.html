@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart</title>
+    <link href="css/bootstrap.min.css" text="text/css" rel="stylesheet"/>
+    <link href="css/main.css" type="text/css" rel="stylesheet"/>
+    <script src="http://cdn.jsdelivr.net/jquery/1.10.1/jquery.min.js" type="text/javascript"></script>
+    <script src="js/main.js" type="text/javascript"></script>
+</head>
+<body>
+<table id="table_container" class="table table-bordered table-hover">
+    <thead id="table_header">
+    </thead>
+    <tbody id="table_data">
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    setTable('Assets', [ 'Name', 'Type', 'Sub Type', 'Group', 'External ID', 'State' ], [
+        [ 'Police Car 3', 'Vehicle', 'Police Car', 'Police', '45-789-46', 'Normal' ],
+        [ 'Surveillance 7', 'Vehicle', 'Surveillance', 'Surveillance', '33-549-68', 'Normal' ],
+        [ 'Ambulance 1', 'Vehicle', 'Ambulance', 'Medical', '48-784-78', 'Normal' ],
+        [ 'Surveillance 7', 'Vehicle', 'Surveillance', 'Surveillance', '33-549-68', 'Normal' ]
+    ]);
+</script>
+</body>
+</html>

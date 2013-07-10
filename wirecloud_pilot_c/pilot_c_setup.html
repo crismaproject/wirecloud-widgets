@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pilot C setup</title>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <style>
+        html{min-height:100%;position:relative}/* make sure it is at least as tall as the viewport */
+        body, .container-fluid, .row-fluid, .row-fluid iframe {height:100%}
+        .container-fluid {
+            position:absolute;
+            top:0;
+            bottom:0;
+            left:0;
+            right:0;
+            overflow:hidden;
+            z-index:-1
+        }
+        iframe { border: 0 none; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <iframe src="pilot_c_setup/index.html" class="span3"></iframe>
+        <iframe src="openlayers/index.html" class="span9"></iframe>
+    </div>
+</div>
+</body>
+</html>
