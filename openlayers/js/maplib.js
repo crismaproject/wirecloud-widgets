@@ -8,7 +8,6 @@
 function OpenLayersFacade(container, initLat, initLong, initZ) {
     var epsg4326Projection = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
     var vectorLayer = new OpenLayers.Layer.Vector();
-    var markerLayer = new OpenLayers.Layer.Markers();
 
     /**
      * Contains the OpenLayers map object
@@ -21,8 +20,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                 ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
                     "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
                     "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
-            vectorLayer,
-            markerLayer
+            vectorLayer
         ],
         center: latLon(initLat || 51.75, initLong || -1.25),
         zoom: initZ || 3,
@@ -32,34 +30,12 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         }
     });
 
-    OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
-        initialize: function(options) {
-            OpenLayers.Control.prototype.initialize.apply(this, arguments);
-            this.handler = new OpenLayers.Handler.Click(this, {'click': this.trigger }, {
-                    'single': true,
-                    'double': false,
-                    'pixelTolerance': 0,
-                    'stopSingle': false,
-                    'stopDouble': false
-                }
-            );
-        },
-
-        trigger: function(ev) {
-            var lonlatCenter = map.center.clone().transform(mapProjection(), epsg4326Projection);
-            var lonlat = map.getLonLatFromPixel(ev.xy).transform(mapProjection(), epsg4326Projection);
-            var coordData = {
-                'center': { 'lat': lonlatCenter.lat, 'lon': lonlatCenter.lon, 'z': ev.object.zoom },
-                'lat': lonlat.lat,
-                'lon': lonlat.lon
-            };
-            fireEvent('mapClicked', coordData);
-        }
-    });
-
-    var clickControl = new OpenLayers.Control.Click();
-    map.addControl(clickControl);
-    clickControl.activate();
+    var selectControl = new OpenLayers.Control.SelectFeature(vectorLayer, {clickout: true});
+    selectControl.onSelect = function(feature) {
+        fireEvent('poiClicked', { clicked: feature.attributes.id });
+    };
+    map.addControl(selectControl);
+    selectControl.activate();
 
     /**
      * Contains all elements currently shown on the map.
@@ -125,10 +101,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      */
     function project(points) {
         var projectedPoints = [];
-        for (var i = 0; i < points.length; i++) {
-            var coords = latLon(points[i][0], points[i][1]);
-            projectedPoints[i] = new OpenLayers.Geometry.Point(coords.lon, coords.lat);
-        }
+        for (var i = 0; i < points.length; i++)
+            projectedPoints[i] = latLon(points[i][0], points[i][1]);
         return projectedPoints;
     }
 
@@ -168,8 +142,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      */
     function removeFromMap(id) {
         if (this.elements[id]['_inst']) {
-            markerLayer.removeMarker(this.elements[id]['_inst']);
-            markerLayer.redraw();
+            vectorLayer.removeFeatures([this.elements[id]['_inst']]);
+            vectorLayer.redraw();
         }
     }
 
@@ -190,13 +164,16 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @see add
      */
     function addToMap(id) {
-        this.elements[id]['_inst'] = new OpenLayers.Marker(this.elements[id]['coordinates'], new OpenLayers.Icon(this.elements[id]['icon'], { h: 25, w: 25 }));
-        markerLayer.addMarker(this.elements[id]['_inst']);
-        markerLayer.redraw();
+        var style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+        style.externalGraphic = this.elements[id]['icon'];
+        style.graphicWidth = 25;
+        style.graphicHeight = 25;
+        style.title = id;
+        style.fillOpacity = .75;
 
-        this.elements[id]['_inst'].events.register('click', id, function(ev) {
-            fireEvent('poiClicked', id);
-            });
+        var vector = new OpenLayers.Feature.Vector(this.elements[id]['coordinates'], { id: id }, style);
+        vectorLayer.addFeatures([vector]);
+        this.elements[id]['_inst'] = vector;
     }
 
     /**
@@ -207,14 +184,14 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     function addPolyToMap(id) {
         var ring = new OpenLayers.Geometry.LinearRing(this.elements[id]['points']);
         var polygon = new OpenLayers.Geometry.Polygon([ring]);
-        this.elements[id]['_inst'] = new OpenLayers.Feature.Vector(polygon);
+        this.elements[id]['_inst'] = new OpenLayers.Feature.Vector(polygon, { id: id });
         vectorLayer.addFeatures(this.elements[id]['_inst']);
         vectorLayer.redraw();
     }
 
     function addLineToMap(id) {
         var lines = new OpenLayers.Geometry.LineString(this.elements[id]['points']);
-        this.elements[id]['_inst'] = new OpenLayers.Feature.Vector(lines, null, {
+        this.elements[id]['_inst'] = new OpenLayers.Feature.Vector(lines, { id: id }, {
                 strokeWidth: 3,
                 strokeOpacity: .5,
                 strokeColor: '#ff3333'
@@ -253,10 +230,10 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * Converts latitude-longitude coordinate pairs to a properly projected OpenLayers.LonLat instance.
      * @param latitude
      * @param longitude
-     * @returns {OpenLayers.LonLat}
+     * @returns {OpenLayers.Geometry.Point}
      */
     function latLon(latitude, longitude) {
-        return new OpenLayers.LonLat(longitude, latitude).transform(epsg4326Projection, mapProjection());
+        return new OpenLayers.Geometry.Point(longitude, latitude).transform(epsg4326Projection, mapProjection());
     }
 
     /**
@@ -288,22 +265,4 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         var event = new CustomEvent(name, { detail: data, bubbles: true, cancelable: true });
         document.getElementById(container).dispatchEvent(event);
     }
-
-
-
-
-    // REMOVE THE FOLLOWING FUNCTION
-    function testVectorLayerCapabilities() {
-        var point = new OpenLayers.Geometry.Point(34.7205, 31.8189).transform(epsg4326Projection, mapProjection());
-        var style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
-        style.externalGraphic = 'img/danger.png';
-        style.graphicWidth = 25;
-        style.graphicHeight = 25;
-        style.title = 'I am a test!';
-        var vector = new OpenLayers.Feature.Vector(point, null, style);
-        vectorLayer.addFeatures([vector]);
-        vectorLayer.redraw();
-    }
-
-    testVectorLayerCapabilities();
 }
