@@ -19,7 +19,7 @@ function loadRoutes(facade) {
         $(xml).find('mapobject[entity="Path"]').each(function(index, element) {
             var id = $(element).find('name').text();
             var points = [];
-            $(xml).find('latlng').each(function(index2, element2) {
+            $(element).find('latlng').each(function(index2, element2) {
                 points.push([$(element2).attr('latY'), $(element2).attr('lonX')]);
             });
             facade.addLine(id, points);
