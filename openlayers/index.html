@@ -9,18 +9,19 @@
     <script type="text/javascript">
         $(function() {
             var map = new OpenLayersFacade('map');
-            console.log(map);
             document.mapObj = map;
-
 
             $('#map').bind('mapFocusChanged', function(event) { console.log(event.originalEvent.detail); });
             $('#map').bind('mapClicked', function(event) { console.log(event.originalEvent.detail); });
             $('#map').bind('poiClicked', function(event) { console.log(event.originalEvent.detail); });
 
-            /*map.add('fire1', 31.790287, 34.641389, 'img/fire.png');
+            // Add points of interest:
+            map.add('fire1', 31.790287, 34.641389, 'img/fire.png');
             map.add('fire2', 31.7917278, 34.6442866, 'img/fire.png');
             map.add('amb1', 31.8033814, 34.643149, 'img/ambulance.png');
             map.add('p1', 31.790289, 34.642379, 'img/person.png');
+
+            // Add a polygon
             map.addPoly('fire1poly', [
                 [ 31.78843, 34.639587 ],
                 [ 31.792476, 34.636712 ],
@@ -28,6 +29,8 @@
                 [ 31.79167, 34.649586 ],
                 [ 31.786694, 34.6463 ]
             ]);
+
+            // Add a polyline
             map.addLine('amb1path', [
                     [ 31.803477185988, 34.6431865509 ],
                     [ 31.803819110964, 34.6424194391 ],
@@ -36,11 +39,10 @@
                     [ 31.794395195523, 34.6419420059 ],
                     [ 31.792886003203, 34.6451552923 ],
                     [ 31.791937615965, 34.6445008333 ],
-            ]);*/
+            ]);
 
-            loadSampleData(document.mapObj);
-
-            window.setTimeout('document.mapObj.viewAll();', 2000);
+            // Re-center the map
+            window.setTimeout('document.mapObj.viewAll();', 1000);
         });
     </script>
 </head>
