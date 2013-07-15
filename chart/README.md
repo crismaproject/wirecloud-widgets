@@ -23,7 +23,7 @@ To do.
 ## Examples
 
 The example below creates a chart container and fills it with sample data. The chart stacks three elements
-(_g_, _r_, and _d_ in the JSON array below) on top of each other.
+(g, r, and d in the JSON array named `series` below) on top of each other.
 
 ```html
 <div id="chart_container"></div>
