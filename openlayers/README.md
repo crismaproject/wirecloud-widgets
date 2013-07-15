@@ -8,7 +8,9 @@ The following listings detail properties and functions available through instanc
 
 ### Constructor
 
-`OpenLayersFacade(container, initLat, initLong, initZ)`
+```javascript
+OpenLayersFacade ( container, initLat, initLong, initZ )
+```
 
 * _container_ denotes the ID of the HTML DOM element that will be initialized as a map view through OpenLayers. This is
   **not** a CSS selector; provide the DOM element's ID here.
@@ -23,24 +25,34 @@ The following listings detail properties and functions available through instanc
 
 ### Methods
 
-* .add( )
-* .addLine( )
-* .addPoly( )
-* .move( )
-* .remove( )
-* .view( )
+* .add( id, lat, lon, icon )
+* .addLine( id, points )
+* .addPoly( id, points )
+* .move( id, lat, lon )
+* .remove( id )
+* .view( lat, lon )
 * .viewAll( )
 
 ## Wirecloud Endpoints
 
-API doc
+### Input
+
+* add_line
+* add_point
+* add_poly
+* clear
+* view_point
+
+### Output
+
+* center_point
 
 ## Examples
 
 The example below creates a map view, adds a few points of interests and re-focuses the map so that all POIs are
 visible:
 
-```
+```html
 <div id="map"></div>
 <script type="text/javascript">
     var facade = new OpenLayersFacade('map');
