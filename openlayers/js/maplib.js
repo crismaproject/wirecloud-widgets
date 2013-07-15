@@ -7,7 +7,8 @@
  */
 function OpenLayersFacade(container, initLat, initLong, initZ) {
     var epsg4326Projection = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
-    var vectorLayer = new OpenLayers.Layer.Vector();
+    var geometryLayer = new OpenLayers.Layer.Vector();
+    var poiLayer = new OpenLayers.Layer.Vector();
 
     /**
      * Contains the OpenLayers map object
@@ -20,7 +21,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                 ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
                     "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
                     "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
-            vectorLayer
+            geometryLayer,
+            poiLayer
         ],
         center: latLon(initLat || 51.75, initLong || -1.25),
         zoom: initZ || 3,
@@ -30,7 +32,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         }
     });
 
-    var selectControl = new OpenLayers.Control.SelectFeature(vectorLayer, {clickout: true});
+    var selectControl = new OpenLayers.Control.SelectFeature(poiLayer, {clickout: true});
     selectControl.onSelect = function(feature) {
         fireEvent('poiClicked', { clicked: feature.attributes.id });
     };
@@ -141,9 +143,18 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @param id
      */
     function removeFromMap(id) {
-        if (this.elements[id]['_inst']) {
-            vectorLayer.removeFeatures([this.elements[id]['_inst']]);
-            vectorLayer.redraw();
+        if (this.elements[id] && this.elements[id]['_inst']) {
+            switch (this.elements[id]['type']) {
+                case 'poi':
+                    poiLayer.removeFeatures([this.elements[id]['_inst']]);
+                    poiLayer.redraw();
+                    break;
+                case 'poly':
+                case 'line':
+                    geometryLayer.removeFeatures([this.elements[id]['_inst']]);
+                    geometryLayer.redraw();
+                    break;
+            }
         }
     }
 
@@ -153,8 +164,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      */
     function removePolyFromMap(id) {
         if (this.elements[id]['_inst']) {
-            vectorLayer.removeFeatures(this.elements[id]['_inst']);
-            vectorLayer.redraw();
+            geometryLayer.removeFeatures(this.elements[id]['_inst']);
+            geometryLayer.redraw();
         }
     }
 
@@ -172,7 +183,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         style.fillOpacity = .75;
 
         var vector = new OpenLayers.Feature.Vector(this.elements[id]['coordinates'], { id: id }, style);
-        vectorLayer.addFeatures([vector]);
+        poiLayer.addFeatures([vector]);
         this.elements[id]['_inst'] = vector;
     }
 
@@ -185,8 +196,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         var ring = new OpenLayers.Geometry.LinearRing(this.elements[id]['points']);
         var polygon = new OpenLayers.Geometry.Polygon([ring]);
         this.elements[id]['_inst'] = new OpenLayers.Feature.Vector(polygon, { id: id });
-        vectorLayer.addFeatures(this.elements[id]['_inst']);
-        vectorLayer.redraw();
+        geometryLayer.addFeatures(this.elements[id]['_inst']);
+        geometryLayer.redraw();
     }
 
     function addLineToMap(id) {
@@ -196,8 +207,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                 strokeOpacity: .5,
                 strokeColor: '#ff3333'
         });
-        vectorLayer.addFeatures(this.elements[id]['_inst']);
-        vectorLayer.redraw();
+        geometryLayer.addFeatures(this.elements[id]['_inst']);
+        geometryLayer.redraw();
     }
 
     /**
