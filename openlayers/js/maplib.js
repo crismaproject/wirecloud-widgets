@@ -28,7 +28,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         zoom: initZ || 3,
         eventListeners: {
             moveend: mapEvent,
-            zoomend: mapEvent
+            zoomend: mapEvent,
+            click: mapClickEvent
         }
     });
 
@@ -263,6 +264,13 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         var lonlatCenter = ev.object.center.clone().transform(mapProjection(), epsg4326Projection);
         var coordData = { 'lat': lonlatCenter.lat, 'lon': lonlatCenter.lon, 'z': ev.object.zoom };
         fireEvent('mapFocusChanged', coordData);
+    }
+
+    function mapClickEvent(ev) {
+        var opx = map.getLonLatFromViewPortPx(ev.xy);
+        var clickCenter = opx.transform(mapProjection(), epsg4326Projection);
+        var coordData = { 'lat': clickCenter.lat, 'lon': clickCenter.lon };
+        fireEvent('mapClicked', coordData);
     }
 
     /**
