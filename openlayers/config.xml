@@ -16,6 +16,7 @@
   <Platform.Wiring>
     <InputEndpoint name="view_point" type="text" label="Coordinates" description="Focuses the map on specified coordinates" friendcode="geo-lon-lat-z" />
     <InputEndpoint name="add_point" type="text" label="Add point" description="Adds a point to the map" friendcode="geo-lon-lat-z" />
+    <InputEndpoint name="add_line" type="text" label="Add line" description="Adds a line to the map" friendcode="geo-points" />
     <InputEndpoint name="add_poly" type="text" label="Add polygon" description="Adds a polygon to the map" friendcode="geo-points" />
     <InputEndpoint name="clear" type="text" label="Clear" description="Removes all features from the map (points and polygons)" friendcode="signal" />
     <OutputEndpoint name="center_point" type="text" label="Coordinates" description="Sends a signal whenever the shown center changes" friendcode="geo-lon-lat-z" />
