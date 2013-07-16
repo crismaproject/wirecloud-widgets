@@ -1,9 +1,10 @@
 /**
  * A facade-like interface to handle interaction with the OpenLayers library.
- * @param container the id of the DOM element where the map should be rendered
- * @param initLat the initial center latitude to display (optional)
- * @param initLong the initial center longitude to display (optional)
- * @param initZ the initial zoom factor to display (optional)
+ * @param {string} container the id of the DOM element where the map should be rendered
+ * @param {float} initLat the initial center latitude to display (optional)
+ * @param {float} initLong the initial center longitude to display (optional)
+ * @param {int} initZ the initial zoom factor to display (optional)
+ * @constructor
  */
 function OpenLayersFacade(container, initLat, initLong, initZ) {
     var epsg4326Projection = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
@@ -45,25 +46,20 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @type {Array}
      */
     this.elements = { };
-    this.view = view;
-    this.viewAll = viewAll;
-    this.add = add;
-    this.addPoly = addPoly;
-    this.addLine = addLine;
-    this.move = move;
-    this.remove = remove;
-    this.map = map;
 
     /**
      * Pans the map to the specified latitude-longitude coordinates.
-     * @param lat the latitude
-     * @param lon the longitude
+     * @param {float} lat the latitude
+     * @param {float} lon the longitude
      */
-    function view(lat, lon) {
+    this.view = function (lat, lon) {
         map.panTo(latLon(lat, lon));
-    }
+    };
 
-    function viewAll() {
+    /**
+     * Pans the map so that all elements are visible at a maximum zoom level.
+     */
+    this.viewAll = function () {
         var bounds = new OpenLayers.Bounds();
         for (var id in this.elements) {
             var element = this.elements[id];
@@ -74,17 +70,18 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                     bounds.extend(element['points'][j]);
         }
         map.zoomToExtent(bounds);
-    }
+    };
 
     /**
      * Adds a point of interest to the map.
-     * @param id a unique identifier for the object.
-     * @param lat the latitude of the object.
-     * @param lon the longitude of the object.
+     * @param {string} id a unique identifier for the object.
+     * @param {float} lat the latitude of the object.
+     * @param {float} lon the longitude of the object.
+     * @param {string} icon the URL to the icon that represents this POI.
      */
-    function add(id, lat, lon, icon) {
+    this.add = function (id, lat, lon, icon) {
         if (!icon) icon = 'img/marker.png';
-        if (this.elements.hasOwnProperty(id)) remove.call(this, id);
+        if (this.elements.hasOwnProperty(id)) this.remove.call(this, id);
 
         this.elements[id] =
         {
@@ -94,13 +91,80 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
             'icon': icon
         };
         addToMap.call(this, id);
-    }
+    };
+
+    /**
+     * Adds a polygon to the map.
+     *
+     * @param {string} id the object's unique identifier.
+     * @param {Array} points an array of [x, y] tuples that are edges of the outline of the polygon.
+     */
+    this.addPoly = function (id, points) {
+        if (this.elements.hasOwnProperty(id)) this.remove.call(this, id);
+        points = project(points);
+        this.elements[id] =
+        {
+            'id': id,
+            'type': 'poly',
+            'points': points
+        };
+        addPolyToMap.call(this, id);
+    };
+
+    /**
+     * Adds a polyline to the map.
+     *
+     * @param {string} id the object's unique identifier.
+     * @param {Array} points an array of [x, y] tuples that form the polyline.
+     */
+    this.addLine = function (id, points) {
+        if (this.elements.hasOwnProperty(id)) this.remove.call(this, id);
+        points = project(points);
+        this.elements[id] =
+        {
+            'id': id,
+            'type': 'line',
+            'points': points
+        };
+        addLineToMap.call(this, id);
+    };
+
+    /**
+     * Moves a marker to the designated coordinates. This ONLY works with points of interests added
+     * through {OpenLayersFacade.add}; everything else will be ignored.
+     * @param {string} id the marker's unique identifier. If no marker by this identifier exists, this method will do nothing.
+     * @param {float} lat the marker's new latitude.
+     * @param {float} lon the marker's new longitude.
+     */
+    this.move = function (id, lat, lon) {
+        if (this.elements[id] && this.elements[id].type == 'poi') {
+            removeFromMap.call(this, id);
+            this.elements[id]['coordinates'] = latLon(lat, lon);
+            addToMap.call(this, id);
+        }
+    };
+
+    /**
+     * Removes an object (marker OR polygon) from the map using its unique identifier.
+     * @param {string} id
+     */
+    this.remove = function (id) {
+        if (!this.elements.hasOwnProperty(id)) return;
+        var type = this.elements[id]['type'];
+        if      (type == 'poi')  removeFromMap.call(this, id);
+        else if (type == 'poly' || type == 'line') removePolyFromMap.call(this, id);
+        delete this.elements[id];
+    };
+
+    /** @private */
+    this.map = map;
 
     /**
      * Creates an array of points from an array of [x, y] tuples.
      *
-     * @param points an array of [x, y] tuples.
+     * @param {Array} points an array of [x, y] tuples.
      * @returns {Array} an array of Point instances with the correct map projection.
+     * @private
      */
     function project(points) {
         var projectedPoints = [];
@@ -110,38 +174,9 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     }
 
     /**
-     * Adds a polygon to the map.
-     *
-     * @param id the object's unique identifier.
-     * @param points an array of [x, y] tuples that are edges of the outline of the polygon.
-     */
-    function addPoly(id, points) {
-        if (this.elements.hasOwnProperty(id)) remove.call(this, id);
-        points = project(points);
-        this.elements[id] =
-        {
-            'id': id,
-            'type': 'poly',
-            'points': points
-        };
-        addPolyToMap.call(this, id);
-    }
-
-    function addLine(id, points) {
-        if (this.elements.hasOwnProperty(id)) remove.call(this, id);
-        points = project(points);
-        this.elements[id] =
-        {
-            'id': id,
-            'type': 'line',
-            'points': points
-        };
-        addLineToMap.call(this, id);
-    }
-
-    /**
      * Removes a marker from the map using its unique identifier.
-     * @param id
+     * @param {string} id
+     * @private
      */
     function removeFromMap(id) {
         if (this.elements[id] && this.elements[id]['_inst']) {
@@ -161,7 +196,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
 
     /**
      * Removes a polygon from the map using its unique identifier.
-     * @param id
+     * @param {string} id
+     * @private
      */
     function removePolyFromMap(id) {
         if (this.elements[id]['_inst']) {
@@ -172,8 +208,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
 
     /**
      * Adds an internally registered but not yet rendered marker to the map.
-     * @param id
-     * @see add
+     * @param {string} id
+     * @private
      */
     function addToMap(id) {
         var style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
@@ -190,8 +226,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
 
     /**
      * Adds an internally registered but not yet rendered polygon to the map.
-     * @param id
-     * @see addPoly
+     * @param {string} id
+     * @private
      */
     function addPolyToMap(id) {
         var ring = new OpenLayers.Geometry.LinearRing(this.elements[id]['points']);
@@ -201,6 +237,11 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         geometryLayer.redraw();
     }
 
+    /**
+     * Adds an internally registered but not yet rendered polyline to the map.
+     * @param {string} id
+     * @private
+     */
     function addLineToMap(id) {
         var lines = new OpenLayers.Geometry.LineString(this.elements[id]['points']);
         this.elements[id]['_inst'] = new OpenLayers.Feature.Vector(lines, { id: id }, {
@@ -213,36 +254,11 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     }
 
     /**
-     * Moves a marker to the designated coordinates.
-     * @param id the marker's unique identifier. If no marker by this identifier exists, this method will do nothing.
-     * @param lat the marker's new latitude.
-     * @param lon the marker's new longitude.
-     */
-    function move(id, lat, lon) {
-        if (this.elements[id]) {
-            removeFromMap.call(this, id);
-            this.elements[id]['coordinates'] = latLon(lat, lon);
-            addToMap.call(this, id);
-        }
-    }
-
-    /**
-     * Removes an object (marker OR polygon) from the map using its unique identifier.
-     * @param id
-     */
-    function remove(id) {
-        if (!this.elements.hasOwnProperty(id)) return;
-        var type = this.elements[id]['type'];
-        if      (type == 'poi')  removeFromMap.call(this, id);
-        else if (type == 'poly' || type == 'line') removePolyFromMap.call(this, id);
-        delete this.elements[id];
-    }
-
-    /**
      * Converts latitude-longitude coordinate pairs to a properly projected OpenLayers.LonLat instance.
-     * @param latitude
-     * @param longitude
+     * @param {float} latitude
+     * @param {float} longitude
      * @returns {OpenLayers.Geometry.Point}
+     * @private
      */
     function latLon(latitude, longitude) {
         return new OpenLayers.Geometry.Point(longitude, latitude).transform(epsg4326Projection, mapProjection());
@@ -251,6 +267,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     /**
      * Gets the map's internal projection (defaults to EPSG:900913 if it hasn't been initialized yet).
      * @returns {OpenLayers.Projection}
+     * @private
      */
     function mapProjection() {
         return map ? map.getProjectionObject() : new OpenLayers.Projection('EPSG:900913');
@@ -259,6 +276,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     /**
      * Handles an internal event that relays changes of the map's center and/or zoom factor.
      * @param ev event data
+     * @private
      */
     function mapEvent(ev) {
         var lonlatCenter = ev.object.center.clone().transform(mapProjection(), epsg4326Projection);
@@ -266,6 +284,11 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         fireEvent('mapFocusChanged', coordData);
     }
 
+    /**
+     * Handles an internal event that relays clicks on the map.
+     * @param ev event data
+     * @private
+     */
     function mapClickEvent(ev) {
         var opx = map.getLonLatFromViewPortPx(ev.xy);
         var clickCenter = opx.transform(mapProjection(), epsg4326Projection);
@@ -277,8 +300,9 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * Triggers a custom event (bubbling and cancelable) with the specified name at the
      * map's own DOM root object (the same that was specified in the constructor).
      *
-     * @param name the event's name.
+     * @param {string} name the event's name.
      * @param data additional event data.
+     * @private
      */
     function fireEvent(name, data) {
         var event = new CustomEvent(name, { detail: data, bubbles: true, cancelable: true });
