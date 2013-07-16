@@ -7,7 +7,8 @@
  * @constructor
  */
 function OpenLayersFacade(container, initLat, initLong, initZ) {
-    var epsg4326Projection = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
+    /** @const */
+    var EPSG_4326_PROJECTION = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
     var geometryLayer = new OpenLayers.Layer.Vector();
     var poiLayer = new OpenLayers.Layer.Vector();
 
@@ -35,7 +36,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     });
 
     var selectControl = new OpenLayers.Control.SelectFeature(poiLayer, {clickout: true});
-    selectControl.onSelect = function(feature) {
+    selectControl.onSelect = function (feature) {
         fireEvent('poiClicked', { clicked: feature.attributes.id });
     };
     map.addControl(selectControl);
@@ -48,12 +49,28 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     this.elements = { };
 
     /**
-     * Pans the map to the specified latitude-longitude coordinates.
-     * @param {float} lat the latitude
-     * @param {float} lon the longitude
+     * Pans the map to the specified object. The object can either be: a latitude-longitude coordinate pair, OR
+     * the id of a registered item.
+     *
+     * @example
+     * facade.view(31.25, 27.5);
+     * facade.view('myPoi1');
      */
-    this.view = function (lat, lon) {
-        map.panTo(latLon(lat, lon));
+    this.view = function () {
+        if (arguments.length == 2 && typeof arguments[0] == 'number' && typeof arguments[1] == 'number') {
+            map.zoomToExtent(latLon(arguments[0], arguments[1]));
+        } else if (arguments.length == 1 && typeof arguments[0] == 'string' && this.elements.hasOwnProperty(arguments[0])) {
+            var item = this.elements[arguments[0]];
+            var panTarget = null;
+            if (item.hasOwnProperty('coordinates'))
+                panTarget = item['coordinates'];
+            else if (item.hasOwnProperty('points')) {
+                panTarget = new OpenLayers.Bounds();
+                for (var i = 0; i < item['points'].length; i++)
+                    panTarget.extend(item['points'][i]);
+            }
+            map.zoomToExtent(panTarget);
+        }
     };
 
     /**
@@ -151,7 +168,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     this.remove = function (id) {
         if (!this.elements.hasOwnProperty(id)) return;
         var type = this.elements[id]['type'];
-        if      (type == 'poi')  removeFromMap.call(this, id);
+        if (type == 'poi')  removeFromMap.call(this, id);
         else if (type == 'poly' || type == 'line') removePolyFromMap.call(this, id);
         delete this.elements[id];
     };
@@ -245,9 +262,9 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     function addLineToMap(id) {
         var lines = new OpenLayers.Geometry.LineString(this.elements[id]['points']);
         this.elements[id]['_inst'] = new OpenLayers.Feature.Vector(lines, { id: id }, {
-                strokeWidth: 3,
-                strokeOpacity: .5,
-                strokeColor: '#ff3333'
+            strokeWidth: 3,
+            strokeOpacity: .5,
+            strokeColor: '#ff3333'
         });
         geometryLayer.addFeatures(this.elements[id]['_inst']);
         geometryLayer.redraw();
@@ -261,7 +278,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @private
      */
     function latLon(latitude, longitude) {
-        return new OpenLayers.Geometry.Point(longitude, latitude).transform(epsg4326Projection, mapProjection());
+        return new OpenLayers.Geometry.Point(longitude, latitude).transform(EPSG_4326_PROJECTION, mapProjection());
     }
 
     /**
@@ -279,7 +296,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @private
      */
     function mapEvent(ev) {
-        var lonlatCenter = ev.object.center.clone().transform(mapProjection(), epsg4326Projection);
+        var lonlatCenter = ev.object.center.clone().transform(mapProjection(), EPSG_4326_PROJECTION);
         var coordData = { 'lat': lonlatCenter.lat, 'lon': lonlatCenter.lon, 'z': ev.object.zoom };
         fireEvent('mapFocusChanged', coordData);
     }
@@ -291,7 +308,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      */
     function mapClickEvent(ev) {
         var opx = map.getLonLatFromViewPortPx(ev.xy);
-        var clickCenter = opx.transform(mapProjection(), epsg4326Projection);
+        var clickCenter = opx.transform(mapProjection(), EPSG_4326_PROJECTION);
         var coordData = { 'lat': clickCenter.lat, 'lon': clickCenter.lon };
         fireEvent('mapClicked', coordData);
     }
