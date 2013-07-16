@@ -1,29 +1,133 @@
-function showSeries(data) {
-    document.plot = $.jqplot('chart_container', plotData, {
-        title: 'Performance chart',
-        stackSeries: true,
+/**
+ * Creates a new series object using the specified container.
+ *
+ * @param {string} title the diagram's title.
+ * @param {string} container the id of the DOM element that will contain the chart in question.
+ * @constructor
+ */
+function Series(title, container) {
+    /**
+     * @private
+     * @const
+     * @type {string}
+     */
+    this.container = container;
+
+    /**
+     * @private
+     * @type {Array}
+     */
+    this.labels = [ ];
+
+    /**
+     * @private
+     * @type {Array}
+     */
+    this.colors = [ ];
+
+    /**
+     * @private
+     * @type {Array}
+     */
+    this.data = [ ];
+
+    /**
+     * @private
+     * @type {string}
+     */
+    this.title = title;
+
+    /**
+     * @default true
+     * @type {boolean}
+     */
+    this.isStacked = true;
+
+    /**
+     * @default true
+     * @type {boolean}
+     */
+    this.showLegend = true;
+
+    var resizeBeingHandled = false;
+    $(window).resize(this, function(event) {
+        if (resizeBeingHandled) return;
+        resizeBeingHandled = true;
+        window.setTimeout(function () {
+            resizeBeingHandled = false;
+            event.data.redraw();
+        }, 500);
+    });
+}
+
+/**
+ * Redraws the diagram.
+ */
+Series.prototype.redraw = function () {
+    $('#' + this.container).empty();
+    if (!this.data || this.data.length == 0)
+        return;
+
+    var seriesLabels = [ ];
+    for (var i = 0; i < this.labels.length; i++)
+        seriesLabels[i] = { label: this.labels[i] };
+
+    document.plot = $.jqplot(this.container, this.data, {
+        title: this.title,
+        stackSeries: this.isStacked,
         seriesDefaults: {
             markerOptions: { style: 'circle' },
-            renderer:$.jqplot.BarRenderer,
+            renderer: $.jqplot.BarRenderer,
             rendererOptions: { barMargin: 24 },
-            pointLabels: { show:true, hideZeros: true }
+            pointLabels: { show: this.labels.length != 0 , hideZeros: true }
         },
-        series:
-            [ { label: 'Healthy' } ,
-                { label: 'Critical' } ,
-                { label: 'Deceased' } ],
-        seriesColors: [ '#90EE90', '#DC143C', '#696969' ],
+        series: seriesLabels,
+        seriesColors: this.colors,
         axesDefaults: { tickOptions: { mark: 'cross' } },
         axes: {
             xaxis: {
                 tickOptions: {
-                    showLabel: false,
-                    formatString: 'Decision %.0f'
+                    showLabel: false
+                    //,formatString: 'Decision %.0f'
                 },
                 min: 0
             },
             yaxis: { autoscale: true, min: 0 }
         },
-        legend: { show: true, location: 'e' }
+        legend: { show: this.showLegend, location: 'e' }
     });
+};
+
+/**
+ * @param {Array} labels an array of strings containing labels.
+ * @param {Array} colors an array of colors in RGB hex format for each of the labels.
+ */
+Series.prototype.setLabels = function (labels, colors) {
+    if (this.labels.length != this.colors.length)
+        console.warn('Please provide as many colors as there are labels.');
+    this.labels = labels;
+    this.colors = colors;
+};
+
+/**
+ * A two-dimensional array where each element in the outer array depicts a series on the X axis,
+ * and each element in inner arrays corresponds to one bar in the series. Note that the length of inner
+ * arrays must always be the same.
+ *
+ * When bars are stacked, each of the inner elements will be stacked on top of each other; otherwise
+ * they will be shown side by side, in the order they occur in the array.
+ *
+ * @param {Array} data a two-dimensional array containing series data.
+ * @example
+ * series.setData( [ [1, 2], [3, 4], [5, 6] ] )
+ */
+Series.prototype.setData = function (data) {
+    this.data = data;
+};
+
+/**
+ * @param {string} title the title of the diagram (that will be displayed on top of the chart area).
+ */
+Series.prototype.setTitle = function (title) {
+    this.title = title;
 }

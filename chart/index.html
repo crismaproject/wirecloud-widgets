@@ -15,6 +15,7 @@
 </div>
 
 <script type="text/javascript">
+    // this is only set-up this way for readability purposes.
     var series = [
         { g: 7, r: 4, d: 0 },
         { g: 6, r: 5, d: 0 },
@@ -32,7 +33,10 @@
         plotData[2].push([i, series[i].d]);
     }
 
-    showSeries(plotData);
+    var seriesObj = new Series('Performance', 'chart_container');
+    seriesObj.setData(plotData);
+    seriesObj.setLabels(['Healthy', 'Injured', 'Dead'], [ '#90EE90', '#DC143C', '#696969' ]);
+    seriesObj.redraw();
 </script>
 </body>
 </html>
