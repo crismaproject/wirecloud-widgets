@@ -90,6 +90,18 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     };
 
     /**
+     * Removes all elements from the map.
+     */
+    this.clear = function () {
+        poiLayer.removeAllFeatures();
+        geometryLayer.removeAllFeatures();
+        this.elements = [];
+
+        poiLayer.redraw();
+        geometryLayer.redraw();
+    }
+
+    /**
      * Adds a point of interest to the map.
      * @param {string} id a unique identifier for the object.
      * @param {float} lat the latitude of the object.

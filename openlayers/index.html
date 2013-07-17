@@ -5,47 +5,13 @@
     <script src="http://code.jquery.com/jquery-2.0.0.min.js" type="text/javascript"></script>
     <script src="http://openlayers.org/api/OpenLayers.js" type="text/javascript"></script>
     <script src="js/maplib.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        $(function() {
-            var map = new OpenLayersFacade('map');
-            document.mapObj = map;
-
-            $('#map').bind('mapFocusChanged', function(event) { console.log(event.originalEvent.detail); });
-            $('#map').bind('mapClicked', function(event) { console.log(event.originalEvent.detail); });
-            $('#map').bind('poiClicked', function(event) { console.log(event.originalEvent.detail); });
-
-            // Add points of interest:
-            map.add('fire1', 31.790287, 34.641389, 'img/fire.png');
-            map.add('fire2', 31.7917278, 34.6442866, 'img/fire.png');
-            map.add('amb1', 31.8033814, 34.643149, 'img/ambulance.png');
-            map.add('p1', 31.790289, 34.642379, 'img/person.png');
-
-            // Add a polygon
-            map.addPoly('fire1poly', [
-                [ 31.78843, 34.639587 ],
-                [ 31.792476, 34.636712 ],
-                [ 31.79499, 34.644994 ],
-                [ 31.79167, 34.649586 ],
-                [ 31.786694, 34.6463 ]
-            ]);
-
-            // Add a polyline
-            map.addLine('amb1path', [
-                    [ 31.803477185988, 34.6431865509 ],
-                    [ 31.803819110964, 34.6424194391 ],
-                    [ 31.801338986439, 34.6407564695 ],
-                    [ 31.799223533504, 34.6450909193 ],
-                    [ 31.794395195523, 34.6419420059 ],
-                    [ 31.792886003203, 34.6451552923 ],
-                    [ 31.791937615965, 34.6445008333 ],
-            ]);
-
-            // Re-center the map
-            window.setTimeout('document.mapObj.viewAll();', 1000);
-        });
-    </script>
 </head>
 <body>
     <div id="map"></div>
+    <script type="text/javascript" defer="defer">
+        var map = new OpenLayersFacade('map');
+        document.mapObj = map;
+    </script>
+    <script src="js/wirecloud.js" type="text/javascript" defer="defer"></script>
 </body>
 </html>

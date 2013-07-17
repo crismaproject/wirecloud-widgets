@@ -13,13 +13,19 @@
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
+  <Platform.Preferences>
+    <Preference name="recenter" type="boolean" description="Automatically re-center the map whenever it changed through events" label="Auto re-center" default="true" />
+  </Platform.Preferences>
+
   <Platform.Wiring>
-    <InputEndpoint name="view_point" type="text" label="Coordinates" description="Focuses the map on specified coordinates" friendcode="geo-lon-lat-z" />
-    <InputEndpoint name="add_point" type="text" label="Add point" description="Adds a point to the map" friendcode="geo-lon-lat-z" />
+    <InputEndpoint name="view_point" type="text" label="Coordinates" description="Focuses the map on specified coordinates" friendcode="geo-lon-lat" />
+    <InputEndpoint name="add_point" type="text" label="Add point" description="Adds a point to the map" friendcode="geo-ooi" />
     <InputEndpoint name="add_line" type="text" label="Add line" description="Adds a line to the map" friendcode="geo-points" />
     <InputEndpoint name="add_poly" type="text" label="Add polygon" description="Adds a polygon to the map" friendcode="geo-points" />
     <InputEndpoint name="clear" type="text" label="Clear" description="Removes all features from the map (points and polygons)" friendcode="signal" />
-    <OutputEndpoint name="center_point" type="text" label="Coordinates" description="Sends a signal whenever the shown center changes" friendcode="geo-lon-lat-z" />
+    <OutputEndpoint name="center_point" type="text" label="Coordinates" description="Sends a signal whenever the shown center changes" friendcode="geo-lon-lat" />
+    <OutputEndpoint name="ooi_click" type="text" label="Clicked object" description="Sends a signal whenever an object is clicked" friendcode="ooi-identifier" />
+    <OutputEndpoint name="pos_click" type="text" label="Clicked spot" description="Sends a signal whenever an empty area of the map is clicked" friendcode="geo-lon-lat" />
   </Platform.Wiring>
   
   <Platform.Link>
