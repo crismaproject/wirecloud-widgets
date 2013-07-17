@@ -13,8 +13,13 @@
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
+  <Platform.Preferences>
+    <Preference name="title" type="text" description="The title to display on top of the diagram" label="Title" default="Chart" />
+  </Platform.Preferences>
+
   <Platform.Wiring>
-    <!-- TO DO -->
+    <InputEndpoint name="series_data_1d" type="text" label="Series data" description="Displays the specified data (provided as a 1-dimensional array)" friendcode="matrix1d" />
+    <InputEndpoint name="series_data_2d" type="text" label="Series data (stacked)" description="Displays the specified data as stacked bars (provided as a 2-dimensional array)" friendcode="matrix2d" />
   </Platform.Wiring>
   
   <Platform.Link>
