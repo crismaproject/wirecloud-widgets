@@ -1,33 +1,45 @@
-function setHeaders(elements) {
-    $('#table_header').empty();
-    if (elements) {
+/**
+ * @constructor
+ * @param {string} selector
+ */
+function Table(selector) {
+    /**
+     * @const
+     * @private
+     */
+    this.container = selector;
+
+    $(this.container).empty().append('<thead></thead>').append('<tbody></tbody>');
+}
+
+Table.prototype.setHeaders = function () {
+    $('thead', this.container).empty();
+    if (arguments.length > 0) {
         var headerRow = $('<tr></tr>');
-        for(var i = 0; i < elements.length; i++)
-            headerRow.append($('<th></th>').text(elements[i]));
-        $('#table_header').append(headerRow);
+        for(var i = 0; i < arguments.length; i++)
+            headerRow.append($('<th></th>').text(arguments[i]));
+        $('thead', this.container).append(headerRow);
     }
 }
 
-function setData(rows) {
-    $('#table_data').empty();
+Table.prototype.setData = function (rows) {
+    $('tbody', this.container).empty();
     if (rows)
         for(var i = 0; i < rows.length; i++) {
             var dataRow = $('<tr></tr>');
-            for(var j = 0; j < rows[i].length; j++)
-                dataRow.append($('<td></td>').text(rows[i][j]));
-            dataRow.click(function(){console.log('Selected ' + rows[i][0])});
-            $('#table_data').append(dataRow);
+            var row = rows[i];
+            for(var j = 0; j < row.length; j++)
+                dataRow.append($('<td></td>').text(row[j]));
+            var clickHandler = function () {
+                $(this).trigger('selected_row');
+            };
+            dataRow.click(clickHandler);
+            $('tbody', this.container).append(dataRow);
         }
 }
 
-function setCaption(caption) {
-    $('#table_container caption').remove();
+Table.prototype.setCaption = function (caption) {
+    $('caption', this.container).remove();
     if (caption)
-        $('#table_container').prepend($('<caption></caption>').text(caption));
-}
-
-function setTable(caption, headers, rows) {
-    setHeaders(headers);
-    setData(rows);
-    setCaption(caption);
+        $('caption', this.container).prepend($('<caption></caption>').text(caption));
 }

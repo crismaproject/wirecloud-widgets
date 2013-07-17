@@ -9,19 +9,20 @@
 </head>
 <body>
 <table id="table_container" class="table table-bordered table-hover">
-    <thead id="table_header">
-    </thead>
-    <tbody id="table_data">
-    </tbody>
 </table>
 
 <script type="text/javascript">
-    setTable('Assets', [ 'Name', 'Type', 'Sub Type', 'Group', 'External ID', 'State' ], [
+    var table = new Table('#table_container');
+    table.setCaption('Assets');
+    table.setHeaders('Name', 'Type', 'Sub Type', 'Group', 'External ID', 'State');
+    table.setData([
         [ 'Police Car 3', 'Vehicle', 'Police Car', 'Police', '45-789-46', 'Normal' ],
         [ 'Surveillance 7', 'Vehicle', 'Surveillance', 'Surveillance', '33-549-68', 'Normal' ],
         [ 'Ambulance 1', 'Vehicle', 'Ambulance', 'Medical', '48-784-78', 'Normal' ],
         [ 'Surveillance 7', 'Vehicle', 'Surveillance', 'Surveillance', '33-549-68', 'Normal' ]
     ]);
+
+    $('#table_container').bind('selected_row', function (ev) { console.log(ev); });
 </script>
 </body>
 </html>
