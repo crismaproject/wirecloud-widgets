@@ -4,6 +4,8 @@
 $(function () {
     if (typeof MashupPlatform === 'undefined') {
         console.warn('Wirecloud environment not detected.');
+    } else if (typeof map === 'undefined') {
+        console.warn('"map" variable is not defined.')
     } else {
         var autoRecenter = false;
 

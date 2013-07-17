@@ -4,6 +4,8 @@
 $(function () {
     if (typeof MashupPlatform === 'undefined') {
         console.warn('Wirecloud environment not detected.');
+    } else if (typeof series === 'undefined') {
+        console.warn('"series" variable is not defined.');
     } else {
         var applyPreferences = function () {
             series.setTitle(MashupPlatform.prefs.get('title'));
