@@ -20,4 +20,4 @@ Also note that these components are currently under **early and active developme
 ## Contact
 
 Most widgets are currently maintained by Manuel Warum from the Austrian Institute of Technology. If you need assistance,
-feel free to drop me a line: manuel *(dot)* warum *(dot)* fl *(at)* ait *(dot)* ac *(dot)* at.
+feel free to drop me a line: manuel *(dot)* warum *(dot)* fl *(at)* ait *(dot)* ac *(dot)* at, or [MrManny](https://github.com/MrManny) on github.
