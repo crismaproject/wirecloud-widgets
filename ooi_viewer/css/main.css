@@ -1,0 +1,6 @@
+table { overflow-y: scroll; }
+
+@media (max-width: 300px) {
+    .conserve { display: none; }
+    .btn-small { padding: 0 2px; }
+}

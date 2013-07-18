@@ -1,1 +1,2 @@
 td input, td select { width: 100%; box-sizing: border-box; }
+table { overflow-y: scroll; }
