@@ -47,10 +47,10 @@ $(function () {
         });
 
         $('#map').bind('mapFocusChanged', function(event) {
-            MashupPlatform.wiring.pushEvent('center_point', JSON.string({ latitude: event.originalEvent.lat, longitude: event.originalEvent.lon }));
+            MashupPlatform.wiring.pushEvent('center_point', JSON.stringify({ latitude: event.originalEvent.lat, longitude: event.originalEvent.lon }));
         });
         $('#map').bind('mapClicked', function(event) {
-            MashupPlatform.wiring.pushEvent('pos_click', JSON.string({ latitude: event.originalEvent.lat, longitude: event.originalEvent.lon }));
+            MashupPlatform.wiring.pushEvent('pos_click', JSON.stringify({ latitude: event.originalEvent.lat, longitude: event.originalEvent.lon }));
         });
         $('#map').bind('poiClicked', function(event) {
             MashupPlatform.wiring.pushEvent('ooi_click', event.originalEvent);
