@@ -1,9 +1,9 @@
 /**
  * A facade-like interface to handle interaction with the OpenLayers library.
  * @param {string} container the id of the DOM element where the map should be rendered
- * @param {float} initLat the initial center latitude to display (optional)
- * @param {float} initLong the initial center longitude to display (optional)
- * @param {int} initZ the initial zoom factor to display (optional)
+ * @param {float=} initLat the initial center latitude to display (optional)
+ * @param {float=} initLong the initial center longitude to display (optional)
+ * @param {int=} initZ the initial zoom factor to display (optional)
  * @constructor
  */
 function OpenLayersFacade(container, initLat, initLong, initZ) {
@@ -106,7 +106,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @param {string} id a unique identifier for the object.
      * @param {float} lat the latitude of the object.
      * @param {float} lon the longitude of the object.
-     * @param {string} icon the URL to the icon that represents this POI.
+     * @param {string=} icon the URL to the icon that represents this POI.
      */
     this.add = function (id, lat, lon, icon) {
         if (!icon) icon = 'img/marker.png';
@@ -330,7 +330,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * map's own DOM root object (the same that was specified in the constructor).
      *
      * @param {string} name the event's name.
-     * @param data additional event data.
+     * @param {Object=} data additional event data.
      * @private
      */
     function fireEvent(name, data) {
