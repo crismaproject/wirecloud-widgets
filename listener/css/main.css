@@ -1,0 +1,4 @@
+#data { list-style-type: none; padding: 0 }
+#data li { padding-top: 2.5pt; padding-bottom: 2.5pt; font-family: 'Consolas', monospace }
+#data li:nth-child(even) { background-color: #f9f9ff }
+#data li:hover { background-color: #ececff }
