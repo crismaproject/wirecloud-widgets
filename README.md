@@ -12,8 +12,10 @@ Also note that these components are currently under **early and active developme
 ## Content
 
 * **./chart/** - a simple widget that uses jquery and jqplot to render bar charts.
-* **./openlayers/** - a map widget using OpenLayers and OpenStreetMap (for now) to display maps with points of
-    interests, polygons, and lines.
+* **./listener/** - a simple debugging widget that shows incoming events.
+* **./ooi_editor/**
+* **./ooi_viewer/**
+* **./openlayers/** - a map widget using OpenLayers and OpenStreetMap (for now) to display maps with points of interests, polygons, and lines.
 * **./tabular/** - a simple table (Bootstrap style).
 
 
