@@ -13,10 +13,15 @@
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
+  <Platform.Preferences>
+    <Preference name="to_console" type="boolean" description="Push all data to the console" label="Console"
+                default="true"/>
+  </Platform.Preferences>
+
   <Platform.Wiring>
-    <InputEndpoint name="data" type="text" label="Data" description="Data to display" friendcode="any" />
+    <InputEndpoint name="data" type="text" label="Data" description="Data to display" friendcode="any"/>
   </Platform.Wiring>
-  
+
   <Platform.Link>
     <XHTML href="index.html"/>
   </Platform.Link>
