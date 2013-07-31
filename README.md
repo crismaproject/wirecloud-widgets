@@ -6,15 +6,17 @@ Ideally, every folder here contains a widget that should work on its own and exp
 JavaScript functions. Primarily, they are intended to be used in the context of Wirecloud, so their usefulness outside
 of the Mashup platform could be.. limited.
 
-Also note that these components are currently under **early and active development** - they might or might not work yet.
+Also note that these components are currently under **early and active development** — they might or might not work yet.
 
 
 ## Content
 
-* **./chart/** - a simple widget that uses jquery and jqplot to render bar charts.
-* **./openlayers/** - a map widget using OpenLayers and OpenStreetMap (for now) to display maps with points of
-    interests, polygons, and lines.
-* **./tabular/** - a simple table (Bootstrap style).
+* **./chart/** — a simple widget that uses jquery and jqplot to render bar charts.
+* **./listener/** — a simple debugging widget that shows incoming events.
+* **./ooi_editor/**
+* **./ooi_viewer/**
+* **./openlayers/** — a map widget using OpenLayers and OpenStreetMap (for now) to display maps with points of interests, polygons, and lines.
+* **./tabular/** — a simple table (Bootstrap style).
 
 
 ## Contact
