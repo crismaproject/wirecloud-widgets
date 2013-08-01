@@ -1,6 +1,9 @@
 /**
+ * Creates a new table wrapper for simple DOM manipulations.
+ *
  * @constructor
- * @param {string} selector
+ * @param {string} selector a `table` DOM element CSS selector. Note that any child elements within the table will be
+ * replaced during a call to this constructor.
  */
 function Table(selector) {
     /**
@@ -12,23 +15,32 @@ function Table(selector) {
     $(this.container).empty().append('<thead></thead>').append('<tbody></tbody>');
 }
 
-Table.prototype.setHeaders = function () {
+/**
+ * Sets the table to contain these column headers. If any existed beforehand, they will be removed.
+ * @param {...String?} header Individual header column labels
+ */
+Table.prototype.setHeaders = function (header) {
     $('thead', this.container).empty();
     if (arguments.length > 0) {
         var headerRow = $('<tr></tr>');
-        for(var i = 0; i < arguments.length; i++)
+        for (var i = 0; i < arguments.length; i++)
             headerRow.append($('<th></th>').text(arguments[i]));
         $('thead', this.container).append(headerRow);
     }
 }
 
+/**
+ * Sets the table to contain the specified data. If any existed beforehand, it will be removed.
+ * Note that rows[i].length should match the number of headers.
+ * @param {String[][]?} rows a 2-dimensional array containing rows and cells of rows.
+ */
 Table.prototype.setData = function (rows) {
     $('tbody', this.container).empty();
     if (rows)
-        for(var i = 0; i < rows.length; i++) {
+        for (var i = 0; i < rows.length; i++) {
             var dataRow = $('<tr></tr>');
             var row = rows[i];
-            for(var j = 0; j < row.length; j++)
+            for (var j = 0; j < row.length; j++)
                 dataRow.append($('<td></td>').text(row[j]));
             var clickHandler = function () {
                 $(this).trigger('selected_row');
@@ -38,6 +50,10 @@ Table.prototype.setData = function (rows) {
         }
 }
 
+/**
+ * Sets the table to contain the specified caption. If any existed beforehand, it will be removed.
+ * @param {String?} caption
+ */
 Table.prototype.setCaption = function (caption) {
     $('caption', this.container).remove();
     if (caption)
