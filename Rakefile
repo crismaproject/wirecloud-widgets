@@ -21,7 +21,6 @@ desc 'Create all zipped Wirecloud widget files'
 task :all do
   Dir.glob('**').each do |subdirectory|
     if File.exists?(File.join(subdirectory, '.bundle'))
-      puts "#{subdirectory} OK"
       Rake::Task[:bundle].invoke(subdirectory)
       Rake::Task[:bundle].reenable
     end
