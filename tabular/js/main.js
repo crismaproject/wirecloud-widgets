@@ -12,6 +12,18 @@ function Table(selector) {
      */
     this.container = selector;
 
+    /**
+     * @const
+     * @private
+     */
+    this.headers = [];
+
+    /**
+     * @const
+     * @private
+     */
+    this.rows = [];
+
     $(this.container).empty().append('<thead></thead>').append('<tbody></tbody>');
 }
 
@@ -21,6 +33,7 @@ function Table(selector) {
  */
 Table.prototype.setHeaders = function (header) {
     $('thead', this.container).empty();
+    this.headers = arguments;
     if (arguments.length > 0) {
         var headerRow = $('<tr></tr>');
         for (var i = 0; i < arguments.length; i++)
@@ -36,9 +49,10 @@ Table.prototype.setHeaders = function (header) {
  */
 Table.prototype.setData = function (rows) {
     $('tbody', this.container).empty();
+    this.rows = rows;
     if (rows)
         for (var i = 0; i < rows.length; i++) {
-            var dataRow = $('<tr></tr>');
+            var dataRow = $('<tr></tr>').attr('data-n', i);
             var row = rows[i];
             for (var j = 0; j < row.length; j++)
                 dataRow.append($('<td></td>').text(row[j]));

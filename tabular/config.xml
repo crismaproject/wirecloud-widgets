@@ -15,8 +15,10 @@
 
   <Platform.Wiring>
     <!-- TO DO -->
+    <OutputEndpoint name="selected_row" type="text" label="Selected row"
+                    description="Sends a signal whenever a row is clicked" friendcode="row"/>
   </Platform.Wiring>
-  
+
   <Platform.Link>
     <XHTML href="index.html"/>
   </Platform.Link>

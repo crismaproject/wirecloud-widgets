@@ -7,12 +7,16 @@ $(function () {
     } else if (typeof table === 'undefined') {
         console.warn('"table" variable is not defined.')
     } else {
+        $('#table_container').bind('selected_row', function (ev) {
+            var selectedRowIndex = $(ev.target).attr('data-n');
+            if (selectedRowIndex) {
+                var row = table.rows[selectedRowIndex];
+                var data = {};
+                for (var i = 0; i < table.headers.length; i++)
+                    data[table.headers[i]] = row[i];
 
-    }
-
-    function parseJSON(data) {
-        if (typeof data === 'string')
-            data = $.parseJSON(data);
-        return data;
+                MashupPlatform.wiring.pushEvent('selected_row', data);
+            }
+        });
     }
 });
