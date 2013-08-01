@@ -1,3 +1,19 @@
-table {
-    overflow-y: scroll;
+@media (max-width: 575px) {
+    table#table_container {
+        font-size: 12px
+    }
+
+    table#table_container>tbody>tr>td,
+    table#table_container>thead>tr>th {
+        padding: 2px 5px
+    }
+
+    .table-bordered>tbody>tr>th, .table-bordered>tbody>tr>td {
+        border: 0 none
+    }
+
+    .table-bordered>thead>tr>th, .table-bordered>thead>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>tfoot>tr>td {
+        border-left: 0 none;
+        border-right: 0 none
+    }
 }
