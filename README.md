@@ -18,6 +18,17 @@ Also note that these components are currently under **early and active developme
 * **./openlayers/** — a map widget using OpenLayers and OpenStreetMap (for now) to display maps with points of interests, polygons, and lines.
 * **./tabular/** — a simple table (Bootstrap style).
 
+## Building
+
+There are two ways to "build" these widgets automatically:
+
+* Windows: use `bundle.bat` which should build all widgets. However, this method *requires* 7-zip installed under `C:\Program Files\7-Zip\7z.exe`, *or*
+* use `rake all` on systems with Rake installed. It will build any widgets in subdirectories containing a `.bundle` file. It requires [rubyzip](https://github.com/rubyzip/rubyzip) to be installed.
+
+You can also build it manually:
+
+1. Use any compression tool to create ZIP files for each of the widgets you are interested in so that the `config.xml` file is in the root directory of the archive. If you want to, exclude `README.md` files.
+2. By convention, you should then change the extension from `.zip` to `.wgt`.
 
 ## Contact
 
