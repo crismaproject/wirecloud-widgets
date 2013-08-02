@@ -8,7 +8,7 @@ $(function () {
         var toConsole = false;
 
         var applyPreferences = function () {
-            autoRecenter = MashupPlatform.prefs.get('to_console');
+            toConsole = MashupPlatform.prefs.get('to_console');
         };
 
         MashupPlatform.prefs.registerCallback(applyPreferences);
