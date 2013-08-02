@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Template xmlns="http://morfeo-project.org/2007/Template">
+  <Catalog.ResourceDescription>
+    <Vendor>AIT</Vendor>
+    <Name>crisma-debug-pusher</Name>
+    <Version>0.1</Version>
+    <Author>Manuel Warum</Author>
+    <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
+    <Description>Simple widget to send data</Description>
+    <ImageURI>img/catalogue.png</ImageURI>
+    <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
+    <WikiURI>http://127.0.0.1/index.htm</WikiURI>
+  </Catalog.ResourceDescription>
+
+  <Platform.Preferences>
+    <Preference name="to_console" type="boolean" description="Push all data to the console" label="Console"
+                default="true"/>
+  </Platform.Preferences>
+
+  <Platform.Wiring>
+    <OutputEndpoint name="data" type="text" label="Data" description="Data to push" friendcode="any"/>
+  </Platform.Wiring>
+
+  <Platform.Link>
+    <XHTML href="index.html"/>
+  </Platform.Link>
+
+  <Platform.Rendering width="6" height="12"/>
+</Template>
