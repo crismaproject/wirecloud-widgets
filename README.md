@@ -24,6 +24,7 @@ There are two ways to "build" these widgets automatically:
 
 * Windows: use `bundle.bat` which should build all widgets. However, this method *requires* 7-zip installed under `C:\Program Files\7-Zip\7z.exe`, *or*
 * use `rake all` on systems with Rake installed. It will build any widgets in subdirectories containing a `.bundle` file. It requires [rubyzip](https://github.com/rubyzip/rubyzip) to be installed.
+  `rake` can also be used to bundle widgets individually; for instance, to build the `ooi_viewer` widget, use `rake bundle[ooi_viewer]`.
 
 You can also build it manually:
 
