@@ -17,7 +17,12 @@ $(function () {
         MashupPlatform.wiring.registerCallback('data', function (data) {
             appendData(data);
             if (toConsole)
-                console.log(data);
+                console.log({
+                    'received': true,
+//                    'local-event': 'data',
+//                    'remote-event': '??',
+                    'data': data
+                });
         });
     }
 });

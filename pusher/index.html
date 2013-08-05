@@ -14,8 +14,13 @@
     <fieldset>
         <div class="form-group keep-small">
             <label for="inputEventName" class="control-label">Event</label>
-            <input type="text" id="inputEventName" class="form-control" placeholder="Event" disabled="disabled">
-            <!-- TODO: retrieve name of connected event from Wirecloud API -->
+
+            <div class="input-group">
+                <input type="text" id="inputEventName" class="form-control" placeholder="Event" disabled="disabled">
+                <span class="input-group-btn">
+                    <button class="btn" type="button" id="btn-refresh-event"><img src="img/refresh.png"></button>
+                </span>
+            </div>
         </div>
         <div class="form-group">
             <label for="inputEventName" class="control-label keep-small">Data</label>
@@ -23,8 +28,10 @@
             <span class="help-block hide-small">Enter JSON-encoded event data here.</span>
         </div>
         <div class="text-center">
-            <button type="reset" class="btn btn-small btn-danger">Clear</button>
-            <button id="btn-send" type="button" class="btn btn-small btn-default">Send</button>
+            <span class="btn-group">
+                <button type="reset" class="btn btn-small btn-danger">Clear</button>
+                <button id="btn-send" type="button" class="btn btn-small btn-default">Send</button>
+            </span>
         </div>
     </fieldset>
 </form>
