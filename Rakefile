@@ -1,4 +1,5 @@
 require 'zip/zip'
+require 'nokogiri'
 
 desc 'Create zipped Wirecloud widget file for the specified project'
 task :bundle, [:what] do |t, args|
@@ -17,12 +18,49 @@ task :bundle, [:what] do |t, args|
   end
 end
 
+task :doc_endpoints do
+  Dir.glob('**').each do |subdirectory|
+    config_file = File.join(subdirectory, 'config.xml')
+    if File.exists?(config_file)
+      file = File.open config_file
+      doc = Nokogiri::XML(file)
+      file.close
+
+      endpoints = { :in => [], :out => [] }
+      doc.css('InputEndpoint').each { |endpoint| endpoints[:in].push({:friendcode => endpoint[:friendcode], :name => endpoint[:name]}) }
+      doc.css('OutputEndpoint').each { |endpoint| endpoints[:out].push({:friendcode => endpoint[:friendcode], :name => endpoint[:name]}) }
+
+      File.open(File.join(subdirectory, 'ENDPOINTS.md'), 'w') do |f|
+        f.puts '# Notice'
+        f.puts "This document has been generated automatically on #{Time.now}. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line."
+        f.puts ''
+
+        write_endpoints!(f, endpoints[:in], 'Input endpoints')
+        f.puts ''
+        write_endpoints!(f, endpoints[:out], 'Output endpoints')
+      end
+    end
+  end
+end
+
 desc 'Create all zipped Wirecloud widget files'
-task :all do
+task :all => [:doc_endpoints] do
   Dir.glob('**').each do |subdirectory|
     if File.exists?(File.join(subdirectory, '.bundle'))
       Rake::Task[:bundle].invoke(subdirectory)
       Rake::Task[:bundle].reenable
     end
+  end
+end
+
+
+def write_endpoints!(f, endpoints, title)
+  f.puts "# #{title}"
+
+  if endpoints.empty?
+    f.puts '(none)'
+  else
+    endpoints.sort! { |x, y| x[:name] <=> y[:name] }
+    endpoints.each { |endpoint| f.puts "* `#{endpoint[:name]}` : #{endpoint[:friendcode]}" }
   end
 end
