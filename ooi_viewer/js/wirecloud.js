@@ -5,19 +5,28 @@ $(function () {
     if (typeof MashupPlatform === 'undefined') {
         console.warn('Wirecloud environment not detected.');
     } else if (typeof ooiViewer === 'undefined') {
-        console.warn('"map" variable is not defined.')
+        console.warn('"ooiViewer" variable is not defined.')
     } else {
         MashupPlatform.wiring.registerCallback('ooi', function (data) {
             var ooiId = parseJSON(data);
-            map.view(ooiId);
 
             // do something with the identifier now; eg. fetch it from the external resource, or something like that
-            console.debug('Implement me :(');
+            console.log('Implement me :(');
+        });
+
+        MashupPlatform.wiring.registerCallback('row', function (data) {
+            var rowData = parseJSON(data);
+            var id = null;
+
+            if (data.hasOwnProperty('id')) {
+                id = data.id;
+                delete data.id;
+            }
+
+            ooiViewer.set(id, rowData);
         });
 
         $('#btn-locate').click(function() {
-            console.debug('Implement me :(');
-
             // the following lines might throw errors as parts of the implementation are still missing
             if (window.hasOwnProperty('currentObj') && window.currentObj) {
                 MashupPlatform.wiring.pushEvent('locate-ooi', window.currentObj.id);

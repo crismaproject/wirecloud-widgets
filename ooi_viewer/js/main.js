@@ -12,7 +12,9 @@ function OOIViewer(container) {
 /**
  * Sets the table's contents.
  * @param {string} identifier the OOI's identifier.
- * @param {Object} obj
+ * @param {Object} obj an object where keys are used as row headers and values as, well, values.
+ * @example
+ * ooiViewer.set(123, {'Name': 'Alice', 'Location': 'Wonderland'}) // shows an OOI with id 123, the name Alice and the location Wonderland.
  */
 OOIViewer.prototype.set = function (identifier, obj) {
     var tbody = $(this.container).find('tbody');
@@ -29,9 +31,10 @@ OOIViewer.prototype.set = function (identifier, obj) {
 }
 
 /**
- * @param label
- * @param callback
- * @returns {string} identifier
+ * Creates a button in the UI that triggers a JavaScript function if it is clicked.
+ * @param label The label that will be shown on the generated button.
+ * @param callback a method that should be called when the generated button is clicked.
+ * @returns {String} Returns a unique identifier that should be used for the removeAction method.
  */
 OOIViewer.prototype.addAction = function (label, callback) {
     this.removeAction.call(this, label);
@@ -48,7 +51,8 @@ OOIViewer.prototype.addAction = function (label, callback) {
 }
 
 /**
- * @param uid
+ * Removes a previously registered button from the UI.
+ * @param uid the unique identifier that was generated when the action was registered with addAction.
  */
 OOIViewer.prototype.removeAction = function (uid) {
     if (this.actionCallbacks.hasOwnProperty(uid)) {
