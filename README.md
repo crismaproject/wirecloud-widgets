@@ -18,6 +18,10 @@ Also note that these components are currently under **early and active developme
 * **./openlayers/** — a map widget using OpenLayers and OpenStreetMap (for now) to display maps with points of interests, polygons, and lines.
 * **./tabular/** — a simple table (Bootstrap style).
 
+**Documentation** for endpoints can be found in each of the widgets' respective subdirectory, in a file aptly
+named `ENDPOINTS.md`. These files are automatically generated from Wirecloud metadata in each `config.xml`.
+To (re-)generate these files on your own, you can use the `rake doc_endpoints` build task.
+
 ## Building
 
 There are two ways to "build" these widgets automatically:
@@ -30,6 +34,8 @@ You can also build it manually:
 
 1. Use any compression tool to create ZIP files for each of the widgets you are interested in so that the `config.xml` file is in the root directory of the archive. If you want to, exclude `README.md` files.
 2. By convention, you should then change the extension from `.zip` to `.wgt`.
+
+If you want to contribute other ways of building/bundling widgets (or documentation), feel free to do so and send me a push request.
 
 ## Contact
 
