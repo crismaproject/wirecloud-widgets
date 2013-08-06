@@ -26,9 +26,10 @@ task :doc_endpoints do
       doc = Nokogiri::XML(file)
       file.close
 
-      endpoints = { :in => [], :out => [] }
-      doc.css('InputEndpoint').each { |endpoint| endpoints[:in].push({:friendcode => endpoint[:friendcode], :name => endpoint[:name]}) }
-      doc.css('OutputEndpoint').each { |endpoint| endpoints[:out].push({:friendcode => endpoint[:friendcode], :name => endpoint[:name]}) }
+      endpoints = {
+          :in  => doc.css('InputEndpoint').collect { |x| create_hash(x) },
+          :out => doc.css('OutputEndpoint').collect { |x| create_hash(x) }
+      }
 
       File.open(File.join(subdirectory, 'ENDPOINTS.md'), 'w') do |f|
         f.puts '# Notice'
@@ -53,6 +54,14 @@ task :all => [:doc_endpoints] do
   end
 end
 
+def create_hash(endpoint)
+  {
+      :name => endpoint[:name],
+      :friendcode => endpoint[:friendcode],
+      :description => endpoint[:description],
+      :label => endpoint[:label]
+  }
+end
 
 def write_endpoints!(f, endpoints, title)
   f.puts "# #{title}"
@@ -61,6 +70,6 @@ def write_endpoints!(f, endpoints, title)
     f.puts '(none)'
   else
     endpoints.sort! { |x, y| x[:name] <=> y[:name] }
-    endpoints.each { |endpoint| f.puts "* `#{endpoint[:name]}` : #{endpoint[:friendcode]}" }
+    endpoints.each { |endpoint| f.puts "* **#{endpoint[:label]}**\n    * Internal name `#{endpoint[:name]}`, with declared friend-code: `#{endpoint[:friendcode]}`\n    * #{endpoint[:description]}" }
   end
 end
