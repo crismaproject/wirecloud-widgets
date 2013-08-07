@@ -9,8 +9,9 @@
 function OpenLayersFacade(container, initLat, initLong, initZ) {
     /** @const */
     var EPSG_4326_PROJECTION = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
-    var geometryLayer = new OpenLayers.Layer.Vector();
-    var poiLayer = new OpenLayers.Layer.Vector();
+    var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer');
+    var lineLayer = new OpenLayers.Layer.Vector('Line Layer');
+    var poiLayer = new OpenLayers.Layer.Vector('POI Layer');
 
     /**
      * Contains the OpenLayers map object
@@ -24,6 +25,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                     "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
                     "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
             geometryLayer,
+            lineLayer,
             poiLayer
         ],
         center: latLon(initLat || 51.75, initLong || -1.25),
@@ -94,6 +96,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      */
     this.clear = function () {
         poiLayer.removeAllFeatures();
+        lineLayer.removeAllFeatures();
         geometryLayer.removeAllFeatures();
         this.elements = [];
 
@@ -119,7 +122,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
             'coordinates': latLon(lat, lon),
             'icon': icon
         };
-        addToMap.call(this, id);
+        addPoiToMap.call(this, id);
     };
 
     /**
@@ -169,7 +172,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         if (this.elements[id] && this.elements[id].type == 'poi') {
             removeFromMap.call(this, id);
             this.elements[id]['coordinates'] = latLon(lat, lon);
-            addToMap.call(this, id);
+            addPoiToMap.call(this, id);
         }
     };
 
@@ -211,16 +214,27 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         if (this.elements[id] && this.elements[id]['_inst']) {
             switch (this.elements[id]['type']) {
                 case 'poi':
-                    poiLayer.removeFeatures([this.elements[id]['_inst']]);
-                    poiLayer.redraw();
+                    removeAndRedraw.call(this, id, poiLayer);
                     break;
                 case 'poly':
+                    removeAndRedraw.call(this, id, geometryLayer);
+                    break;
                 case 'line':
-                    geometryLayer.removeFeatures([this.elements[id]['_inst']]);
-                    geometryLayer.redraw();
+                    removeAndRedraw.call(this, id, lineLayer);
                     break;
             }
         }
+    }
+
+    /**
+     * Removes a feature from a specific layer using its unique element identifier.
+     * @param {string} id
+     * @param {OpenLayers.Layer.Vector} layer
+     * @private
+     */
+    function removeAndRedraw(id, layer) {
+        layer.removeFeatures([this.elements[id]['_inst']]);
+        layer.redraw();
     }
 
     /**
@@ -240,7 +254,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @param {string} id
      * @private
      */
-    function addToMap(id) {
+    function addPoiToMap(id) {
         var style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
         style.externalGraphic = this.elements[id]['icon'];
         style.graphicWidth = 25;
@@ -278,8 +292,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
             strokeOpacity: .5,
             strokeColor: '#ff3333'
         });
-        geometryLayer.addFeatures(this.elements[id]['_inst']);
-        geometryLayer.redraw();
+        lineLayer.addFeatures(this.elements[id]['_inst']);
+        lineLayer.redraw();
     }
 
     /**

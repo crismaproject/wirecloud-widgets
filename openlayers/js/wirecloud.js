@@ -4,8 +4,12 @@
 $(function () {
     if (typeof MashupPlatform === 'undefined') {
         console.warn('Wirecloud environment not detected.');
+        var logEvent = function(event) { console.log([event.originalEvent.type, event.originalEvent.detail]); };
+        $('#map').bind('mapFocusChanged', logEvent);
+        $('#map').bind('mapClicked', logEvent);
+        $('#map').bind('poiClicked', logEvent);
     } else if (typeof map === 'undefined') {
-        console.warn('"map" variable is not defined.')
+        console.warn('"map" variable is not defined.');
     } else {
         var autoRecenter = false;
 
