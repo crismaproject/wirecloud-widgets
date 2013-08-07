@@ -37,18 +37,39 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         }
     });
 
-    var selectControl = new OpenLayers.Control.SelectFeature(poiLayer, {clickout: true});
-    selectControl.onSelect = function (feature) {
-        fireEvent('poiClicked', { clicked: feature.attributes.id });
+    var drawControls = {
+        select: new OpenLayers.Control.SelectFeature(poiLayer, {clickout: true}),
+        poi: new OpenLayers.Control.DrawFeature(poiLayer, OpenLayers.Handler.Point),
+        line: new OpenLayers.Control.DrawFeature(lineLayer, OpenLayers.Handler.Path),
+        poly: new OpenLayers.Control.DrawFeature(geometryLayer, OpenLayers.Handler.Polygon)
     };
-    map.addControl(selectControl);
-    selectControl.activate();
+    drawControls.select.onSelect = function (feature) { fireEvent('poiClicked', { clicked: feature.attributes.id }); };
+    for (var key in drawControls) { map.addControl(drawControls[key]); }
+    drawControls.select.activate();
 
     /**
      * Contains all elements currently shown on the map.
      * @type {Array}
      */
     this.elements = { };
+
+    /**
+     * Gets or sets whether the map viewer is readonly.
+     * If this flag is set to true, it prevents drawing handlers from being activated; however, it does not
+     * deactivate an already activated drawing handler. In case of doubt, follow up with setMode('select').
+     * @type {boolean}
+     * @default true
+     */
+    this.readonly = true;
+
+    /**
+     * @param {string} mode
+     */
+    this.setMode = function(mode) {
+        for (var key in map.controls)
+            map.controls[key].deactivate();
+        drawControls[drawControls.hasOwnProperty(mode) ? mode : 'select'].activate();
+    }
 
     /**
      * Pans the map to the specified object. The object can either be: a latitude-longitude coordinate pair, OR

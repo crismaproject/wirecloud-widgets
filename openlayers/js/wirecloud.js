@@ -12,9 +12,11 @@ $(function () {
         console.warn('"map" variable is not defined.');
     } else {
         var autoRecenter = false;
+        var canDraw = false;
 
         var applyPreferences = function () {
             autoRecenter = MashupPlatform.prefs.get('recenter');
+            canDraw = MashupPlatform.prefs.get('canDraw');
         };
 
         MashupPlatform.prefs.registerCallback(applyPreferences);
