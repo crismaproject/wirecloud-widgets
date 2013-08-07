@@ -44,6 +44,19 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         poly: new OpenLayers.Control.DrawFeature(geometryLayer, OpenLayers.Handler.Polygon)
     };
     drawControls.select.onSelect = function (feature) { fireEvent('poiClicked', { clicked: feature.attributes.id }); };
+    drawControls.poi.events.register('featureadded', null, function (ev) {
+        var point = new OpenLayers.Geometry.Point(ev.feature.geometry.x, ev.feature.geometry.y)
+            .transform(mapProjection(), EPSG_4326_PROJECTION);
+        fireEvent('featureAdded', { kind: 'poi', lat: point.x, lon: point.y });
+    });
+    drawControls.line.events.register('featureadded', null, function (ev) {
+        var points = unravel(ev.feature.geometry.components);
+        fireEvent('featureAdded', { kind: 'line', points: points });
+    });
+    drawControls.poly.events.register('featureadded', null, function (ev) {
+        var points = unravel(ev.feature.geometry.components[0].components);
+        fireEvent('featureAdded', { kind: 'poly', points: points });
+    });
     for (var key in drawControls) { map.addControl(drawControls[key]); }
     drawControls.select.activate();
 
@@ -335,6 +348,15 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      */
     function mapProjection() {
         return map ? map.getProjectionObject() : new OpenLayers.Projection('EPSG:900913');
+    }
+
+    function unravel(array) {
+        var points = [];
+        for (var i = 0; i < array.length; i++) {
+            var point = array[i].clone().transform(mapProjection(), EPSG_4326_PROJECTION);
+            points[i] = [ point.x, point.y ];
+        }
+        return points;
     }
 
     /**

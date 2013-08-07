@@ -24,6 +24,9 @@
     <InputEndpoint name="add_line" type="text" label="Add line" description="Adds a line to the map" friendcode="geo-points" />
     <InputEndpoint name="add_poly" type="text" label="Add polygon" description="Adds a polygon to the map" friendcode="geo-points" />
     <InputEndpoint name="clear" type="text" label="Clear" description="Removes all features from the map (points and polygons)" friendcode="signal" />
+    <OutputEndpoint name="added_point" type="text" label="Added point" description="Whenever a point is added via the map viewer, this event dispatches the coordinates" friendcode="geo-lon-lat" />
+    <OutputEndpoint name="added_line" type="text" label="Added line" description="Whenever a (poly-)line is added via the map viewer, this event dispatches the geometry" friendcode="geo-points" />
+    <OutputEndpoint name="added_poly" type="text" label="Added polygon" description="Whenever a polygon is added via the map viewer, this event dispatches the geometry" friendcode="geo-points" />
     <OutputEndpoint name="center_point" type="text" label="Coordinates" description="Sends a signal whenever the shown center changes" friendcode="geo-lon-lat" />
     <OutputEndpoint name="ooi_click" type="text" label="Clicked object" description="Sends a signal whenever an object is clicked" friendcode="ooi-identifier" />
     <OutputEndpoint name="pos_click" type="text" label="Clicked spot" description="Sends a signal whenever an empty area of the map is clicked" friendcode="geo-lon-lat" />

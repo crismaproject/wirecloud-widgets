@@ -1,5 +1,5 @@
 # Notice
-This document has been generated automatically on 2013-08-06 13:14:41 +0200. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line.
+This document has been generated automatically on 2013-08-07 12:28:43 +0200. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line.
 
 # Input endpoints
 * **Add line**
@@ -19,6 +19,15 @@ This document has been generated automatically on 2013-08-06 13:14:41 +0200. If 
     * Focuses the map on specified coordinates
 
 # Output endpoints
+* **Added line**
+    * Internal name `added_line`, with declared friend-code: `geo-points`
+    * Whenever a (poly-)line is added via the map viewer, this event dispatches the geometry
+* **Added point**
+    * Internal name `added_point`, with declared friend-code: `geo-lon-lat`
+    * Whenever a point is added via the map viewer, this event dispatches the coordinates
+* **Added polygon**
+    * Internal name `added_poly`, with declared friend-code: `geo-points`
+    * Whenever a polygon is added via the map viewer, this event dispatches the geometry
 * **Coordinates**
     * Internal name `center_point`, with declared friend-code: `geo-lon-lat`
     * Sends a signal whenever the shown center changes
