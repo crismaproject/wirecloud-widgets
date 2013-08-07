@@ -12,7 +12,7 @@ task :bundle, [:what] do |t, args|
 
     Zip::ZipFile.open(archive, Zip::ZipFile::CREATE) do |z|
       Dir[File.join(project, '**', '**')].each do |file|
-        z.add(file.sub("#{project}/", ''), file) unless /README\.md/i =~ file
+        z.add(file.sub("#{project}/", ''), file) unless /[a-z]+\.md/i =~ file
       end
     end
   end
