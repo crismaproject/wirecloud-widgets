@@ -75,15 +75,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      */
     this.elements = { };
 
-    /**
-     * Gets or sets whether the map viewer is readonly.
-     * If this flag is set to true, it prevents drawing handlers from being activated; however, it does not
-     * deactivate an already activated drawing handler. In case of doubt, follow up with setMode('select').
-     * @type {boolean}
-     * @default true
-     */
-    this.readonly = true;
-
     var readonly = true;
 
     this.isReadonly = function() { return readonly; }
@@ -97,8 +88,9 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @param {string} mode
      */
     this.setMode = function(mode) {
-        for (var key in map.controls)
-            map.controls[key].deactivate();
+        if (readonly && mode !== 'select') return;
+        for (var key in drawPanel.controls)
+            drawPanel.controls[key].deactivate();
         drawControls[drawControls.hasOwnProperty(mode) ? mode : 'select'].activate();
     }
 

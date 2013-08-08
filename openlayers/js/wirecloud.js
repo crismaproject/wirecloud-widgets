@@ -11,6 +11,8 @@ $(function () {
         $('#map').bind('mapClicked', logEvent);
         $('#map').bind('poiClicked', logEvent);
         $('#map').bind('featureAdded', logEvent);
+
+        map.setReadonly(false);
     } else if (typeof map === 'undefined') {
         console.warn('"map" variable is not defined.');
     } else {
