@@ -60,6 +60,15 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     for (var key in drawControls) { map.addControl(drawControls[key]); }
     drawControls.select.activate();
 
+    var drawPanel = new OpenLayers.Control.Panel();
+    drawPanel.addControls([
+        new OpenLayers.Control.Button({ title: 'Navigate', displayClass: 'btnNav', trigger: function() { alert('Nav'); } }),
+        new OpenLayers.Control.Button({ title: 'Add OOI', displayClass: 'btnAddOoi', trigger: function() { alert('OOI'); } }),
+        new OpenLayers.Control.Button({ title: 'Add line', displayClass: 'btnAddLine', trigger: function() { alert('Line'); } }),
+        new OpenLayers.Control.Button({ title: 'Add polygon', displayClass: 'btnAddPoly', trigger: function() { alert('Poly'); } })
+    ]);
+    map.addControl(drawPanel);
+
     /**
      * Contains all elements currently shown on the map.
      * @type {Array}
@@ -74,6 +83,15 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @default true
      */
     this.readonly = true;
+
+    var readonly = true;
+
+    this.isReadonly = function() { return readonly; }
+
+    this.setReadonly = function(value) {
+        readonly = value;
+        this.setMode('select');
+    }
 
     /**
      * @param {string} mode
