@@ -40,7 +40,7 @@ Table.prototype.setHeaders = function (header) {
             headerRow.append($('<th></th>').text(arguments[i]));
         $('thead', this.container).append(headerRow);
     }
-}
+};
 
 /**
  * Sets the table to contain the specified data. If any existed beforehand, it will be removed.
@@ -62,7 +62,7 @@ Table.prototype.setData = function (rows) {
             dataRow.click(clickHandler);
             $('tbody', this.container).append(dataRow);
         }
-}
+};
 
 /**
  * Sets the table to contain the specified caption. If any existed beforehand, it will be removed.
@@ -72,4 +72,4 @@ Table.prototype.setCaption = function (caption) {
     $('caption', this.container).remove();
     if (caption)
         $('caption', this.container).prepend($('<caption></caption>').text(caption));
-}
+};

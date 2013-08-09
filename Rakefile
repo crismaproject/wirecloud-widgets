@@ -2,7 +2,7 @@ require 'zip/zip'
 require 'nokogiri'
 
 desc 'Create zipped Wirecloud widget file for the specified project'
-task :bundle, [:what] do |t, args|
+task :bundle, [:what] do |_, args|
   project = args[:what]
   archive = "#{project}.wgt"
 

@@ -1,5 +1,15 @@
 @media (max-width: 300px) {
-    .hide-small { display: none }
-    .keep-small { font-size: 85% }
-    .keep-small input, .keep-small button { font-size: 85%; padding: 2px; height: auto; }
+    .hide-small {
+        display: none
+    }
+
+    .keep-small {
+        font-size: 85%
+    }
+
+    .keep-small input, .keep-small button {
+        font-size: 85%;
+        padding: 2px;
+        height: auto;
+    }
 }

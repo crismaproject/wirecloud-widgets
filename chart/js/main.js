@@ -50,7 +50,7 @@ function Series(title, container) {
     this.showLegend = true;
 
     var resizeBeingHandled = false;
-    $(window).resize(this, function(event) {
+    $(window).resize(this, function (event) {
         if (resizeBeingHandled) return;
         resizeBeingHandled = true;
         window.setTimeout(function () {
@@ -79,7 +79,7 @@ Series.prototype.redraw = function () {
             markerOptions: { style: 'circle' },
             renderer: $.jqplot.BarRenderer,
             rendererOptions: { barMargin: 24 },
-            pointLabels: { show: this.labels.length != 0 , hideZeros: true }
+            pointLabels: { show: this.labels.length != 0, hideZeros: true }
         },
         series: seriesLabels,
         seriesColors: this.colors,
@@ -99,11 +99,16 @@ Series.prototype.redraw = function () {
 };
 
 /**
+ * Labels each series using the specified labels and colors.
+ * Changing this value will require to redraw the table.
+ *
  * @param {Array} labels an array of strings containing labels.
- * @param {Array} colors an array of colors in RGB hex format for each of the labels.
+ * @param {Array?} colors an array of colors in RGB hex format (including the initial #) for each of the labels.
+ * Iff this is null, a default set of six colors will be assumed.
  */
 Series.prototype.setLabels = function (labels, colors) {
-    if (this.labels.length != this.colors.length)
+    colors = colors || [ '#aa3333', '#33aa33', '#3333aa', '#33aaaa', '#aa33aa', '#aaaa33' ];
+    if (this.labels.length > this.colors.length)
         console.warn('Please provide as many colors as there are labels.');
     this.labels = labels;
     this.colors = colors;
@@ -116,6 +121,7 @@ Series.prototype.setLabels = function (labels, colors) {
  *
  * When bars are stacked, each of the inner elements will be stacked on top of each other; otherwise
  * they will be shown side by side, in the order they occur in the array.
+ * Changing this value will require to redraw the table.
  *
  * @param {Array} data a two-dimensional array containing series data.
  * @example
@@ -126,8 +132,12 @@ Series.prototype.setData = function (data) {
 };
 
 /**
+ * Sets the title that's displayed on top of the diagram.
+ * Changing this value will require to redraw the table.
+ *
  * @param {string} title the title of the diagram (that will be displayed on top of the chart area).
+ * @see redraw
  */
 Series.prototype.setTitle = function (title) {
     this.title = title;
-}
+};

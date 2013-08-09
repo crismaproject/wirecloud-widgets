@@ -26,7 +26,7 @@ $(function () {
             ooiViewer.set(id, rowData);
         });
 
-        $('#btn-locate').click(function() {
+        $('#btn-locate').click(function () {
             // the following lines might throw errors as parts of the implementation are still missing
             if (window.hasOwnProperty('currentObj') && window.currentObj) {
                 MashupPlatform.wiring.pushEvent('locate-ooi', window.currentObj.id);

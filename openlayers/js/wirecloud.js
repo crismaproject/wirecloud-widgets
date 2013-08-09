@@ -4,13 +4,16 @@
 $(function () {
     if (typeof MashupPlatform === 'undefined') {
         console.warn('Wirecloud environment not detected.');
-        var logEvent = function(event) { console.log([event.originalEvent.type, event.originalEvent.detail]); };
+        var logEvent = function (event) {
+            console.log([event.originalEvent.type, event.originalEvent.detail]);
+        };
 
         // These bindings exist for debugging purposes outside the Wirecloud environment
-        $('#map').bind('mapFocusChanged', logEvent);
-        $('#map').bind('mapClicked', logEvent);
-        $('#map').bind('poiClicked', logEvent);
-        $('#map').bind('featureAdded', logEvent);
+        $('#map')
+            .bind('mapFocusChanged', logEvent)
+            .bind('mapClicked', logEvent)
+            .bind('poiClicked', logEvent)
+            .bind('featureAdded', logEvent);
 
         map.setReadonly(false);
     } else if (typeof map === 'undefined') {
@@ -56,31 +59,31 @@ $(function () {
             map.clear();
         });
 
-        $('#map').bind('mapFocusChanged', function(event) {
-            MashupPlatform.wiring.pushEvent('center_point', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));
-        });
-        $('#map').bind('mapClicked', function(event) {
-            MashupPlatform.wiring.pushEvent('pos_click', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));
-        });
-        $('#map').bind('poiClicked', function(event) {
-            MashupPlatform.wiring.pushEvent('ooi_click', event.originalEvent.detail);
-        });
-
-        $('#map').bind('featureAdded', function(event) {
-            switch (event.originalEvent.type) {
-                case 'poi':
-                    MashupPlatform.wiring.pushEvent('added_point', JSON.stringify(event.originalEvent.detail));
-                    break;
-                case 'line':
-                    MashupPlatform.wiring.pushEvent('added_line', JSON.stringify(event.originalEvent.detail));
-                    break;
-                case 'poly':
-                    MashupPlatform.wiring.pushEvent('added_poly', JSON.stringify(event.originalEvent.detail));
-                    break;
-                default:
-                    console.warn('Unsupported feature type: ' + event.originalEvent.type);
-            }
-        });
+        $('#map')
+            .bind('mapFocusChanged', function (event) {
+                MashupPlatform.wiring.pushEvent('center_point', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));
+            })
+            .bind('mapClicked', function (event) {
+                MashupPlatform.wiring.pushEvent('pos_click', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));
+            })
+            .bind('poiClicked', function (event) {
+                MashupPlatform.wiring.pushEvent('ooi_click', event.originalEvent.detail);
+            })
+            .bind('featureAdded', function (event) {
+                switch (event.originalEvent.type) {
+                    case 'poi':
+                        MashupPlatform.wiring.pushEvent('added_point', JSON.stringify(event.originalEvent.detail));
+                        break;
+                    case 'line':
+                        MashupPlatform.wiring.pushEvent('added_line', JSON.stringify(event.originalEvent.detail));
+                        break;
+                    case 'poly':
+                        MashupPlatform.wiring.pushEvent('added_poly', JSON.stringify(event.originalEvent.detail));
+                        break;
+                    default:
+                        console.warn('Unsupported feature type: ' + event.originalEvent.type);
+                }
+            });
     }
 
     function parseJSON(data) {

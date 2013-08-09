@@ -28,7 +28,7 @@ OOIViewer.prototype.set = function (identifier, obj) {
             .append($('<td></td>').text(value));
         tbody.append(row);
     }
-}
+};
 
 /**
  * Creates a button in the UI that triggers a JavaScript function if it is clicked.
@@ -48,7 +48,7 @@ OOIViewer.prototype.addAction = function (label, callback) {
             .click(callback)
     );
     return uid;
-}
+};
 
 /**
  * Removes a previously registered button from the UI.
@@ -59,7 +59,7 @@ OOIViewer.prototype.removeAction = function (uid) {
         $(this.container).find('.actions button.a_' + uid.toUpperCase()).remove();
         delete this.actionCallbacks[uid];
     }
-}
+};
 
 /**
  * Generates an RFC 4122 v4 compliant unique identifier.
@@ -68,7 +68,7 @@ OOIViewer.prototype.removeAction = function (uid) {
  */
 function generateIdentifier() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
 }

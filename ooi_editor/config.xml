@@ -14,10 +14,12 @@
   </Catalog.ResourceDescription>
 
   <Platform.Wiring>
-    <InputEndpoint name="ooi" type="text" label="Object" description="The Object of Interest to edit" friendcode="ooi-identifier" />
-    <OutputEndpoint name="saved-ooi" type="text" label="Saved object" description="Transmits the OOI identifier whenever it is saved" friendcode="ooi-identifier" />
+    <InputEndpoint name="ooi" type="text" label="Object" description="The Object of Interest to edit"
+                   friendcode="ooi-identifier"/>
+    <OutputEndpoint name="saved-ooi" type="text" label="Saved object"
+                    description="Transmits the OOI identifier whenever it is saved" friendcode="ooi-identifier"/>
   </Platform.Wiring>
-  
+
   <Platform.Link>
     <XHTML href="index.html"/>
   </Platform.Link>

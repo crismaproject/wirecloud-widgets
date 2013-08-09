@@ -14,12 +14,15 @@
   </Catalog.ResourceDescription>
 
   <Platform.Wiring>
-    <InputEndpoint name="ooi" type="text" label="Object" description="The Object of Interest to view" friendcode="ooi-identifier" />
-    <InputEndpoint name="row" type="text" label="Row" description="The complex object to view" friendcode="row" />
-    <OutputEndpoint name="locate-lonlat" type="text" label="Locate (lon-lat)" description="Request to focus on specific coordinates" friendcode="geo-lon-lat" />
-    <OutputEndpoint name="locate-ooi" type="text" label="Locate (OOI)" description="Request to focus on a specific OOI" friendcode="ooi-identifier" />
+    <InputEndpoint name="ooi" type="text" label="Object" description="The Object of Interest to view"
+                   friendcode="ooi-identifier"/>
+    <InputEndpoint name="row" type="text" label="Row" description="The complex object to view" friendcode="row"/>
+    <OutputEndpoint name="locate-lonlat" type="text" label="Locate (lon-lat)"
+                    description="Request to focus on specific coordinates" friendcode="geo-lon-lat"/>
+    <OutputEndpoint name="locate-ooi" type="text" label="Locate (OOI)" description="Request to focus on a specific OOI"
+                    friendcode="ooi-identifier"/>
   </Platform.Wiring>
-  
+
   <Platform.Link>
     <XHTML href="index.html"/>
   </Platform.Link>

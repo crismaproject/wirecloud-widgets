@@ -77,22 +77,34 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
 
     var readonly = true;
 
-    this.isReadonly = function() { return readonly; }
-
-    this.setReadonly = function(value) {
-        readonly = value;
-        this.setMode('select');
-    }
+    /**
+     * Gets if the viewer is in a readonly mode.
+     * @returns {boolean} true iff it is readonly, false otherwise.
+     */
+    this.isReadonly = function () {
+        return readonly;
+    };
 
     /**
-     * @param {string} mode
+     * Sets whether the viewer is readonly (ie. drawing is disallowed).
+     * @param {boolean} value
      */
-    this.setMode = function(mode) {
+    this.setReadonly = function (value) {
+        readonly = value;
+        this.setMode('select');
+    };
+
+    /**
+     * Sets the viewer's drawing mode.
+     * @param {string} mode Must be one of the following: 'select' for panning, 'poi' for placing points, 'line' for drawing lines, or 'poly' for polygons.
+     * If the viewer is readonly, only 'select' is allowed.
+     */
+    this.setMode = function (mode) {
         if (readonly && mode !== 'select') return;
         for (var key in drawPanel.controls)
             drawPanel.controls[key].deactivate();
         drawControls[drawControls.hasOwnProperty(mode) ? mode : 'select'].activate();
-    }
+    };
 
     /**
      * Pans the map to the specified object. The object can either be: a latitude-longitude coordinate pair, OR
@@ -146,7 +158,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
 
         poiLayer.redraw();
         geometryLayer.redraw();
-    }
+    };
 
     /**
      * Adds a point of interest to the map.
