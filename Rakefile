@@ -28,7 +28,7 @@ task :doc_endpoints do
 
       endpoints = {
           :in => doc.css('InputEndpoint').collect { |x| create_hash(x) }.sort { |x, y| x[:name] <=> y[:name] },
-          :out => doc.css('OutputEndpoint').collect { |x| create_hash(x) }
+          :out => doc.css('OutputEndpoint').collect { |x| create_hash(x) }.sort { |x, y| x[:name] <=> y[:name] }
       }
 
       File.open(File.join(subdirectory, 'ENDPOINTS.md'), 'w') do |f|
