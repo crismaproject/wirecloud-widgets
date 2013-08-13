@@ -116,7 +116,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      */
     this.view = function () {
         if (arguments.length == 2 && typeof arguments[0] == 'number' && typeof arguments[1] == 'number') {
-            map.zoomToExtent(latLon(arguments[0], arguments[1]));
+            var projectedCoordinates = latLon(arguments[0], arguments[1]); // actually returns a Point, but we need LonLat for map.panTo
+            map.panTo(new OpenLayers.LonLat(projectedCoordinates.x, projectedCoordinates.y));
         } else if (arguments.length == 1 && typeof arguments[0] == 'string' && this.elements.hasOwnProperty(arguments[0])) {
             var item = this.elements[arguments[0]];
             var panTarget = null;
