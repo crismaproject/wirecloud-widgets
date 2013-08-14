@@ -1,6 +1,6 @@
 # Notice
 
-This document has been generated automatically on 2013-08-14 10:33:18 +0200. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line.
+This document has been generated automatically on 2013-08-14 10:35:40 +0200. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line.
 
 # Overview
 
@@ -90,7 +90,7 @@ This endpoint dispatches latitude-longitude coordinates whenever a point is adde
 
 **Description:** Whenever a polygon is added via the map viewer, this event dispatches its geometry
 
-Whenever a (poly-)line is added via the map viewer, this event dispatches a JSON-encoded object consisting of latitude-longitude coordinates -- ie. latitude-longitude tuples -- this polygon is composed of.
+Whenever a polygon is added via the map viewer, this event dispatches a JSON-encoded object consisting of latitude-longitude coordinates -- ie. latitude-longitude tuples -- this polygon is composed of.
 
 ## Coordinates
 

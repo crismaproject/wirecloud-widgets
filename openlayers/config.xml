@@ -78,7 +78,7 @@
                     description="Whenever a polygon is added via the map viewer, this event dispatches its geometry"
                     friendcode="geo-points">
       <doc:Documentation>
-        Whenever a (poly-)line is added via the map viewer, this event dispatches a JSON-encoded object consisting
+        Whenever a polygon is added via the map viewer, this event dispatches a JSON-encoded object consisting
         of latitude-longitude coordinates -- ie. latitude-longitude tuples -- this polygon is composed of.
       </doc:Documentation>
     </OutputEndpoint>
