@@ -83,11 +83,27 @@
       </doc:Documentation>
     </OutputEndpoint>
     <OutputEndpoint name="center_point" type="text" label="Coordinates"
-                    description="Sends a signal whenever the shown center changes" friendcode="geo-lon-lat"/>
+                    description="Sends a signal whenever the shown center changes" friendcode="geo-lon-lat">
+      <doc:Documentation>
+        This endpoint sends a signal everytime the center point of the map or the current zoom factor changes
+        (either through user interaction or programmatically). The JSON-encoded data includes a latitude-longitude pair
+        as well as the current zoom factor (denoted `z`).
+      </doc:Documentation>
+    </OutputEndpoint>
     <OutputEndpoint name="ooi_click" type="text" label="Clicked object"
-                    description="Sends a signal whenever an object is clicked" friendcode="ooi-identifier"/>
+                    description="Sends a signal whenever an object is clicked" friendcode="ooi-identifier">
+      <doc:Documentation>
+        If an object of interest was clicked on the map, this endpoint will transmit the OOI's unique identifier.
+        Note that this signal and `pos_click` are mutually exclusive; if an OOI was clicked, this signal will be used
+        and `pos_click` will NOT trigger.
+      </doc:Documentation>
+    </OutputEndpoint>
     <OutputEndpoint name="pos_click" type="text" label="Clicked spot"
-                    description="Sends a signal whenever an empty area of the map is clicked" friendcode="geo-lon-lat"/>
+                    description="Sends a signal whenever an empty area of the map is clicked" friendcode="geo-lon-lat">
+      If a spot on the map was clicked, this endpoint will transmit the latitude-longitude coordinates.
+      Note that this signal and `ooi_click` are mutually exclusive; if an OOI was clicked, `ooi_click` will be used
+      and this signal will NOT trigger.
+    </OutputEndpoint>
   </Platform.Wiring>
 
   <Platform.Link>

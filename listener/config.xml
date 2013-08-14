@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Template xmlns="http://morfeo-project.org/2007/Template">
+<Template xmlns="http://morfeo-project.org/2007/Template" xmlns:doc="crisma://documentation">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>crisma-debug-listener</Name>
@@ -19,7 +19,12 @@
   </Platform.Preferences>
 
   <Platform.Wiring>
-    <InputEndpoint name="data" type="text" label="Data" description="Data to display" friendcode="any"/>
+    <InputEndpoint name="data" type="text" label="Data" description="Data to display" friendcode="any">
+      <doc:Documentation>
+        This endpoint will listen for any sort of activation from connected widgets. Whenever an activation occurs,
+        the event and accompanying data will be forwarded to the widget's interface.
+      </doc:Documentation>
+    </InputEndpoint>
   </Platform.Wiring>
 
   <Platform.Link>

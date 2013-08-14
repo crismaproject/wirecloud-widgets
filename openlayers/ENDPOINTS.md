@@ -1,6 +1,6 @@
 # Notice
 
-This document has been generated automatically on 2013-08-14 10:35:40 +0200. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line.
+This document has been generated automatically on 2013-08-14 14:05:32 +0200. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line.
 
 # Overview
 
@@ -100,6 +100,8 @@ Whenever a polygon is added via the map viewer, this event dispatches a JSON-enc
 
 **Description:** Sends a signal whenever the shown center changes
 
+This endpoint sends a signal everytime the center point of the map or the current zoom factor changes (either through user interaction or programmatically). The JSON-encoded data includes a latitude-longitude pair as well as the current zoom factor (denoted `z`).
+
 ## Clicked object
 
 **Internal name:** `ooi_click`
@@ -107,6 +109,8 @@ Whenever a polygon is added via the map viewer, this event dispatches a JSON-enc
 **Friendcode:** `ooi-identifier`
 
 **Description:** Sends a signal whenever an object is clicked
+
+If an object of interest was clicked on the map, this endpoint will transmit the OOI's unique identifier. Note that this signal and `pos_click` are mutually exclusive; if an OOI was clicked, this signal will be used and `pos_click` will NOT trigger.
 
 ## Clicked spot
 
