@@ -1,12 +1,12 @@
 # Notice
 
-This document has been generated automatically on 2013-08-13 09:51:13 +0200. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line.
+This document has been generated automatically on 2013-08-14 10:33:18 +0200. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line.
 
 # Overview
 
 **Declared inputs:** add_line, add_point, add_poly, clear, view_point
 
-**Declared outputs:** added_point, added_line, added_poly, center_point, ooi_click, pos_click
+**Declared outputs:** added_line, added_point, added_poly, center_point, ooi_click, pos_click
 
 # Input endpoints
 
@@ -18,6 +18,8 @@ This document has been generated automatically on 2013-08-13 09:51:13 +0200. If 
 
 **Description:** Adds a line to the map
 
+This endpoint allows the creation of line segments by providing an array of tuples containing latitude-longitude coordinate pairs.
+
 ## Add point
 
 **Internal name:** `add_point`
@@ -26,7 +28,7 @@ This document has been generated automatically on 2013-08-13 09:51:13 +0200. If 
 
 **Description:** Adds a point to the map
 
-This is an endpoint that accepts a JSON-encoded object with latitude and longitude coordinate data and a uniqueidentifier. The object will be added to the map view. If the recenter preference is set to true, the map willthen pan to the newly added object.
+This is an endpoint that accepts a JSON-encoded object with latitude and longitude coordinate data and a unique identifier. The object will be added to the map view. If the recenter preference is set to true, the map will then pan to the newly added object.
 
 ## Add polygon
 
@@ -36,6 +38,8 @@ This is an endpoint that accepts a JSON-encoded object with latitude and longitu
 
 **Description:** Adds a polygon to the map
 
+This endpoint allows the creation of polygons (without holes). It accepts an array of tuples containing latitude-longitude coordinate pairs that will form the outline of the polygon.
+
 ## Clear
 
 **Internal name:** `clear`
@@ -43,6 +47,8 @@ This is an endpoint that accepts a JSON-encoded object with latitude and longitu
 **Friendcode:** `signal`
 
 **Description:** Removes all features from the map (points and polygons)
+
+This endpoint does not require any data. When any signal is received on this endpoint, all contents will be removed from the map unconditionally.
 
 ## Coordinates
 
@@ -52,17 +58,9 @@ This is an endpoint that accepts a JSON-encoded object with latitude and longitu
 
 **Description:** Focuses the map on specified coordinates
 
-This is an endpoint that accepts a JSON-encoded object with latitude and longitude coordinate data. Whencoordinates are received (WGS 1984 projection), the map will pan to the location represented by it.
+This is an endpoint that accepts a JSON-encoded object with latitude and longitude coordinate data. When coordinates are received (WGS 1984 projection), the map will pan to the location represented by it.
 
 # Output endpoints
-
-## Added point
-
-**Internal name:** `added_point`
-
-**Friendcode:** `geo-lon-lat`
-
-**Description:** Whenever a point is added via the map viewer, this event dispatches the coordinates
 
 ## Added line
 
@@ -70,7 +68,19 @@ This is an endpoint that accepts a JSON-encoded object with latitude and longitu
 
 **Friendcode:** `geo-points`
 
-**Description:** Whenever a (poly-)line is added via the map viewer, this event dispatches the geometry
+**Description:** Whenever a (poly-)line is added via the map viewer, this event dispatches its geometry
+
+Whenever a (poly-)line is added via the map viewer, this event dispatches a JSON-encoded object consisting of latitude-longitude coordinates -- ie. latitude-longitude tuples -- this (poly-)line is composed of.
+
+## Added point
+
+**Internal name:** `added_point`
+
+**Friendcode:** `geo-lon-lat`
+
+**Description:** Whenever a point is added via the map viewer, this event dispatches its coordinates
+
+This endpoint dispatches latitude-longitude coordinates whenever a point is added to the map.
 
 ## Added polygon
 
@@ -78,7 +88,9 @@ This is an endpoint that accepts a JSON-encoded object with latitude and longitu
 
 **Friendcode:** `geo-points`
 
-**Description:** Whenever a polygon is added via the map viewer, this event dispatches the geometry
+**Description:** Whenever a polygon is added via the map viewer, this event dispatches its geometry
+
+Whenever a (poly-)line is added via the map viewer, this event dispatches a JSON-encoded object consisting of latitude-longitude coordinates -- ie. latitude-longitude tuples -- this polygon is composed of.
 
 ## Coordinates
 

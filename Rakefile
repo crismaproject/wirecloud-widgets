@@ -59,7 +59,7 @@ def create_hash(endpoint)
       :friendcode => endpoint[:friendcode],
       :description => endpoint[:description],
       :label => endpoint[:label],
-      :documentation => endpoint.xpath('.//doc:Documentation/text()', {'doc' => 'crisma://documentation'}).collect { |x| x.text.strip.gsub(/\s{2,}/, '') }.shift
+      :documentation => endpoint.xpath('.//doc:Documentation/text()', {'doc' => 'crisma://documentation'}).collect { |x| x.text.strip.gsub(/\s{2,}/, ' ') }.shift
   }
 end
 
