@@ -4,7 +4,7 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>ooi-viewer</Name>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Details viewer for Objects of Interest</Description>
