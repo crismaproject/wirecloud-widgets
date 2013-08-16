@@ -1,16 +1,24 @@
 # Notice
 
-This document has been generated automatically on 2013-08-14 14:03:04 +0200. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line.
+This document has been generated automatically on 2013-08-16 12:25:24 +0200. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line.
 
 # Overview
 
-**Declared inputs:** 
+**Declared inputs:** add_row
 
 **Declared outputs:** selected_row
 
 # Input endpoints
 
-(none)
+## Add a new row
+
+**Internal name:** `add_row`
+
+**Friendcode:** `row`
+
+**Description:** Adds a new row at the end of the table
+
+This endpoint accepts a JSON-encoded one-dimensional array where each element in the array represents exactly one cell in the table. A new row will be created and appended to the table with these new cells.
 
 # Output endpoints
 
