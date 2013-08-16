@@ -13,8 +13,21 @@
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
+  <Platform.Preferences>
+    <Preference name="caption" type="text"
+                description="Table caption" label="Table caption"
+                default=""/>
+  </Platform.Preferences>
+
   <Platform.Wiring>
-    <!-- TO DO -->
+    <InputEndpoint name="add_row" type="text" label="Add a new row"
+                   description="Adds a new row at the end of the table" friendcode="row">
+      <doc:Documentation>
+        This endpoint accepts a JSON-encoded one-dimensional array where each element in the array represents exactly
+        one cell in the table. A new row will be created and appended to the table with these new cells.
+      </doc:Documentation>
+    </InputEndpoint>
+
     <OutputEndpoint name="selected_row" type="text" label="Selected row"
                     description="Sends a signal whenever a row is clicked" friendcode="row">
       <doc:Documentation>
