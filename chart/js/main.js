@@ -1,3 +1,5 @@
+window.indicator_uri = 'http://localhost/api';
+
 /**
  * Creates a new series object using the specified container.
  *
@@ -141,3 +143,18 @@ Series.prototype.setData = function (data) {
 Series.prototype.setTitle = function (title) {
     this.title = title;
 };
+
+/**
+ * @param {Series} series
+ * @param {int} worldstateId
+ */
+function loadWorldState(series, worldstateId) {
+    $.get(window.indicator_uri + '/pywps.cgi?service=WPS&request=Execute&version=1.0.0&identifier=indicatorExample&datainputs=WorldStateId=' + worldstateId, function (response) {
+        var wpsOutput = $('Output', response).find('LiteralData').text().replace(/'/g, '"'); // single quotes are evil when parsing JSON
+        var wpsJson = JSON.parse(wpsOutput);
+        series.setData([[wpsJson.green], [wpsJson.yellow], [wpsJson.red], [wpsJson.dead]]);
+        series.isStacked = false;
+        series.setLabels(['Healthy', 'Injured', 'Critical', 'Dead'], [ '#90EE90', '#F0C07D', '#DC143C', '#696969' ]);
+        series.redraw();
+    });
+}

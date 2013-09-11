@@ -4,7 +4,7 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>ooi-viewer</Name>
-    <Version>0.2.1</Version>
+    <Version>0.4.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Details viewer for Objects of Interest</Description>
@@ -13,14 +13,15 @@
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
+  <Platform.Preferences>
+    <Preference name="ooi-wsr-uri" type="string" description="URL of the OOI-WSR API" label="API URI"/>
+  </Platform.Preferences>
+
   <Platform.Wiring>
-    <InputEndpoint name="ooi" type="text" label="Object" description="The Object of Interest to view"
-                   friendcode="ooi-identifier"/>
-    <InputEndpoint name="row" type="text" label="Row" description="The complex object to view" friendcode="row"/>
+    <InputEndpoint name="worldstate" type="text" label="Worldstate" description="" friendcode="wsid"/>
+    <InputEndpoint name="entity" type="text" label="Entity" description="" friendcode="entityid"/>
     <OutputEndpoint name="locate-lonlat" type="text" label="Locate (lon-lat)"
                     description="Request to focus on specific coordinates" friendcode="geo-lon-lat"/>
-    <OutputEndpoint name="locate-ooi" type="text" label="Locate (OOI)" description="Request to focus on a specific OOI"
-                    friendcode="ooi-identifier"/>
   </Platform.Wiring>
 
   <Platform.Link>

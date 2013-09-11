@@ -72,3 +72,36 @@ function generateIdentifier() {
         return v.toString(16);
     });
 }
+
+window.ooi_wsr_uri = 'http://localhost/api';
+var worldstateId = null;
+var entityId = null;
+var entityTypes = {};
+
+function attemptUpdate() {
+    if (worldstateId && entityId) {
+        $.get(window.ooi_wsr_uri + '/Entity/?wsid=' + worldstateId, function (response) {
+            var entity = null;
+            for (var i = 0; i < response.length && !entity; i++)
+                if (response[i].entityId == entityId)
+                    entity = response[i];
+            if (!entity || typeof entityTypes[entity.entityTypeId] === 'undefined') return;
+
+            var entityType = entityTypes[entity.entityTypeId];
+            var entityProperties = {
+                'Name': entity.entityName || '',
+                'Description': entity.entityDescription || '',
+                'Type': entityType.name,
+                'Type description': entityType.description || ''
+            };
+            for (var i = 0; i < entity.entityInstancesProperties.length; i++) {
+                var current = entity.entityInstancesProperties[i];
+                var displayKey = entityType.properties[current.entityTypePropertyId].name;
+                var displayValue = current.entityPropertyValue;
+                entityProperties[displayKey] = displayValue;
+            }
+
+            ooiViewer.set(entityId, entityProperties);
+        }, 'json');
+    }
+}

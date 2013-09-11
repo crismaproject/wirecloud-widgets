@@ -19,11 +19,9 @@ $(function () {
     } else if (typeof map === 'undefined') {
         console.warn('"map" variable is not defined.');
     } else {
-        var autoRecenter = false;
-
         var applyPreferences = function () {
-            autoRecenter = MashupPlatform.prefs.get('recenter');
-            map.readonly = !MashupPlatform.prefs.get('canDraw');
+            map.wfsUriBase = MashupPlatform.prefs.get('wfs_uri');
+            if (map.worldState) map.loadWorldState(map.worldState);
         };
 
         MashupPlatform.prefs.registerCallback(applyPreferences);
@@ -34,29 +32,9 @@ $(function () {
             map.view(coordinates.latitude, coordinates.longitude);
         });
 
-        MashupPlatform.wiring.registerCallback('add_point', function (data) {
-            var coordinates = parseJSON(data);
-            map.add(coordinates.id, coordinates.latitude, coordinates.longitude, coordinates.icon);
-            if (autoRecenter)
-                map.viewAll();
-        });
-
-        MashupPlatform.wiring.registerCallback('add_line', function (data) {
-            var coordinates = parseJSON(data);
-            map.addLine(coordinates.id, coordinates.points);
-            if (autoRecenter)
-                map.viewAll();
-        });
-
-        MashupPlatform.wiring.registerCallback('add_poly', function (data) {
-            var coordinates = parseJSON(data);
-            map.addPoly(coordinates.id, coordinates.points);
-            if (autoRecenter)
-                map.viewAll();
-        });
-
-        MashupPlatform.wiring.registerCallback('clear', function () {
-            map.clear();
+        MashupPlatform.wiring.registerCallback('worldstate', function (data) {
+            var worldstateId = parseInt(data);
+            map.loadWorldState(worldstateId);
         });
 
         $('#map')
@@ -67,22 +45,7 @@ $(function () {
                 MashupPlatform.wiring.pushEvent('pos_click', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));
             })
             .bind('poiClicked', function (event) {
-                MashupPlatform.wiring.pushEvent('ooi_click', event.originalEvent.detail);
-            })
-            .bind('featureAdded', function (event) {
-                switch (event.originalEvent.type) {
-                    case 'poi':
-                        MashupPlatform.wiring.pushEvent('added_point', JSON.stringify(event.originalEvent.detail));
-                        break;
-                    case 'line':
-                        MashupPlatform.wiring.pushEvent('added_line', JSON.stringify(event.originalEvent.detail));
-                        break;
-                    case 'poly':
-                        MashupPlatform.wiring.pushEvent('added_poly', JSON.stringify(event.originalEvent.detail));
-                        break;
-                    default:
-                        console.warn('Unsupported feature type: ' + event.originalEvent.type);
-                }
+                MashupPlatform.wiring.pushEvent('ooi_click', JSON.stringify(event.originalEvent.detail));
             });
     }
 

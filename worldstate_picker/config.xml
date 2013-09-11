@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Template xmlns="http://morfeo-project.org/2007/Template">
+  <Catalog.ResourceDescription>
+    <Vendor>AIT</Vendor>
+    <Name>worldstate-picker</Name>
+    <Version>0.4.0</Version>
+    <Author>Manuel Warum</Author>
+    <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
+    <Description>Simple widget to pick a worldstate</Description>
+    <ImageURI>img/catalogue.png</ImageURI>
+    <iPhoneImageURI>img/catalogue.jpg</iPhoneImageURI>
+    <WikiURI>http://127.0.0.1/index.htm</WikiURI>
+  </Catalog.ResourceDescription>
+
+  <Platform.Preferences>
+    <Preference name="ooi-wsr-uri" type="string" description="URL of the OOI-WSR API" label="API URI"/>
+  </Platform.Preferences>
+
+  <Platform.Wiring>
+    <OutputEndpoint name="simulation" type="text" label="Simulation" description="Selected simulation" friendcode="simid"/>
+    <OutputEndpoint name="worldstate" type="text" label="Worldstate" description="Selected worldstate" friendcode="wsid"/>
+  </Platform.Wiring>
+
+  <Platform.Link>
+    <XHTML href="index.html"/>
+  </Platform.Link>
+
+  <Platform.Rendering width="6" height="12"/>
+</Template>

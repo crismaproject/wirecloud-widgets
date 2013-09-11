@@ -1,0 +1,21 @@
+table {
+    overflow-y: scroll;
+}
+
+tr.selected {
+    background-color: #e2edff;
+}
+tr.selected>td,
+tr.selected>th {
+    color: #363d4f;
+}
+
+@media (max-width: 300px) {
+    .conserve-space {
+        display: none;
+    }
+
+    .btn-small {
+        padding: 0 2px;
+    }
+}

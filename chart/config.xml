@@ -4,7 +4,7 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>crisma-chart</Name>
-    <Version>0.2.1</Version>
+    <Version>0.4.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Displays bar charts</Description>
@@ -14,16 +14,12 @@
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="title" type="text" description="The title to display on top of the diagram" label="Title"
-                default="Chart"/>
+    <Preference name="indicator-uri" type="string" description="URL of the Indicators API" label="API URI"/>
   </Platform.Preferences>
 
   <Platform.Wiring>
-    <InputEndpoint name="series_data_1d" type="text" label="Series data"
-                   description="Displays the specified data (provided as a 1-dimensional array)" friendcode="matrix1d"/>
-    <InputEndpoint name="series_data_2d" type="text" label="Series data (stacked)"
-                   description="Displays the specified data as stacked bars (provided as a 2-dimensional array)"
-                   friendcode="matrix2d"/>
+    <InputEndpoint name="worldstate" type="text" label="Worldstate"
+                   description="Displays indicators for the specified worldstate" friendcode="wsid"/>
   </Platform.Wiring>
 
   <Platform.Link>

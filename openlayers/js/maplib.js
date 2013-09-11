@@ -10,8 +10,23 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     /** @const */
     var EPSG_4326_PROJECTION = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
     var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer');
-    var lineLayer = new OpenLayers.Layer.Vector('Line Layer');
-    var poiLayer = new OpenLayers.Layer.Vector('POI Layer');
+
+    function graphicFor(typeIdentifier) {
+        switch (typeIdentifier) {
+            case 'Ambulance':
+            case 'Ambulance Station':
+                return 'img/ambulance.png';
+            case 'Hospital':
+                return 'img/hospital.png';
+            case 'Patient':
+                return 'img/person.png';
+            case 'Incident':
+                return 'img/danger.png';
+            default:
+                console.log('Unknown OOI type: ' + typeIdentifier);
+                return 'img/ooi.png';
+        }
+    }
 
     /**
      * Contains the OpenLayers map object
@@ -24,9 +39,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                 ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
                     "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
                     "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
-            geometryLayer,
-            lineLayer,
-            poiLayer
+            geometryLayer
         ],
         center: latLon(initLat || 51.75, initLong || -1.25),
         zoom: initZ || 3,
@@ -37,43 +50,84 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         }
     });
 
-    var drawControls = {
-        select: new OpenLayers.Control.SelectFeature(poiLayer, {clickout: true}),
-        poi: new OpenLayers.Control.DrawFeature(poiLayer, OpenLayers.Handler.Point),
-        line: new OpenLayers.Control.DrawFeature(lineLayer, OpenLayers.Handler.Path),
-        poly: new OpenLayers.Control.DrawFeature(geometryLayer, OpenLayers.Handler.Polygon)
-    };
-    drawControls.select.onSelect = function (feature) { fireEvent('poiClicked', { clicked: feature.attributes.id }); };
-    drawControls.poi.events.register('featureadded', null, function (ev) {
-        var point = new OpenLayers.Geometry.Point(ev.feature.geometry.x, ev.feature.geometry.y)
-            .transform(mapProjection(), EPSG_4326_PROJECTION);
-        fireEvent('featureAdded', { kind: 'poi', lat: point.x, lon: point.y });
-    });
-    drawControls.line.events.register('featureadded', null, function (ev) {
-        var points = unravel(ev.feature.geometry.components);
-        fireEvent('featureAdded', { kind: 'line', points: points });
-    });
-    drawControls.poly.events.register('featureadded', null, function (ev) {
-        var points = unravel(ev.feature.geometry.components[0].components);
-        fireEvent('featureAdded', { kind: 'poly', points: points });
-    });
-    for (var key in drawControls) { map.addControl(drawControls[key]); }
-    drawControls.select.activate();
+    this.loadWorldState = function(worldStateId) {
+        var autoFocus = typeof this.worldState === 'undefined';
+        this.worldState = worldStateId;
 
-    var drawPanel = new OpenLayers.Control.Panel();
-    drawPanel.addControls([
-        new OpenLayers.Control.Button({ title: 'Navigate', displayClass: 'btnNav', trigger: function() { alert('Nav'); } }),
-        new OpenLayers.Control.Button({ title: 'Add OOI', displayClass: 'btnAddOoi', trigger: function() { alert('OOI'); } }),
-        new OpenLayers.Control.Button({ title: 'Add line', displayClass: 'btnAddLine', trigger: function() { alert('Line'); } }),
-        new OpenLayers.Control.Button({ title: 'Add polygon', displayClass: 'btnAddPoly', trigger: function() { alert('Poly'); } })
-    ]);
-    map.addControl(drawPanel);
+        var originalLayer = this.map.getLayersByName("OOI-Entities-WS");
+        if (originalLayer != null && originalLayer.length > 0)
+            for (var i = 0; i < originalLayer.length; i++)
+                this.map.removeLayer(originalLayer[i]);
+
+        var originalSelectControls = this.map.getControlsByClass('OpenLayers.Control.SelectFeature');
+        if (originalSelectControls != null && originalSelectControls.length > 0)
+            for (var i = 0; i < originalSelectControls.length; i++) {
+                originalSelectControls[i].deactivate();
+                this.map.removeControl(originalSelectControls[i]);
+            }
+
+        if (worldStateId != null) {
+            var wfsLayerProtocol = new OpenLayers.Protocol.WFS({
+                readFormat: new OpenLayers.Format.GML({xy: false}),
+                version: "1.0.0",
+                url: this.wfsUriBase + '?service=WFS&version=1.0.0&request=GetFeature&typeName=OOI-WSR:OOI-Entities&maxFeatures=50&viewparams=wsid:' + worldStateId,
+                featurePrefix: "OOI-WSR",
+                featureType: "OOI-Entities",
+                featureNS: "http://www.crismaproject.eu/",
+                geometryName: "Geometry"
+            });
+
+            var wfsLayer = new OpenLayers.Layer.Vector(
+                "OOI-Entities-WS",
+                {
+                    strategies: [new OpenLayers.Strategy.Fixed()],
+                    projection: EPSG_4326_PROJECTION,
+                    protocol: wfsLayerProtocol
+                });
+
+            wfsLayer.events.register('beforefeatureadded', wfsLayer.events.object, function(obj) {
+                var style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+                style.externalGraphic = graphicFor(obj.feature.data.EntityTypeName);
+                style.graphicWidth = 25;
+                style.graphicHeight = 25;
+                style.title = obj.feature.data.EntityName;
+                style.fillOpacity = .75;
+                obj.feature.style = style;
+            });
+
+            if (autoFocus) {
+                wfsLayer.events.register('featuresadded', wfsLayer.events.object, function(eventData) {
+                    autoFocus = false;
+
+                    var bounds = new OpenLayers.Bounds();
+                    for (var i = 0; i < eventData.features.length; i++)
+                        bounds.extend(eventData.features[i].geometry);
+
+                    this.map.zoomToExtent(bounds);
+                });
+            }
+
+            this.map.addLayer(wfsLayer);
+
+            var selectControl = new OpenLayers.Control.SelectFeature(wfsLayer, {
+                clickout: true,
+                onSelect: function (feature) {
+                    fireEvent('poiClicked', { clicked: feature.data });
+                }
+            });
+
+            this.map.addControl(selectControl);
+            selectControl.activate();
+        }
+    }
 
     /**
      * Contains all elements currently shown on the map.
      * @type {Array}
      */
     this.elements = { };
+
+    this.wfsUriBase = 'http://localhost/ows';
 
     var readonly = true;
 
@@ -152,12 +206,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * Removes all elements from the map.
      */
     this.clear = function () {
-        poiLayer.removeAllFeatures();
-        lineLayer.removeAllFeatures();
         geometryLayer.removeAllFeatures();
         this.elements = [];
-
-        poiLayer.redraw();
         geometryLayer.redraw();
     };
 
@@ -268,19 +318,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @private
      */
     function removeFromMap(id) {
-        if (this.elements[id] && this.elements[id]['_inst']) {
-            switch (this.elements[id]['type']) {
-                case 'poi':
-                    removeAndRedraw.call(this, id, poiLayer);
-                    break;
-                case 'poly':
-                    removeAndRedraw.call(this, id, geometryLayer);
-                    break;
-                case 'line':
-                    removeAndRedraw.call(this, id, lineLayer);
-                    break;
-            }
-        }
+        if (this.elements[id] && this.elements[id]['_inst'])
+            removeAndRedraw.call(this, id, geometryLayer);
     }
 
     /**
@@ -292,18 +331,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     function removeAndRedraw(id, layer) {
         layer.removeFeatures([this.elements[id]['_inst']]);
         layer.redraw();
-    }
-
-    /**
-     * Removes a polygon from the map using its unique identifier.
-     * @param {string} id
-     * @private
-     */
-    function removePolyFromMap(id) {
-        if (this.elements[id]['_inst']) {
-            geometryLayer.removeFeatures(this.elements[id]['_inst']);
-            geometryLayer.redraw();
-        }
     }
 
     /**
@@ -320,7 +347,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         style.fillOpacity = .75;
 
         var vector = new OpenLayers.Feature.Vector(this.elements[id]['coordinates'], { id: id }, style);
-        poiLayer.addFeatures([vector]);
+        geometryLayer.addFeatures([vector]);
         this.elements[id]['_inst'] = vector;
     }
 
@@ -349,8 +376,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
             strokeOpacity: .5,
             strokeColor: '#ff3333'
         });
-        lineLayer.addFeatures(this.elements[id]['_inst']);
-        lineLayer.redraw();
+        geometryLayer.addFeatures(this.elements[id]['_inst']);
+        geometryLayer.redraw();
     }
 
     /**

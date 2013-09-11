@@ -3,11 +3,12 @@
 <Template xmlns="http://morfeo-project.org/2007/Template" xmlns:doc="crisma://documentation">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
-    <Name>crisma-openlayers</Name>
-    <Version>0.2.1</Version>
+    <Name>crisma-openlayers-pilotc</Name>
+    <Version>0.4</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
-    <Description>Basic OpenLayers widget using OpenStreetMap tiles. Data, imagery and map information provided by
+    <Description>
+      Basic OpenLayers widget using OpenStreetMap tiles. Data, imagery and map information provided by
       OpenStreetMap and contributors, CC-BY-SA
     </Description>
     <ImageURI>img/catalogue.png</ImageURI>
@@ -16,13 +17,13 @@
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="recenter" type="boolean"
-                description="Automatically re-center the map whenever it changed through events" label="Auto re-center"
-                default="true"/>
-    <Preference name="canDraw" type="boolean" description="Is the map editable?" label="Draw" default="false"/>
+    <Preference name="wfs_uri" type="string" description="Base URI of the OOI-WSR WFS server" label="API URI"/>
   </Platform.Preferences>
 
   <Platform.Wiring>
+    <InputEndpoint name="worldstate" type="text" label="Worldstate ID"
+                   description="Loads a worldstate" friendcode="wsid" />
+
     <InputEndpoint name="view_point" type="text" label="Coordinates"
                    description="Focuses the map on specified coordinates" friendcode="geo-lon-lat">
       <doc:Documentation>
@@ -30,58 +31,7 @@
         data. When coordinates are received (WGS 1984 projection), the map will pan to the location represented by it.
       </doc:Documentation>
     </InputEndpoint>
-    <InputEndpoint name="add_point" type="text" label="Add point" description="Adds a point to the map"
-                   friendcode="geo-ooi">
-      <doc:Documentation>
-        This is an endpoint that accepts a JSON-encoded object with latitude and longitude coordinate
-        data and a unique identifier. The object will be added to the map view. If the recenter preference is set to
-        true, the map will then pan to the newly added object.
-      </doc:Documentation>
-    </InputEndpoint>
-    <InputEndpoint name="add_line" type="text" label="Add line" description="Adds a line to the map"
-                   friendcode="geo-points">
-      <doc:Documentation>
-        This endpoint allows the creation of line segments by providing an array of tuples containing latitude-longitude
-        coordinate pairs.
-      </doc:Documentation>
-    </InputEndpoint>
-    <InputEndpoint name="add_poly" type="text" label="Add polygon" description="Adds a polygon to the map"
-                   friendcode="geo-points">
-      <doc:Documentation>
-        This endpoint allows the creation of polygons (without holes). It accepts an array of tuples containing
-        latitude-longitude coordinate pairs that will form the outline of the polygon.
-      </doc:Documentation>
-    </InputEndpoint>
-    <InputEndpoint name="clear" type="text" label="Clear"
-                   description="Removes all features from the map (points and polygons)" friendcode="signal">
-      <doc:Documentation>
-        This endpoint does not require any data. When any signal is received on this endpoint, all contents
-        will be removed from the map unconditionally.
-      </doc:Documentation>
-    </InputEndpoint>
-    <OutputEndpoint name="added_point" type="text" label="Added point"
-                    description="Whenever a point is added via the map viewer, this event dispatches its coordinates"
-                    friendcode="geo-lon-lat">
-      <doc:Documentation>
-        This endpoint dispatches latitude-longitude coordinates whenever a point is added to the map.
-      </doc:Documentation>
-    </OutputEndpoint>
-    <OutputEndpoint name="added_line" type="text" label="Added line"
-                    description="Whenever a (poly-)line is added via the map viewer, this event dispatches its geometry"
-                    friendcode="geo-points">
-      <doc:Documentation>
-        Whenever a (poly-)line is added via the map viewer, this event dispatches a JSON-encoded object consisting
-        of latitude-longitude coordinates -- ie. latitude-longitude tuples -- this (poly-)line is composed of.
-      </doc:Documentation>
-    </OutputEndpoint>
-    <OutputEndpoint name="added_poly" type="text" label="Added polygon"
-                    description="Whenever a polygon is added via the map viewer, this event dispatches its geometry"
-                    friendcode="geo-points">
-      <doc:Documentation>
-        Whenever a polygon is added via the map viewer, this event dispatches a JSON-encoded object consisting
-        of latitude-longitude coordinates -- ie. latitude-longitude tuples -- this polygon is composed of.
-      </doc:Documentation>
-    </OutputEndpoint>
+
     <OutputEndpoint name="center_point" type="text" label="Coordinates"
                     description="Sends a signal whenever the shown center changes" friendcode="geo-lon-lat">
       <doc:Documentation>
