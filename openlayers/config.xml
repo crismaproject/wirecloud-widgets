@@ -17,7 +17,7 @@
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="wfs_uri" type="string" description="Base URI of the OOI-WSR WFS server" label="API URI"/>
+    <Preference name="wfs_uri" type="text" description="Base URI of the OOI-WSR WFS server" label="API URI"/>
   </Platform.Preferences>
 
   <Platform.Wiring>

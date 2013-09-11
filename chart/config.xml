@@ -14,7 +14,7 @@
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="indicator-uri" type="string" description="URL of the Indicators API" label="API URI"/>
+    <Preference name="indicator-uri" type="text" description="URL of the Indicators API" label="API URI"/>
   </Platform.Preferences>
 
   <Platform.Wiring>

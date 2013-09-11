@@ -14,7 +14,7 @@
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="ooi-wsr-uri" type="string" description="URL of the OOI-WSR API" label="API URI"/>
+    <Preference name="ooi-wsr-uri" type="text" description="URL of the OOI-WSR API" label="API URI"/>
   </Platform.Preferences>
 
   <Platform.Wiring>
