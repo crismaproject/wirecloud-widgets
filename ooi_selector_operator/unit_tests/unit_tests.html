@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.12.0.css">
+    <script type="text/javascript">
+        /**
+         * Dummy implementation for the most important functions exposed by the Wirecloud API
+         */
+        var MashupPlatform = {
+            wiring: {
+                callbacks: { },
+
+                registerCallback: function (name, handler) {
+                    if (!this.callbacks.hasOwnProperty(name))
+                        this.callbacks[name] = [ handler ];
+                    else
+                        this.callbacks[name].push(handler);
+                },
+                pushEvent: function (name, data) {
+                    for (var i = 0; i < this.callbacks[name].length; i++)
+                        this.callbacks[name][i](data);
+                }
+            }
+        };
+    </script>
+    <script type="text/javascript" src="../js/main.js"></script>
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixtures"></div>
+    <script type="text/javascript" src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
+    <script type="text/javascript">
+        var receivingBuffer = { oois_out: [], oois_selected_out: [] };
+        MashupPlatform.wiring.registerCallback('oois_out', function (data) {
+            receivingBuffer.oois_out = JSON.parse(data);
+        });
+        MashupPlatform.wiring.registerCallback('oois_selected_out', function (data) {
+            receivingBuffer.oois_selected_out = JSON.parse(data);
+        });
+
+        test('List of entities is initially empty', function () {
+            equal(entities.length, 0);
+        });
+
+        test('List of selections is initially empty', function () {
+            equal(selected.length, 0);
+        });
+
+        test('Entities (1, 2, 5) are received through the endpoint', function () {
+            MashupPlatform.wiring.pushEvent('oois_in', JSON.stringify([ 1, 2, 5 ]));
+            equal(entities.length, 3);
+            equal(selected.length, 0);
+            deepEqual(receivingBuffer.oois_out, [ 1, 2, 5 ], 'Expecting to propagate three items');
+        });
+
+        test('Entity=2 is selected', function () {
+            MashupPlatform.wiring.pushEvent('oois_selected_in', JSON.stringify([ 2 ]));
+            equal(entities.length, 3);
+            equal(selected.length, 1);
+            deepEqual(receivingBuffer.oois_selected_out, [ 2 ]);
+        });
+
+        test('Entity=5 is selected', function () {
+            MashupPlatform.wiring.pushEvent('oois_selected_in', JSON.stringify([ 2, 5 ]));
+            equal(entities.length, 3);
+            equal(selected.length, 2);
+            deepEqual(receivingBuffer.oois_selected_out, [ 2, 5 ]);
+        });
+
+        test('New entities (3, 5, 7) are received through the endpoint', function () {
+            MashupPlatform.wiring.pushEvent('oois_in', JSON.stringify([ 3, 5, 7 ]));
+            deepEqual(entities, [ 3, 5, 7]);
+            deepEqual(selected, [ 5 ]);
+            deepEqual(receivingBuffer.oois_out, [ 3, 5, 7 ], 'Expecting to propagate zero items');
+            deepEqual(receivingBuffer.oois_selected_out, [ 5 ], 'Expecting to propagate zero items');
+        });
+
+        test('Empty list of entities is received through the endpoint', function () {
+            MashupPlatform.wiring.pushEvent('oois_in', JSON.stringify([ ]));
+            deepEqual(entities, [ ]);
+            deepEqual(selected, [ ]);
+            deepEqual(receivingBuffer.oois_out, [ ], 'Expecting to propagate zero items');
+            deepEqual(receivingBuffer.oois_selected_out, [ ], 'Expecting to propagate zero items');
+        });
+    </script>
+</body>
+</html>
