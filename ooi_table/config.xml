@@ -13,16 +13,10 @@
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
-  <Platform.Preferences>
-    <Preference name="ooi-wsr-uri" type="text" description="URL of the OOI-WSR API" label="API URI"/>
-  </Platform.Preferences>
-
   <Platform.Wiring>
-    <InputEndpoint name="worldstate" type="text" label="Worldstate ID"
-                   description="Loads a worldstate" friendcode="wsid" />
-
-    <OutputEndpoint name="row" type="text" label="Row" description="The selected object" friendcode="row"/>
-    <OutputEndpoint name="entity" type="text" label="Entity" description="The selected object ID" friendcode="entityid"/>
+    <InputEndpoint name="oois_in" type="text" label="OOIs" description="All objects of interest" friendcode="oois"/>
+    <InputEndpoint name="oois_selected_in" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
+    <OutputEndpoint name="oois_selected_out" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
   </Platform.Wiring>
 
   <Platform.Link>

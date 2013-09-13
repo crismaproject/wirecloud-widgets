@@ -1,5 +1,6 @@
 table {
     overflow-y: scroll;
+    font-size: 11pt;
 }
 
 tr.selected {
@@ -10,12 +11,14 @@ tr.selected>th {
     color: #363d4f;
 }
 
-@media (max-width: 300px) {
-    .conserve-space {
-        display: none;
-    }
+@media (max-width: 520px) {
+    table { font-size: 10pt }
+}
 
-    .btn-small {
-        padding: 0 2px;
-    }
+@media (max-width: 420px) {
+    table { font-size: 9pt }
+}
+
+@media (max-width: 320px) {
+    table { font-size: 8.5pt }
 }

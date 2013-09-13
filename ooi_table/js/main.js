@@ -17,72 +17,33 @@ function OOITable(container) {
  */
 OOITable.prototype.addRow = function(row, opt) {
     var me = this;
-    $('tbody', this.container).append(
-        $('<tr></tr>')
-            .append($('<th></th>').append('<input type="checkbox">'))
-            .append($('<th></th>').text(row.id))
-            .append($('<td></td>').text(row.type))
-            .append($('<td></td>').text(row.site))
-            .attr('data-orig', JSON.stringify(opt))
-            .click (function () {
-                $('tr.selected').removeClass('selected');
-                $(this).addClass('selected');
-                if (me.onSelected)
-                    me.onSelected(opt);
-        })
-    );
+    var row = $('<tr></tr>')
+        .attr('data-row-id', row.id)
+        .append($('<th></th>').text(row.id))
+        .append($('<td></td>').text(row.type || '?'))
+        .append($('<td></td>').text(row.site || '?'))
+        .click(function () {
+            $('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            if (me.onSelected)
+                me.onSelected(opt);
+        });
+    if (opt) row.attr('data-orig', JSON.stringify(opt));
+    $('tbody', this.container).append(row);
 }
 
 OOITable.prototype.clear = function() {
     $('tbody', this.container).empty();
 }
 
-OOITable.prototype.loadWorldState = function (wsId) {
-    var uri = window.ooi_wsr_uri + '/Entity?wsid=' + wsId;
-    var target = this;
-
-    $.get(uri, function (data) {
-        target.clear();
-        for (var i = 0; i < data.length; i++)
-            target.addRow({
-                id: data[i].entityName,
-                type: extractTypeFromEntity(data[i]),
-                site: extractSiteFromEntity(data[i])
-            }, data[i]);
-    }, 'json');
+OOITable.prototype.unselectAll = function() {
+    $('tr.selected', this.container).removeClass('selected');
 }
 
-var typeCache = {};
-$.get(window.ooi_wsr_uri + '/EntityType', function (data) {
-    for (var i = 0; i < data.length; i++)
-        typeCache[data[i].entityTypeId] = data[i];
-    console.log('Loaded entity types');
-});
-
-function extractTypeFromEntity(entity) {
-    var entityTypeId = entity.entityTypeId;
-    return typeof entityTypeId !== 'undefined' && typeof typeCache[entityTypeId] !== 'undefined' ? typeCache[entityTypeId].entityTypeName : '?';
+OOITable.prototype.selectAll = function() {
+    $('tr').not('.selected').addClass('selected');
 }
 
-function extractSiteFromEntity(entity) {
-    return tryExtractPath(entity, '', 'entityInstancesGeometry', 0, 'geometry', 'geometry', 'wellKnownText');
+OOITable.prototype.select = function(id) {
+    $('tr[data-row-id="'+ id +'"]').not('.selected').addClass('selected');
 }
-
-function tryExtractPath(obj, defaultValue, path) {
-    var scope = obj;
-    for (var i = 2; i < arguments.length; i++) {
-        scope = scope[arguments[i]];
-        if (typeof scope === 'undefined')
-            return defaultValue;
-    }
-    return scope;
-}
-
-$(function () {
-    $('#check-all-none').change(function () {
-        var checked = $(this).is(':checked');
-        var targets = $('#ooi-table tbody input[type="checkbox"]');
-        if (checked) targets.not(':checked').attr('checked', 'checked');
-        else targets.filter(':checked').removeAttr('checked');
-    });
-});

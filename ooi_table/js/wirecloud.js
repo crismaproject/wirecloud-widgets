@@ -2,30 +2,33 @@
  * Iff the Wirecloud environment is available, register endpoints.
  */
 $(function () {
-    var hasMashupPlatform = typeof MashupPlatform !== 'undefined';
-
-    if (!hasMashupPlatform)
-        console.warn('Wirecloud environment not detected.');
-
     table.onSelected = function (row) {
-        if (row && hasMashupPlatform) {
-            if (row.hasOwnProperty('entityId')) MashupPlatform.wiring.pushEvent('entity', row.entityId);
-            MashupPlatform.wiring.pushEvent('row', JSON.stringify(row));
-        } else
-            console.log(['selected row', row]);
-    }
-
-    if (hasMashupPlatform) {
-        var applyPreferences = function () {
-            window.ooi_wsr_uri = MashupPlatform.prefs.get('ooi-wsr-uri');
-        };
-
-        MashupPlatform.prefs.registerCallback(applyPreferences);
-        applyPreferences();
-
-        MashupPlatform.wiring.registerCallback('worldstate', function (data) {
-            var worldstateId = parseInt(data);
-            table.loadWorldState(worldstateId);
+        var selection = [];
+        $('#ooi-table tr.selected').each(function (index, value) {
+            var ooi = JSON.parse($(value).attr('data-orig'));
+            selection.push(ooi);
         });
-    }
+        MashupPlatform.wiring.pushEvent('oois_selected_out', JSON.stringify(selection));
+    };
+
+    MashupPlatform.wiring.registerCallback('oois_in', function (data) {
+        var oois = JSON.parse(data);
+
+        table.clear();
+        for (var i = 0; i < oois.length; i++) {
+            var ooi = oois[i];
+            table.addRow({
+                id: ooi.id,
+                type: ooi.type,
+                site: ooi.site
+            }, ooi);
+        }
+    });
+
+    MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {
+        var oois = JSON.parse(data);
+        table.unselectAll();
+        for (var i = 0; i < oois.length; i++)
+            table.select(oois[i].id);
+    });
 });
