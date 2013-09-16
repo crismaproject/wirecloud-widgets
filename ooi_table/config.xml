@@ -5,6 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>ooi-table</Name>
     <Version>0.4.0</Version>
+    <DisplayName>OOI Table</DisplayName>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Table view for Objects of Interest</Description>

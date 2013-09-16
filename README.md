@@ -1,10 +1,12 @@
 # Wirecloud Widgets
 
 This repository contains (more or less) general purpose widgets that can be used with
-[F-I-WARE](http://www.fi-ware.eu/)'s Mashup platform [Wirecloud](http://conwet.fi.upm.es/wirecloud/).
+[FI-WARE](http://www.fi-ware.eu/)'s Mashup platform [Wirecloud](http://conwet.fi.upm.es/wirecloud/).
 Ideally, every folder here contains a widget that should work on its own and expose its functionality via a set of
 JavaScript functions. Primarily, they are intended to be used in the context of Wirecloud, so their usefulness outside
-of the Mashup platform could be.. limited.
+of the Mashup platform could be limited.
+
+You can find a working and up-to-date Wirecloud testbed here, courtesy of FI-Ware: [mashup.lab.fi-ware.eu](https://mashup.lab.fi-ware.eu).
 
 Also note that these components are currently under **early and active development** — they might or might not work yet.
 
@@ -20,20 +22,16 @@ Also note that these components are currently under **early and active developme
 
 **Documentation** for endpoints can be found in each of the widgets' respective subdirectory, in a file aptly
 named `ENDPOINTS.md`. These files are automatically generated from Wirecloud metadata in each `config.xml`.
-To (re-)generate these files on your own, you can use the `rake doc_endpoints` build task.
+To (re-)generate these files on your own, you can use the `rake doc` rake task.
 
 ## Building
 
-There are two ways to "build" these widgets automatically:
+There are two ways to build these widgets automatically:
 
-* Windows: use `bundle.bat` which should build all widgets. However, this method *requires* 7-zip installed under `C:\Program Files\7-Zip\7z.exe`, *or*
-* use `rake all` on systems with Rake installed. It will build any widgets in subdirectories containing a `.bundle` file. It requires [rubyzip](https://github.com/rubyzip/rubyzip) to be installed.
-  `rake` can also be used to bundle widgets individually; for instance, to build the `ooi_viewer` widget, use `rake bundle[ooi_viewer]`.
-
-You can also build it manually:
-
-1. Use any compression tool to create ZIP files for each of the widgets you are interested in so that the `config.xml` file is in the root directory of the archive. If you want to, exclude `README.md` files.
-2. By convention, you should then change the extension from `.zip` to `.wgt`.
+* **If you have ruby/rake:** use `rake all`. It will build any widgets in subdirectories containing a `.bundle` file. It requires [rubyzip](https://github.com/rubyzip/rubyzip) to be installed (`gem install rubyzip`).
+There are also rake tasks to bundle widgets individually; for instance, to build the *ooi_viewer* widget, use `rake bundle[ooi_viewer]`.
+* **Build it manually:** use any compression tool to create ZIP files for each of the widgets you are interested in so that the *config.xml* file is in the root directory of the archive. If you want to, exclude Markdown files.
+By convention, you should then change the extension from `.zip` to `.wgt`.
 
 If you want to contribute other ways of building/bundling widgets (or documentation), feel free to do so and send me a push request.
 
