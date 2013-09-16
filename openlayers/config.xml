@@ -3,8 +3,8 @@
 <Template xmlns="http://morfeo-project.org/2007/Template" xmlns:doc="crisma://documentation">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
-    <Name>crisma-openlayers-pilotc</Name>
-    <Version>0.4</Version>
+    <Name>ooi-gis-map</Name>
+    <Version>0.5.1</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
@@ -16,22 +16,12 @@
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
-  <Platform.Preferences>
-    <Preference name="wfs_uri" type="text" description="Base URI of the OOI-WSR WFS server" label="API URI"/>
-  </Platform.Preferences>
-
   <Platform.Wiring>
-    <InputEndpoint name="worldstate" type="text" label="Worldstate ID"
-                   description="Loads a worldstate" friendcode="wsid" />
+    <InputEndpoint name="wfs-uri" type="text" label="WFS URI" description="Map data for OOIs" friendcode="wfs-uri"/>
+    <InputEndpoint name="oois_in" type="text" label="OOIs" description="Objects of interest" friendcode="oois"/>
+    <InputEndpoint name="oois_selected_in" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
 
-    <InputEndpoint name="view_point" type="text" label="Coordinates"
-                   description="Focuses the map on specified coordinates" friendcode="geo-lon-lat">
-      <doc:Documentation>
-        This is an endpoint that accepts a JSON-encoded object with latitude and longitude coordinate
-        data. When coordinates are received (WGS 1984 projection), the map will pan to the location represented by it.
-      </doc:Documentation>
-    </InputEndpoint>
-
+    <OutputEndpoint name="oois_selected_out" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
     <OutputEndpoint name="center_point" type="text" label="Coordinates"
                     description="Sends a signal whenever the shown center changes" friendcode="geo-lon-lat">
       <doc:Documentation>

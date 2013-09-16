@@ -50,10 +50,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         }
     });
 
-    this.loadWorldState = function(worldStateId) {
-        var autoFocus = typeof this.worldState === 'undefined';
-        this.worldState = worldStateId;
-
+    this.loadWFS = function(uri) {
         var originalLayer = this.map.getLayersByName("OOI-Entities-WS");
         if (originalLayer != null && originalLayer.length > 0)
             for (var i = 0; i < originalLayer.length; i++)
@@ -66,11 +63,11 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                 this.map.removeControl(originalSelectControls[i]);
             }
 
-        if (worldStateId != null) {
+        if (uri) {
             var wfsLayerProtocol = new OpenLayers.Protocol.WFS({
                 readFormat: new OpenLayers.Format.GML({xy: false}),
                 version: "1.0.0",
-                url: this.wfsUriBase + '?service=WFS&version=1.0.0&request=GetFeature&typeName=OOI-WSR:OOI-Entities&maxFeatures=50&viewparams=wsid:' + worldStateId,
+                url: uri,
                 featurePrefix: "OOI-WSR",
                 featureType: "OOI-Entities",
                 featureNS: "http://www.crismaproject.eu/",
@@ -95,17 +92,15 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                 obj.feature.style = style;
             });
 
-            if (autoFocus) {
-                wfsLayer.events.register('featuresadded', wfsLayer.events.object, function(eventData) {
-                    autoFocus = false;
+            wfsLayer.events.register('featuresadded', wfsLayer.events.object, function(eventData) {
+                autoFocus = false;
 
-                    var bounds = new OpenLayers.Bounds();
-                    for (var i = 0; i < eventData.features.length; i++)
-                        bounds.extend(eventData.features[i].geometry);
+                var bounds = new OpenLayers.Bounds();
+                for (var i = 0; i < eventData.features.length; i++)
+                    bounds.extend(eventData.features[i].geometry);
 
-                    this.map.zoomToExtent(bounds);
-                });
-            }
+                this.map.zoomToExtent(bounds);
+            });
 
             this.map.addLayer(wfsLayer);
 
@@ -126,8 +121,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @type {Array}
      */
     this.elements = { };
-
-    this.wfsUriBase = 'http://localhost/ows';
 
     var readonly = true;
 

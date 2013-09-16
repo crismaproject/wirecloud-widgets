@@ -1,3 +1,10 @@
+var entitiesLookupTable = {};
+var selected = [];
+
+function propagateSelection() {
+    MashupPlatform.wiring.pushEvent('oois_selected_out', JSON.stringify(selected));
+}
+
 /*
  * Iff the Wirecloud environment is available, register endpoints.
  */
@@ -19,22 +26,21 @@ $(function () {
     } else if (typeof map === 'undefined') {
         console.warn('"map" variable is not defined.');
     } else {
-        var applyPreferences = function () {
-            map.wfsUriBase = MashupPlatform.prefs.get('wfs_uri');
-            if (map.worldState) map.loadWorldState(map.worldState);
-        };
-
-        MashupPlatform.prefs.registerCallback(applyPreferences);
-        applyPreferences();
-
-        MashupPlatform.wiring.registerCallback('view_point', function (data) {
-            var coordinates = parseJSON(data);
-            map.view(coordinates.latitude, coordinates.longitude);
+        MashupPlatform.wiring.registerCallback('oois_in', function (data) {
+            entitiesLookupTable = { };
+            var entities = JSON.parse(data);
+            for (var i = 0; i < entities.length; i++) {
+                if (!entities[i].hasOwnProperty('entityId')) continue;
+                entitiesLookupTable[entities[i].entityId] = entities[i];
+            }
         });
 
-        MashupPlatform.wiring.registerCallback('worldstate', function (data) {
-            var worldstateId = parseInt(data);
-            map.loadWorldState(worldstateId);
+        MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {
+            selected = JSON.parse(data);
+        });
+
+        MashupPlatform.wiring.registerCallback('wfs-uri', function (wfsUri) {
+            map.loadWFS(wfsUri);
         });
 
         $('#map')
@@ -47,11 +53,5 @@ $(function () {
             .bind('poiClicked', function (event) {
                 MashupPlatform.wiring.pushEvent('ooi_click', JSON.stringify(event.originalEvent.detail));
             });
-    }
-
-    function parseJSON(data) {
-        if (typeof data === 'string')
-            data = $.parseJSON(data);
-        return data;
     }
 });
