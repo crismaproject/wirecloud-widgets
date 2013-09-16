@@ -14,7 +14,7 @@
     <wire:displayName>World state loader</wire:displayName>
     <dcterms:description>This operator loads world states from the world state repository.</dcterms:description>
     <dcterms:creator rdf:resource="http://creatoruri/"/>
-    <usdl-core:versionInfo>0.1.0</usdl-core:versionInfo>
+    <usdl-core:versionInfo>0.1.1</usdl-core:versionInfo>
     <wire:hasImageUri rdf:resource="img/catalogue.png"/>
     <usdl-core:utilizedResource rdf:resource="js/main.js"/>
     <foaf:page rdf:resource="http://conwet.fi.upm.es/docs/display/wirecloud"/>
@@ -47,6 +47,15 @@
             <wire:friendcode>worldstate</wire:friendcode>
           </wire:OutputEndpoint>
         </wire:hasOutputEndpoint>
+        <wire:hasOutputEndpoint>
+          <wire:OutputEndpoint rdf:ID="output_2">
+            <dcterms:title>oois</dcterms:title>
+            <dcterms:description>Objects of Interest for the given Worldstate</dcterms:description>
+            <wire:type>text</wire:type>
+            <rdfs:label>OOIs</rdfs:label>
+            <wire:friendcode>oois</wire:friendcode>
+          </wire:OutputEndpoint>
+        </wire:hasOutputEndpoint>
       </wire:PlatformWiring>
     </wire:hasPlatformWiring>
 
@@ -54,10 +63,19 @@
       <wire:PlatformPreference rdf:ID="pref_1">
         <dcterms:title>api</dcterms:title>
         <dcterms:description>OOI-WSR API URI</dcterms:description>
-        <rdfs:label>API URI</rdfs:label>
+        <rdfs:label>API</rdfs:label>
         <wire:type>text</wire:type>
         <wire:default>http://localhost/api</wire:default>
-        <wire:index>0</wire:index>
+      </wire:PlatformPreference>
+    </wire:hasPlatformPreference>
+
+    <wire:hasPlatformPreference>
+      <wire:PlatformPreference rdf:ID="pref_2">
+        <dcterms:title>force-ws</dcterms:title>
+        <dcterms:description>Enforces the specified worldstate. The 'simulation id' input endpoint will be ignored. Use 0, if you want to disable this behaviour.</dcterms:description>
+        <rdfs:label>Worldstate</rdfs:label>
+        <wire:type>text</wire:type>
+        <wire:default>0</wire:default>
       </wire:PlatformPreference>
     </wire:hasPlatformPreference>
   </wire:Operator>
