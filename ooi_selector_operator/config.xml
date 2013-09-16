@@ -6,15 +6,17 @@
          xmlns:dcterms="http://purl.org/dc/terms/"
          xmlns:skos="http://www.w3.org/2004/02/skos/core#"
          xmlns:wire="http://wirecloud.conwet.fi.upm.es/ns/widget#"
-         xmlns:vCard = "http://www.w3.org/2006/vcard/ns#"
+         xmlns:vCard="http://www.w3.org/2006/vcard/ns#"
          xmlns:gr="http://purl.org/goodrelations/v1#">
 
   <wire:Operator rdf:about="http://wirecloud.com/test">
     <dcterms:title>ooi_selector_operator</dcterms:title>
     <wire:displayName>OOI Selector</wire:displayName>
-    <dcterms:description>This operator manages a list of OOIs that can be selected, and synchronizes the selection status between them across connected widgets/operators.</dcterms:description>
+    <dcterms:description>This operator manages a list of OOIs that can be selected, and synchronizes the selection
+      status between them across connected widgets/operators.
+    </dcterms:description>
     <dcterms:creator rdf:resource="http://creatoruri/"/>
-    <usdl-core:versionInfo>0.1.0</usdl-core:versionInfo>
+    <usdl-core:versionInfo>0.1.1</usdl-core:versionInfo>
     <wire:hasImageUri rdf:resource="img/catalogue.png"/>
     <usdl-core:utilizedResource rdf:resource="js/main.js"/>
     <foaf:page rdf:resource="http://conwet.fi.upm.es/docs/display/wirecloud"/>
@@ -37,6 +39,8 @@
             <rdfs:label>OOIs</rdfs:label>
             <wire:friendcode>oois</wire:friendcode>
           </wire:InputEndpoint>
+        </wire:hasInputEndpoint>
+        <wire:hasInputEndpoint>
           <wire:InputEndpoint rdf:ID="input_2">
             <dcterms:title>oois_selected_in</dcterms:title>
             <dcterms:description>Selected OOIs</dcterms:description>
@@ -54,6 +58,8 @@
             <rdfs:label>OOIs</rdfs:label>
             <wire:friendcode>oois</wire:friendcode>
           </wire:OutputEndpoint>
+        </wire:hasOutputEndpoint>
+        <wire:hasOutputEndpoint>
           <wire:OutputEndpoint rdf:ID="output_2">
             <dcterms:title>oois_selected_out</dcterms:title>
             <dcterms:description>Selected OOIs</dcterms:description>
