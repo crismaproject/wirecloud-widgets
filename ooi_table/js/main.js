@@ -32,7 +32,7 @@ function OOITable(container, columns) {
 OOITable.prototype.addRow = function(row) {
     var me = this;
     var tr = $('<tr></tr>')
-        .attr('data-row-id', row.id)
+        .attr('data-row-id', row.entityId)
         .click(function () {
             if ($(this).is('.selected'))
                 $(this).removeClass('selected');

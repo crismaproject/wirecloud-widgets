@@ -18,6 +18,6 @@ $(function () {
         var oois = JSON.parse(data);
         table.unselectAll();
         for (var i = 0; i < oois.length; i++)
-            table.select(oois[i].id);
+            table.select(oois[i].entityId);
     });
 });
