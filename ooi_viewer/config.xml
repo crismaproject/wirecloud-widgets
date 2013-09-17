@@ -4,24 +4,18 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>ooi-viewer</Name>
-    <Version>0.4.0</Version>
+    <Version>0.5.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
-    <Description>Details viewer for Objects of Interest</Description>
+    <Description>Details viewer for Objects of Interests</Description>
     <ImageURI>img/catalogue.png</ImageURI>
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
-  <Platform.Preferences>
-    <Preference name="ooi-wsr-uri" type="text" description="URL of the OOI-WSR API" label="API URI"/>
-  </Platform.Preferences>
-
   <Platform.Wiring>
-    <InputEndpoint name="worldstate" type="text" label="Worldstate" description="" friendcode="wsid"/>
-    <InputEndpoint name="entity" type="text" label="Entity" description="" friendcode="entityid"/>
-    <OutputEndpoint name="locate-lonlat" type="text" label="Locate (lon-lat)"
-                    description="Request to focus on specific coordinates" friendcode="geo-lon-lat"/>
+    <InputEndpoint name="oois" type="text" label="OOIs" description="" friendcode="oois"/>
+    <InputEndpoint name="types" type="text" label="OOI types" description="OOI type definitions" friendcode="ooi-types"/>
   </Platform.Wiring>
 
   <Platform.Link>

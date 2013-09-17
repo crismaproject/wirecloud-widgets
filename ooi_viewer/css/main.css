@@ -1,13 +1,14 @@
-table {
-    overflow-y: scroll;
+div.row:hover > div { background-color: #f0f0f0; }
+div.grp {
+    border-top: 1px solid #cccccc;
+    padding-top: 1em;
+    padding-bottom: 1em;
 }
-
-@media (max-width: 300px) {
-    .conserve-space {
-        display: none;
-    }
-
-    .btn-small {
-        padding: 0 2px;
-    }
+div.grp:first-child {
+    border-top: none;
+    padding-top: 0;
 }
+div.grp:last-child {
+    padding-bottom: 0;
+}
+div.grp:hover { background-color: #fafafa; }
