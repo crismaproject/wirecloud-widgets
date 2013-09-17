@@ -4,7 +4,7 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>ooi-gis-map</Name>
-    <Version>0.5.2</Version>
+    <Version>0.5.4</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
@@ -16,8 +16,12 @@
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
+  <Platform.Preferences>
+    <Preference name="wfs-uri" type="text" description="OOI WFS URI" label="OOI WFS URI" default="http://localhost/ows"/>
+  </Platform.Preferences>
+
   <Platform.Wiring>
-    <InputEndpoint name="wfs-uri" type="text" label="WFS URI" description="Map data for OOIs" friendcode="wfs-uri"/>
+    <InputEndpoint name="worldstate" type="text" label="Worldstate" description="Worldstate" friendcode="worldstate"/>
     <InputEndpoint name="oois_in" type="text" label="OOIs" description="Objects of interest" friendcode="oois"/>
     <InputEndpoint name="oois_selected_in" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
 

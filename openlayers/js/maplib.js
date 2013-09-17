@@ -50,8 +50,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         }
     });
 
-    this.loadWFS = function(uri) {
-        var originalLayer = this.map.getLayersByName("OOI-Entities-WS");
+    this.loadWfsFor = function(worldStateId) {
+        var originalLayer = this.map.getLayersByName("OOI-WFS-Entities");
         if (originalLayer != null && originalLayer.length > 0)
             for (var i = 0; i < originalLayer.length; i++)
                 this.map.removeLayer(originalLayer[i]);
@@ -63,11 +63,11 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                 this.map.removeControl(originalSelectControls[i]);
             }
 
-        if (uri) {
+        if (worldStateId) {
             var wfsLayerProtocol = new OpenLayers.Protocol.WFS({
                 readFormat: new OpenLayers.Format.GML({xy: false}),
                 version: "1.0.0",
-                url: uri,
+                url: this.wfsUri,
                 featurePrefix: "OOI-WSR",
                 featureType: "OOI-Entities",
                 featureNS: "http://www.crismaproject.eu/",
@@ -75,11 +75,16 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
             });
 
             var wfsLayer = new OpenLayers.Layer.Vector(
-                "OOI-Entities-WS",
+                "OOI-WFS-Entities",
                 {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     projection: EPSG_4326_PROJECTION,
-                    protocol: wfsLayerProtocol
+                    protocol: wfsLayerProtocol,
+                    filter: new OpenLayers.Filter.Comparison({
+                        type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                        property: "OOI-WSR:WorldStateId",
+                        value: worldStateId
+                    })
                 });
 
             wfsLayer.events.register('beforefeatureadded', wfsLayer.events.object, function(obj) {
@@ -122,36 +127,10 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      */
     this.elements = { };
 
-    var readonly = true;
-
     /**
-     * Gets if the viewer is in a readonly mode.
-     * @returns {boolean} true iff it is readonly, false otherwise.
+     * @private
      */
-    this.isReadonly = function () {
-        return readonly;
-    };
-
-    /**
-     * Sets whether the viewer is readonly (ie. drawing is disallowed).
-     * @param {boolean} value
-     */
-    this.setReadonly = function (value) {
-        readonly = value;
-        this.setMode('select');
-    };
-
-    /**
-     * Sets the viewer's drawing mode.
-     * @param {string} mode Must be one of the following: 'select' for panning, 'poi' for placing points, 'line' for drawing lines, or 'poly' for polygons.
-     * If the viewer is readonly, only 'select' is allowed.
-     */
-    this.setMode = function (mode) {
-        if (readonly && mode !== 'select') return;
-        for (var key in drawPanel.controls)
-            drawPanel.controls[key].deactivate();
-        drawControls[drawControls.hasOwnProperty(mode) ? mode : 'select'].activate();
-    };
+    this.wfsUri = null;
 
     /**
      * Pans the map to the specified object. The object can either be: a latitude-longitude coordinate pair, OR
@@ -259,21 +238,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
             'points': points
         };
         addLineToMap.call(this, id);
-    };
-
-    /**
-     * Moves a marker to the designated coordinates. This ONLY works with points of interests added
-     * through {OpenLayersFacade.add}; everything else will be ignored.
-     * @param {string} id the marker's unique identifier. If no marker by this identifier exists, this method will do nothing.
-     * @param {float} lat the marker's new latitude.
-     * @param {float} lon the marker's new longitude.
-     */
-    this.move = function (id, lat, lon) {
-        if (this.elements[id] && this.elements[id].type == 'poi') {
-            removeFromMap.call(this, id);
-            this.elements[id]['coordinates'] = latLon(lat, lon);
-            addPoiToMap.call(this, id);
-        }
     };
 
     /**
@@ -391,15 +355,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      */
     function mapProjection() {
         return map ? map.getProjectionObject() : new OpenLayers.Projection('EPSG:900913');
-    }
-
-    function unravel(array) {
-        var points = [];
-        for (var i = 0; i < array.length; i++) {
-            var point = array[i].clone().transform(mapProjection(), EPSG_4326_PROJECTION);
-            points[i] = [ point.x, point.y ];
-        }
-        return points;
     }
 
     /**

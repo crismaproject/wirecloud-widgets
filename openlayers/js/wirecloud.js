@@ -21,11 +21,15 @@ $(function () {
             .bind('mapClicked', logEvent)
             .bind('poiClicked', logEvent)
             .bind('featureAdded', logEvent);
-
-        map.setReadonly(false);
     } else if (typeof map === 'undefined') {
         console.warn('"map" variable is not defined.');
     } else {
+        var applyPreferences = function () {
+            map.wfsUri = MashupPlatform.prefs.get('wfs-uri');
+        };
+        MashupPlatform.prefs.registerCallback(applyPreferences);
+        applyPreferences();
+
         MashupPlatform.wiring.registerCallback('oois_in', function (data) {
             entitiesLookupTable = { };
             var entities = JSON.parse(data);
@@ -39,8 +43,10 @@ $(function () {
             selected = JSON.parse(data);
         });
 
-        MashupPlatform.wiring.registerCallback('wfs-uri', function (wfsUri) {
-            map.loadWFS(wfsUri);
+        MashupPlatform.wiring.registerCallback('worldstate', function (worldState) {
+            var worldStateObj = JSON.parse(worldState);
+            var worldStateId = worldStateObj.worldStateId;
+            map.loadWfsFor(worldStateId);
         });
 
         $('#map')

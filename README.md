@@ -19,7 +19,6 @@ Also note that these components are currently under **early and active developme
 * **./openlayers/** — a map widget using OpenLayers and OpenStreetMap to display a map with WFS data
 * **./pusher/** — a simple debugging widget that pushes arbitrary data to endpoints.
 * **./worldstate_loader/** — Operator that loads a worldstate from an OOI-WSR instance.
-* **./worldstate_wfs/** — Operator that loads the WFS layer for a specified worldstate.
 
 **Documentation** for endpoints can be found in each of the widgets' respective subdirectory, in a file aptly
 named `ENDPOINTS.md`. These files are automatically generated from Wirecloud metadata in each `config.xml`.
