@@ -8,8 +8,9 @@ var applyPreferences = function () {
 MashupPlatform.prefs.registerCallback(applyPreferences);
 applyPreferences();
 
-MashupPlatform.wiring.registerCallback('worldstate', function (worldstateStringData) {
-    var worldstate = JSON.parse(worldstateStringData);
-    var worldstateWfsUri = wfsUriBase + '&viewparams=wsid:' + worldstate.id;
-    MashupPlatform.wiring.pushEvent('wfs-uri', worldstateWfsUri);
+MashupPlatform.wiring.registerCallback('worldstate', function (worldStateStringData) {
+    var worldState = JSON.parse(worldStateStringData);
+    if (!worldState.hasOwnProperty('worldStateId')) throw 'Something went horribly wrong. No "worldStateId" field in worldstate object!';
+    var worldStateWfsUri = wfsUriBase + '&viewParams=wsid:' + worldState.worldStateId;
+    MashupPlatform.wiring.pushEvent('wfs-uri', worldStateWfsUri);
 });
