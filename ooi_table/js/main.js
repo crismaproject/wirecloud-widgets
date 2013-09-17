@@ -7,6 +7,9 @@ function OOITable(container, columns) {
     /** @private */
     this.columns = [ ];
 
+    /** @private */
+    this.display = { };
+
     /**
      * @param selected an array of selected rows
      */
@@ -43,8 +46,13 @@ OOITable.prototype.addRow = function(row) {
                 me.onSelectionChanged(me.getSelection());
         });
 
-    for (var i = 0; i < this.columns.length; i++)
-        tr.append($('<td></td>').text(row.hasOwnProperty(this.columns[i]) ? row[this.columns[i]] : '?'));
+    for (var i = 0; i < this.columns.length; i++) {
+        var column = this.columns[i];
+        var value = row[column];
+        if (typeof value !== 'undefined' && this.display.hasOwnProperty(column) && this.display[column].hasOwnProperty(value))
+            value = this.display[column][value];
+        tr.append($('<td></td>').text(value));
+    }
 
     tr.attr('data-orig', JSON.stringify(row));
     $('tbody', this.container).append(tr);

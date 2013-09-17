@@ -4,7 +4,7 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>ooi-table</Name>
-    <Version>0.5.0</Version>
+    <Version>0.5.1</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Table view for Objects of Interest</Description>
@@ -16,6 +16,7 @@
   <Platform.Wiring>
     <InputEndpoint name="oois_in" type="text" label="OOIs" description="All objects of interest" friendcode="oois"/>
     <InputEndpoint name="oois_selected_in" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
+    <InputEndpoint name="types" type="text" label="OOI types" description="OOI type definitions" friendcode="ooi-types"/>
     <OutputEndpoint name="oois_selected_out" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
   </Platform.Wiring>
 

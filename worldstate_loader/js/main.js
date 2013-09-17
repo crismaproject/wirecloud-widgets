@@ -8,6 +8,16 @@ var applyPreferences = function () {
         enforcedWorldstate = enforcedWorldstatePref;
         loadWorldstate(enforcedWorldstate);
     }
+
+    var typeUri = apiUri + '/EntityType';
+    MashupPlatform.http.makeRequest(typeUri, {
+        method: 'GET',
+        requestHeaders: { 'Accept': 'application/json' },
+        onSuccess: function (response) {
+            MashupPlatform.wiring.pushEvent('ooi-types', response.responseText);
+        },
+        onFailure: function () { alert('Request to OOI-WSR failed!'); }
+    });
 };
 
 MashupPlatform.prefs.registerCallback(applyPreferences);

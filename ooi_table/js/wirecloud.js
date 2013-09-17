@@ -20,4 +20,14 @@ $(function () {
         for (var i = 0; i < oois.length; i++)
             table.select(oois[i].entityId);
     });
+
+    MashupPlatform.wiring.registerCallback('types', function (data) {
+        var ooiTypes = JSON.parse(data);
+        var typeDisplayNames = { };
+        for (var i = 0; i < ooiTypes.length; i++) {
+            var ooiType = ooiTypes[i];
+            typeDisplayNames[ooiType.entityTypeId] = ooiType.entityTypeName;
+        }
+        table.display = { 'entityTypeId': typeDisplayNames };
+    });
 });
