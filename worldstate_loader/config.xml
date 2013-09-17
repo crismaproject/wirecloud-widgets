@@ -85,7 +85,7 @@
   </foaf:Person>
 
   <gr:BusinessEntity rdf:about="http://vendoruri/">
-    <foaf:name>CRISMA</foaf:name>
+    <foaf:name>AIT</foaf:name>
   </gr:BusinessEntity>
 
   <foaf:Image rdf:about="img/catalogue.png">
