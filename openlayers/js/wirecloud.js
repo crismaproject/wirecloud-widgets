@@ -51,7 +51,26 @@ $(function () {
                 MashupPlatform.wiring.pushEvent('pos_click', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));
             })
             .bind('poiClicked', function (event) {
-                MashupPlatform.wiring.pushEvent('ooi_click', JSON.stringify(event.originalEvent.detail));
+                // inconsistent property name casing between WFS and OOI-WSR, so let's just take the ID
+                // and look it up in our table
+                var clickedOoiId = event.originalEvent.detail.clicked.EntityId; // NOTE: WFS uses 'EntityId', OOI-WSR uses 'entityId'
+                if (!entitiesLookupTable.hasOwnProperty(clickedOoiId))
+                    throw 'Entities table (received through oois_in) is inconsistent with WFS data!';
+                var clickedOoi = entitiesLookupTable[clickedOoiId];
+
+                MashupPlatform.wiring.pushEvent('ooi_click', JSON.stringify(clickedOoi));
+
+                var selectedIndex = -1;
+                for (var i = 0; i < selected.length && selectedIndex == -1; i++)
+                    if (selected[i].entityId === clickedOoi.entityId)
+                        selectedIndex = i;
+
+                if (selectedIndex === -1)
+                    selected.push(clickedOoi);
+                else
+                    selected.splice(selectedIndex, 1);
+
+                propagateSelection();
             });
     }
 });
