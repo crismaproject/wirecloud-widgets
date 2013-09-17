@@ -28,11 +28,10 @@ function OOITable(container, columns) {
 /**
  *
  * @param row the row to add
- * @param {string} row.id the OOI's unique identifier
- * @param {string} row.type the OOI's type
- * @param {string} row.site the OOI's current location
+ * @param {string} row.entityId the OOI's unique identifier
+ * @param {string} row.entityTypeId the OOI's type
  */
-OOITable.prototype.addRow = function(row) {
+OOITable.prototype.addRow = function (row) {
     var me = this;
     var tr = $('<tr></tr>')
         .attr('data-row-id', row.entityId)
@@ -56,31 +55,31 @@ OOITable.prototype.addRow = function(row) {
 
     tr.attr('data-orig', JSON.stringify(row));
     $('tbody', this.container).append(tr);
-}
+};
 
-OOITable.prototype.clear = function() {
+OOITable.prototype.clear = function () {
     $('tbody', this.container).empty();
     this.updateSelectionCount();
-}
+};
 
-OOITable.prototype.unselectAll = function() {
+OOITable.prototype.unselectAll = function () {
     $('tr.selected', this.container).removeClass('selected');
     this.updateSelectionCount();
-}
+};
 
-OOITable.prototype.selectAll = function() {
+OOITable.prototype.selectAll = function () {
     $('tr', this.container).not('.selected').addClass('selected');
     this.updateSelectionCount();
-}
+};
 
-OOITable.prototype.select = function(id) {
-    $('tr[data-row-id="'+ id +'"]', this.container).not('.selected').addClass('selected');
+OOITable.prototype.select = function (id) {
+    $('tr[data-row-id="' + id + '"]', this.container).not('.selected').addClass('selected');
     this.updateSelectionCount();
-}
+};
 
 OOITable.prototype.updateSelectionCount = function () {
     $('.selection-count').text($('tr[data-row-id].selected').length);
-}
+};
 
 OOITable.prototype.getSelection = function () {
     var selection = [];
@@ -89,4 +88,56 @@ OOITable.prototype.getSelection = function () {
         selection.push(ooi);
     });
     return selection;
+};
+
+function GroupManager() {
+    this.groups = {};
+
+    this.dirty = false;
+
+    if (supportsLocalStorage()) { // HTML5 local storage available
+        this.groups = localStorage.getItem('groups');
+        var groupManager = this;
+        $(window).unload(function () {
+            if (groupManager.dirty)
+                localStorage.setItem('groups', groupManager.groups);
+        });
+    }
+}
+
+GroupManager.prototype.get = function (groupId) {
+    return groupId in this.groups ? this.groups[groupId] : [];
+};
+
+GroupManager.prototype.set = function (groupId, items) {
+    this.groups[groupId] = items;
+    this.dirty = true;
+};
+
+GroupManager.prototype.addTo = function (groupId, item) {
+    if (!this.groups.hasOwnProperty(groupId)) this.groups[groupId] = [ item ];
+    else if (this.groups[groupId].indexOf(item) != -1) return;
+    else this.groups.push(item);
+    this.dirty = true;
+};
+
+GroupManager.prototype.removeFrom = function (groupId, item) {
+    if (!this.groups.hasOwnProperty(groupId)) return;
+    var index = this.groups[groupId].indexOf(item);
+    if (index == -1) return;
+    this.groups[groupId].splice(index, 1);
+    if (this.groups[groupId].length == 0) delete this.groups[groupId];
+    this.dirty = true;
+};
+
+/**
+ * Determines if HTML5 local storage is available.
+ * @returns {boolean}
+ */
+function supportsLocalStorage() {
+    try {
+        return 'localStorage' in window && window['localStorage'] !== null;
+    } catch (e) {
+        return false;
+    }
 }
