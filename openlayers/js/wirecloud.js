@@ -1,3 +1,5 @@
+/*global map,MashupPlatform*/
+
 var entitiesLookupTable = {};
 var selected = [];
 
@@ -25,7 +27,7 @@ $(function () {
         console.warn('"map" variable is not defined.');
     } else {
         var applyPreferences = function () {
-            map.wfsUri = MashupPlatform.prefs.get('wfs-uri');
+            map.wfsUri = MashupPlatform.prefs.get('wfs_server');
         };
         MashupPlatform.prefs.registerCallback(applyPreferences);
         applyPreferences();
@@ -43,7 +45,7 @@ $(function () {
             selected = JSON.parse(data);
         });
 
-        MashupPlatform.wiring.registerCallback('worldstate', function (worldState) {
+        MashupPlatform.wiring.registerCallback('worldstate_in', function (worldState) {
             var worldStateObj = JSON.parse(worldState);
             var worldStateId = worldStateObj.worldStateId;
             map.loadWfsFor(worldStateId);

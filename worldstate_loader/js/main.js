@@ -18,30 +18,32 @@ var applyPreferences = function () {
         onSuccess: function (response) {
             MashupPlatform.wiring.pushEvent('ooi-types', response.responseText);
         },
-        onFailure: function () { alert('Request to OOI-WSR failed!'); }
+        onFailure: function () { alert('Request to OOI-WSR failed! (while trying to load entity types)'); }
     });
 };
 
 MashupPlatform.prefs.registerCallback(applyPreferences);
 applyPreferences();
 
-MashupPlatform.wiring.registerCallback('simulation_id', loadLastWorldstateForSimulation);
+MashupPlatform.wiring.registerCallback('simulation', loadLastWorldstateForSimulation);
 
 function loadWorldstate(worldstateId) {
     MashupPlatform.http.makeRequest(apiUri + '/WorldState/' + worldstateId, {
         method: 'GET',
         requestHeaders: { 'Accept': 'application/json' },
         onSuccess: function (response) { MashupPlatform.wiring.pushEvent('worldstate', response.responseText); },
-        onFailure: function () { alert('Request to OOI-WSR failed!'); }
+        onFailure: function () { alert('Request to OOI-WSR failed! (during loadWorldstate)'); }
     });
     loadOOIs(worldstateId);
 }
 
-function loadLastWorldstateForSimulation (simulationId) {
-    if (enforcedWorldstate || !apiUri || !simulationId) return;
+function loadLastWorldstateForSimulation (simulationData) {
+    if (enforcedWorldstate || !apiUri || !simulationData) return;
 
-    // simulation ID known, load the appropriate world states from the OOI-WSR
-    var wsUri = apiUri + '/WorldState?simulationId=' + simulationId; // TODO: filter by simulation id on remote
+    var simulation = JSON.parse(simulationData);
+    if (!simulation || !simulation.hasOwnProperty('simulationId')) throw 'Provided item does not have a "simulationId" property!';
+
+    var wsUri = apiUri + '/WorldState?simulationId=' + simulation.simulationId; // TODO: filter by simulation id on remote
     MashupPlatform.http.makeRequest(wsUri, {
         method: 'GET',
         requestHeaders: { 'Accept': 'application/json' },
@@ -50,7 +52,7 @@ function loadLastWorldstateForSimulation (simulationId) {
             var lastWorldState = null;
 
             for (var i = 0; i < jsonResponse.length; i++) {
-                if (!jsonResponse[i].hasOwnProperty('simulationId') || jsonResponse[i].simulationId != simulationId) continue;
+                if (!jsonResponse[i].hasOwnProperty('simulationId') || jsonResponse[i].simulationId != simulationData) continue;
                 lastWorldState = jsonResponse[i];
             }
 
@@ -59,12 +61,12 @@ function loadLastWorldstateForSimulation (simulationId) {
                 loadOOIs(lastWorldState.worldStateId);
             }
         },
-        onFailure: function () { alert('Request to OOI-WSR failed!'); }
+        onFailure: function () { alert('Request to OOI-WSR failed! (during loadLastWorldstateForSimulation)'); }
     });
 }
 
 /**
- * @param {integer} worldstateId
+ * @param {int} worldstateId
  */
 function loadOOIs (worldstateId) {
     var ooiUri = apiUri + '/Entity?wsid=' + worldstateId;
@@ -74,6 +76,6 @@ function loadOOIs (worldstateId) {
         onSuccess: function (response) {
             MashupPlatform.wiring.pushEvent('oois', response.responseText);
         },
-        onFailure: function () { alert('Request to OOI-WSR failed!'); }
+        onFailure: function () { alert('Request to OOI-WSR failed! (during loadOOIs)'); }
     });
 }

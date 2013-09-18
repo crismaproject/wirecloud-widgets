@@ -11,10 +11,10 @@
 
   <wire:Operator rdf:about="http://wirecloud.com/test">
     <dcterms:title>worldstate_loader</dcterms:title>
-    <wire:displayName>World state loader</wire:displayName>
-    <dcterms:description>This operator loads world states from the world state repository.</dcterms:description>
+    <wire:displayName>Worldstate loader</wire:displayName>
+    <dcterms:description>This operator loads world states from the OOI worldstate repository (OOI-WSR).</dcterms:description>
     <dcterms:creator rdf:resource="http://creatoruri/"/>
-    <usdl-core:versionInfo>0.1.2</usdl-core:versionInfo>
+    <usdl-core:versionInfo>0.1.3</usdl-core:versionInfo>
     <wire:hasImageUri rdf:resource="img/catalogue.png"/>
     <usdl-core:utilizedResource rdf:resource="js/main.js"/>
     <foaf:page rdf:resource="http://conwet.fi.upm.es/docs/display/wirecloud"/>
@@ -30,12 +30,11 @@
       <wire:PlatformWiring rdf:ID="wiring">
         <wire:hasInputEndpoint>
           <wire:InputEndpoint rdf:ID="input_1">
-            <dcterms:title>simulation_id</dcterms:title>
-            <dcterms:description>Simulation ID</dcterms:description>
-            <wire:actionLabel>Simulation ID</wire:actionLabel>
+            <dcterms:title>simulation</dcterms:title>
+            <dcterms:description>Simulation</dcterms:description>
             <wire:type>text</wire:type>
-            <rdfs:label>Simulation ID</rdfs:label>
-            <wire:friendcode>simulation_id</wire:friendcode>
+            <rdfs:label>Simulation</rdfs:label>
+            <wire:friendcode>simulation</wire:friendcode>
           </wire:InputEndpoint>
         </wire:hasInputEndpoint>
         <wire:hasOutputEndpoint>

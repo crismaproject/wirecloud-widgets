@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>ooi-table</Name>
     <DisplayName>OOI Table</DisplayName>
-    <Version>0.5.1</Version>
+    <Version>0.5.2</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Table view for Objects of Interest</Description>
@@ -22,8 +22,8 @@
   </Platform.Wiring>
 
   <Platform.Link>
-    <XHTML href="index.html"/>
+    <XHTML href="index.html" cacheable="false"/>
   </Platform.Link>
 
-  <Platform.Rendering width="6" height="12"/>
+  <Platform.Rendering width="6" height="18"/>
 </Template>
