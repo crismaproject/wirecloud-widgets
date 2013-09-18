@@ -1,3 +1,5 @@
+/*global table,MashupPlatform*/
+
 /*
  * Iff the Wirecloud environment is available, register endpoints.
  */

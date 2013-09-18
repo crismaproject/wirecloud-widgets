@@ -1,3 +1,5 @@
+/*global MashupPlatform*/
+
 var apiUri = null;
 var enforcedWorldstate = null;
 var applyPreferences = function () {

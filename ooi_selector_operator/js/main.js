@@ -1,3 +1,4 @@
+/*global MashupPlatform*/
 var entities = [ ];
 var selected = [ ];
 

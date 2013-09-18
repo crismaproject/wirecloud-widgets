@@ -10,6 +10,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     /** @const */
     var EPSG_4326_PROJECTION = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
     var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer');
+    this.wfsUri = 'http://localhost/ows';
 
     function graphicFor(typeIdentifier) {
         switch (typeIdentifier) {
@@ -133,11 +134,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
             selectControl.activate();
         }
     };
-
-    /**
-     * @private
-     */
-    this.wfsUri = null;
 
     /**
      * Pans the map to the specified object. The object can either be: a latitude-longitude coordinate pair, OR
