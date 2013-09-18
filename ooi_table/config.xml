@@ -4,6 +4,7 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>ooi-table</Name>
+    <DisplayName>OOI Table</DisplayName>
     <Version>0.5.1</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
