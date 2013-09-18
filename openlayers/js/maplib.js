@@ -50,11 +50,22 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         }
     });
 
-    this.loadWfsFor = function(worldStateId) {
-        var originalLayer = this.map.getLayersByName("OOI-WFS-Entities");
-        if (originalLayer != null && originalLayer.length > 0)
-            for (var i = 0; i < originalLayer.length; i++)
-                this.map.removeLayer(originalLayer[i]);
+    /** @private */
+    this.map = map;
+
+    /**
+     * @private
+     * @returns {OpenLayers.Layer.Vector}
+     */
+    this.getWfsLayer = function () {
+        var layers = this.map.getLayersByName("OOI-WFS-Entities");
+        return layers.length ? layers[0] : null;
+    };
+
+    this.loadWfsFor = function (worldStateId) {
+        var originalLayer = this.getWfsLayer();
+        if (originalLayer != null)
+            this.map.removeLayer(originalLayer);
 
         var originalSelectControls = this.map.getControlsByClass('OpenLayers.Control.SelectFeature');
         if (originalSelectControls != null && originalSelectControls.length > 0)
@@ -62,6 +73,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                 originalSelectControls[i].deactivate();
                 this.map.removeControl(originalSelectControls[i]);
             }
+
+        if (!this.wfsUri) throw 'No WFS URI set!';
 
         if (worldStateId) {
             var wfsLayerProtocol = new OpenLayers.Protocol.WFS({
@@ -87,7 +100,9 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                     })
                 });
 
-            wfsLayer.events.register('beforefeatureadded', wfsLayer.events.object, function(obj) {
+            var mapFacade = this;
+
+            wfsLayer.events.register('beforefeatureadded', wfsLayer.events.object, function (obj) {
                 var style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
                 style.externalGraphic = graphicFor(obj.feature.data.EntityTypeName);
                 style.graphicWidth = 25;
@@ -97,14 +112,12 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                 obj.feature.style = style;
             });
 
-            wfsLayer.events.register('featuresadded', wfsLayer.events.object, function(eventData) {
-                autoFocus = false;
-
+            wfsLayer.events.register('featuresadded', wfsLayer.events.object, function (eventData) {
                 var bounds = new OpenLayers.Bounds();
                 for (var i = 0; i < eventData.features.length; i++)
                     bounds.extend(eventData.features[i].geometry);
 
-                this.map.zoomToExtent(bounds);
+                mapFacade.map.zoomToExtent(bounds);
             });
 
             this.map.addLayer(wfsLayer);
@@ -119,13 +132,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
             this.map.addControl(selectControl);
             selectControl.activate();
         }
-    }
-
-    /**
-     * Contains all elements currently shown on the map.
-     * @type {Array}
-     */
-    this.elements = { };
+    };
 
     /**
      * @private
@@ -144,17 +151,18 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         if (arguments.length == 2 && typeof arguments[0] == 'number' && typeof arguments[1] == 'number') {
             var projectedCoordinates = latLon(arguments[0], arguments[1]); // actually returns a Point, but we need LonLat for map.panTo
             map.panTo(new OpenLayers.LonLat(projectedCoordinates.x, projectedCoordinates.y));
-        } else if (arguments.length == 1 && typeof arguments[0] == 'string' && this.elements.hasOwnProperty(arguments[0])) {
-            var item = this.elements[arguments[0]];
-            var panTarget = null;
-            if (item.hasOwnProperty('coordinates'))
-                panTarget = item['coordinates'];
-            else if (item.hasOwnProperty('points')) {
-                panTarget = new OpenLayers.Bounds();
-                for (var i = 0; i < item['points'].length; i++)
-                    panTarget.extend(item['points'][i]);
+        } else if (arguments.length == 1 && typeof arguments[0] == 'string') {
+            var wfsLayer = this.getWfsLayer();
+            if (wfsLayer) {
+                for (var i = 0; i < wfsLayer.features.length; i++) {
+                    if (wfsLayer.features[i].data['EntityId'] === arguments[0] ||
+                        wfsLayer.features[i].data['EntityName'] === arguments[0]) {
+                        var geometry = wfsLayer.features[i].geometry;
+                        map.panTo(new OpenLayers.LonLat(geometry.x, geometry.y));
+                        break;
+                    }
+                }
             }
-            map.zoomToExtent(panTarget);
         }
     };
 
@@ -184,78 +192,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     };
 
     /**
-     * Adds a point of interest to the map.
-     * @param {string} id a unique identifier for the object.
-     * @param {float} lat the latitude of the object.
-     * @param {float} lon the longitude of the object.
-     * @param {string=} icon the URL to the icon that represents this POI.
-     */
-    this.add = function (id, lat, lon, icon) {
-        if (!icon) icon = 'img/marker.png';
-        if (this.elements.hasOwnProperty(id)) this.remove.call(this, id);
-
-        this.elements[id] =
-        {
-            'id': id,
-            'type': 'poi',
-            'coordinates': latLon(lat, lon),
-            'icon': icon
-        };
-        addPoiToMap.call(this, id);
-    };
-
-    /**
-     * Adds a polygon to the map.
-     *
-     * @param {string} id the object's unique identifier.
-     * @param {Array} points an array of [x, y] tuples that are edges of the outline of the polygon.
-     */
-    this.addPoly = function (id, points) {
-        if (this.elements.hasOwnProperty(id)) this.remove.call(this, id);
-        points = project(points);
-        this.elements[id] =
-        {
-            'id': id,
-            'type': 'poly',
-            'points': points
-        };
-        addPolyToMap.call(this, id);
-    };
-
-    /**
-     * Adds a polyline to the map.
-     *
-     * @param {string} id the object's unique identifier.
-     * @param {Array} points an array of [x, y] tuples that form the polyline.
-     */
-    this.addLine = function (id, points) {
-        if (this.elements.hasOwnProperty(id)) this.remove.call(this, id);
-        points = project(points);
-        this.elements[id] =
-        {
-            'id': id,
-            'type': 'line',
-            'points': points
-        };
-        addLineToMap.call(this, id);
-    };
-
-    /**
-     * Removes an object (marker OR polygon) from the map using its unique identifier.
-     * @param {string} id
-     */
-    this.remove = function (id) {
-        if (!this.elements.hasOwnProperty(id)) return;
-        var type = this.elements[id]['type'];
-        if (type == 'poi')  removeFromMap.call(this, id);
-        else if (type == 'poly' || type == 'line') removePolyFromMap.call(this, id);
-        delete this.elements[id];
-    };
-
-    /** @private */
-    this.map = map;
-
-    /**
      * Creates an array of points from an array of [x, y] tuples.
      *
      * @param {Array} points an array of [x, y] tuples.
@@ -267,74 +203,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         for (var i = 0; i < points.length; i++)
             projectedPoints[i] = latLon(points[i][0], points[i][1]);
         return projectedPoints;
-    }
-
-    /**
-     * Removes a marker from the map using its unique identifier.
-     * @param {string} id
-     * @private
-     */
-    function removeFromMap(id) {
-        if (this.elements[id] && this.elements[id]['_inst'])
-            removeAndRedraw.call(this, id, geometryLayer);
-    }
-
-    /**
-     * Removes a feature from a specific layer using its unique element identifier.
-     * @param {string} id
-     * @param {OpenLayers.Layer.Vector} layer
-     * @private
-     */
-    function removeAndRedraw(id, layer) {
-        layer.removeFeatures([this.elements[id]['_inst']]);
-        layer.redraw();
-    }
-
-    /**
-     * Adds an internally registered but not yet rendered marker to the map.
-     * @param {string} id
-     * @private
-     */
-    function addPoiToMap(id) {
-        var style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
-        style.externalGraphic = this.elements[id]['icon'];
-        style.graphicWidth = 25;
-        style.graphicHeight = 25;
-        style.title = id;
-        style.fillOpacity = .75;
-
-        var vector = new OpenLayers.Feature.Vector(this.elements[id]['coordinates'], { id: id }, style);
-        geometryLayer.addFeatures([vector]);
-        this.elements[id]['_inst'] = vector;
-    }
-
-    /**
-     * Adds an internally registered but not yet rendered polygon to the map.
-     * @param {string} id
-     * @private
-     */
-    function addPolyToMap(id) {
-        var ring = new OpenLayers.Geometry.LinearRing(this.elements[id]['points']);
-        var polygon = new OpenLayers.Geometry.Polygon([ring]);
-        this.elements[id]['_inst'] = new OpenLayers.Feature.Vector(polygon, { id: id });
-        geometryLayer.addFeatures(this.elements[id]['_inst']);
-        geometryLayer.redraw();
-    }
-
-    /**
-     * Adds an internally registered but not yet rendered polyline to the map.
-     * @param {string} id
-     * @private
-     */
-    function addLineToMap(id) {
-        var lines = new OpenLayers.Geometry.LineString(this.elements[id]['points']);
-        this.elements[id]['_inst'] = new OpenLayers.Feature.Vector(lines, { id: id }, {
-            strokeWidth: 3,
-            strokeOpacity: .5,
-            strokeColor: '#ff3333'
-        });
-        geometryLayer.addFeatures(this.elements[id]['_inst']);
-        geometryLayer.redraw();
     }
 
     /**

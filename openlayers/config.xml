@@ -17,7 +17,7 @@
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="wfs-uri" type="text" description="OOI WFS URI" label="OOI WFS URI" default="http://localhost/ows"/>
+    <Preference name="wfs-uri" type="text" description="OOI WFS URI" label="OOI WFS URI" default=""/>
   </Platform.Preferences>
 
   <Platform.Wiring>
