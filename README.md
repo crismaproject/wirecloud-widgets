@@ -28,7 +28,7 @@ To (re-)generate these files on your own, you can use the `rake doc` rake task.
 
 ## Building
 
-There are two ways to build these widgets automatically:
+There are two ways to build these widgets:
 
 * **If you have ruby/rake:** use `rake all`. It will build any widgets in subdirectories containing a `.bundle` file. It requires [rubyzip](https://github.com/rubyzip/rubyzip) to be installed (`gem install rubyzip`).
 There are also rake tasks to bundle widgets individually; for instance, to build the *ooi_viewer* widget, use `rake bundle[ooi_viewer]`.
@@ -36,6 +36,11 @@ There are also rake tasks to bundle widgets individually; for instance, to build
 By convention, you should then change the extension from `.zip` to `.wgt`.
 
 If you want to contribute other ways of building/bundling widgets (or documentation), feel free to do so and send me a push request.
+
+## Branches
+
+* **master** — not exactly stable yet, but not as bleeding edge as *v0.5* :)
+* **v0.5** — this is some sort of staging area for the *next* version and most commits are likely to not work completely.
 
 ## Contact
 
