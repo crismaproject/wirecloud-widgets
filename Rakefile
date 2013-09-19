@@ -18,7 +18,8 @@ task :bundle, [:what] do |_, args|
   end
 end
 
-task :doc_endpoints do
+desc 'Created endpoint documentation (ENDPOINTS.md files)'
+task :doc do
   Dir.glob('**').each do |subdirectory|
     config_file = File.join(subdirectory, 'config.xml')
     if File.exists?(config_file)
@@ -33,7 +34,7 @@ task :doc_endpoints do
 
       File.open(File.join(subdirectory, 'ENDPOINTS.md'), 'w') do |f|
         f.puts "# Notice\n\n"
-        f.puts "This document has been generated automatically on #{Time.now}. If this file is not up to date, please (re-)run `rake doc_endpoints` from the command-line.\n\n"
+        f.puts "This document has been generated automatically on #{Time.now}. If this file is not up to date, please (re-)run `rake doc` from the command-line.\n\n"
 
         write_overview f, endpoints
         write_endpoints f, endpoints[:in], 'Input endpoints'
@@ -44,7 +45,7 @@ task :doc_endpoints do
 end
 
 desc 'Create all zipped Wirecloud widget files'
-task :all => [:doc_endpoints] do
+task :all do
   Dir.glob('**').each do |subdirectory|
     if File.exists?(File.join(subdirectory, '.bundle'))
       Rake::Task[:bundle].invoke subdirectory
