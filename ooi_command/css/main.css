@@ -1,0 +1,19 @@
+button[disabled].btn-command-active {
+    opacity: 1;
+    border-color: #ccc;
+    background-color: rgb(242, 233, 234);
+    -webkit-box-shadow: inset 4px 4px 7px -1px rgba(159, 20, 20, .3);
+    box-shadow: inset 4px 4px 7px -1px rgba(159, 20, 20, .3);
+}
+
+/* true for all button icons: */
+.ico-cmd-treat {
+    display: inline-block;
+    vertical-align: -1pt;
+    width: 12px;
+    height: 12px;
+    margin: 0 2pt 0 0;
+}
+
+/* individual settings and overrides: */
+.ico-cmd-treat { background: url("../img/ico-cmd-treat.png") no-repeat; }

@@ -10,6 +10,13 @@ function setObjectsOfInterestTypes(types) {
     entityTypes = group(types, 'entityTypeId');
 }
 
+function setCommandButtonsEnabled(areEnabled) {
+    if (areEnabled)
+        $('button.btn-command').removeAttr('disabled');
+    else
+        $('button.btn-command').attr('disabled', 'disabled');
+}
+
 function rebuildUI() {
     var container = $('#container').empty();
 
@@ -30,22 +37,41 @@ function rebuildUI() {
         var commands = $('<div></div>').addClass('btn-group');
         for (var commandKey in availableCommands[ooiType]) {
             var command = availableCommands[ooiType][commandKey];
-            commands.append($('<button></button>')
-                .addClass('btn')
-                .addClass('btn-default')
-                .text(commandKey));
+            var commandBtn = $('<button></button>')
+                .addClass('btn btn-default btn-command')
+                .attr('data-command', commandKey)
+                .text(command.displayName || commandKey)
+                .prepend($('<i></i>').addClass('ico-cmd-' + commandKey))
+                .click(function () {
+                    $(this).trigger('command', {
+                        'command': command,
+                        'oois': group
+                    });
+
+                    if (command.targetType) {
+                        $(this).addClass('btn-command-active');
+
+                        setCommandButtonsEnabled(false);
+
+                        $('.help', $(this).closest('fieldset'))// TODO: not working properly.. yet.
+                            .text('Now please select a point on the map.');
+                    }
+                });
+
+            commands.append(commandBtn);
         }
 
         container.append($('<fieldset></fieldset>')
             .attr('data-type', group.entityTypeId)
             .append($('<legend></legend>').text(displayName))
             .append(listing)
-            .append(commands));
+            .append(commands)
+            .append('<div></div>').addClass('help'));
     }
 }
 
 function isCommandable(ooi) {
-    return availableCommands.hasOwnProperty(ooi.entityTypeId);
+    return ooi.entityTypeId in availableCommands;
 }
 
 /**

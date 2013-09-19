@@ -20,6 +20,7 @@
     <InputEndpoint name="point_in" type="text" label="Coordinates" description="" friendcode="geo-lonlat" />
 
     <OutputEndpoint name="oois_out" type="text" label="OOIs" description="OOIs with commands" friendcode="oois" />
+    <OutputEndpoint name="commands" type="text" label="Commands" description="Commands" friendcode="commands" />
   </Platform.Wiring>
 
   <Platform.Link>

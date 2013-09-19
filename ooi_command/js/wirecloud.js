@@ -6,6 +6,8 @@
 $(function () {
     if (typeof MashupPlatform === 'undefined') {
         console.warn('Wirecloud environment not detected.');
+
+        $('body').on('command', function(event, data) { console.log(data); });
     } else {
         MashupPlatform.wiring.registerCallback('oois_in', function (data) {
             setObjectsOfInterest(JSON.parse(data));

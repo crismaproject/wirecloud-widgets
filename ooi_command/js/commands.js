@@ -1,6 +1,8 @@
 var availableCommands = {
     7: {
-        'goto': { target: 'point' },
-        'treat': { target: 'point' }
+        'treat': {
+            displayName: 'Treat',
+            targetType: 'point'
+        }
     }
 };
