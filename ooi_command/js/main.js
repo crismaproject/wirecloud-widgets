@@ -1,5 +1,6 @@
 var entityTypes = { };
 var objectsOfInterest = { };
+var pendingCommand = null;
 
 function setObjectsOfInterest(oois) {
     objectsOfInterest = group(only(oois, isCommandable), 'entityTypeId');
@@ -52,9 +53,8 @@ function rebuildUI() {
                         $(this).addClass('btn-command-active');
 
                         setCommandButtonsEnabled(false);
-
-                        $('.help', $(this).closest('fieldset'))// TODO: not working properly.. yet.
-                            .text('Now please select a point on the map.');
+                        setHelp(this, 'Please select a point on the map.');
+                        pendingCommand = command;
                     }
                 });
 
@@ -66,8 +66,15 @@ function rebuildUI() {
             .append($('<legend></legend>').text(displayName))
             .append(listing)
             .append(commands)
-            .append('<div></div>').addClass('help'));
+            .append($('<div></div>').addClass('help')));
     }
+}
+
+function setHelp(scope, text) {
+    var helpContainer = $('.help', $(scope).closest('fieldset'))
+        .text(text)
+        .focus();
+    if (!helpContainer.is(':visible')) helpContainer.show();
 }
 
 function isCommandable(ooi) {
@@ -107,3 +114,14 @@ function only(array, predicate) {
             newArray.push(array[i]);
     return newArray;
 }
+
+$(function () {
+    $(document).keypress(function (eventData) {
+        console.log(eventData);
+        if (pendingCommand && eventData.keyCode == 27) {
+            pendingCommand = null;
+            $('button.btn-command-active').removeClass('btn-command-active');
+            setCommandButtonsEnabled(true);
+        }
+    });
+});

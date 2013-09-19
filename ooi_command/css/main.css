@@ -1,9 +1,21 @@
 button[disabled].btn-command-active {
     opacity: 1;
-    border-color: #ccc;
-    background-color: rgb(242, 233, 234);
-    -webkit-box-shadow: inset 4px 4px 7px -1px rgba(159, 20, 20, .3);
-    box-shadow: inset 4px 4px 7px -1px rgba(159, 20, 20, .3);
+    border-color: #000;
+    -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, .5);
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, .5);
+}
+
+div.help {
+    display: none;
+    font-weight: bold;
+    background: url("../img/action-needed.png") no-repeat 2pt 2pt;
+    padding-left: 28px;
+    margin: 1ex 2ex 0;
+    min-height: 32px;
+    -webkit-box-shadow: 4px 4px 7px -1px rgba(0, 0, 0, .25);
+    box-shadow: 4px 4px 7px -1px rgba(0, 0, 0, .25);
+    border-radius: 3pt;
+    border: 1pt solid #cccccc;
 }
 
 /* true for all button icons: */
