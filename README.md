@@ -35,6 +35,11 @@ By convention, you should then change the extension from `.zip` to `.wgt`.
 
 If you want to contribute other ways of building/bundling widgets (or documentation), feel free to do so and send me a push request.
 
+## Branches
+
+* **master** — not exactly stable yet, but not as bleeding edge as *v0.5* :)
+* **v0.5** — this is some sort of staging area for the *next* version and most commits are likely to not work completely.
+
 ## Contact
 
 Most widgets are currently maintained by Manuel Warum from the Austrian Institute of Technology. If you need assistance,
