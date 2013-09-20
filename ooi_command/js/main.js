@@ -71,16 +71,20 @@ function rebuildUI() {
 
         var commands = $('<div></div>').addClass('btn-group');
         for (var commandKey in availableCommands[ooiType]) {
-            var command = availableCommands[ooiType][commandKey];
             var commandBtn = $('<button></button>')
                 .addClass('btn btn-default btn-command')
                 .attr('data-command', commandKey)
-                .text(command.displayName || commandKey)
+                .text(availableCommands[ooiType][commandKey].displayName || commandKey)
                 .prepend($('<i></i>').addClass('ico-cmd-' + commandKey))
                 .click(function () {
+                    // reinitializing variables locally from the DOM to avoid problems with closure
+                    var ooiType = $(this).closest('fieldset[data-type]').attr('data-type');
+                    var commandKey = $(this).attr('data-command');
+                    var command = availableCommands[ooiType][commandKey];
+
                     $(this).trigger('command', {
                         'command': command,
-                        'oois': group
+                        'oois': objectsOfInterest[ooiType]
                     });
 
                     if (command.targetType) {
@@ -96,7 +100,7 @@ function rebuildUI() {
         }
 
         container.append($('<fieldset></fieldset>')
-            .attr('data-type', group.entityTypeId)
+            .attr('data-type', ooiType)
             .append($('<legend></legend>').text(displayName))
             .append(listing)
             .append(commands)
