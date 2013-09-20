@@ -11,7 +11,6 @@ var pendingCommand = null;
  */
 function setObjectsOfInterest(oois) {
     objectsOfInterest = oois.only(isCommandable).group('entityTypeId');
-    //objectsOfInterest = group(only(oois, isCommandable), 'entityTypeId');
     rebuildUI();
 }
 
@@ -22,7 +21,6 @@ function setObjectsOfInterest(oois) {
  */
 function setObjectsOfInterestTypes(types) {
     entityTypes = types.group('entityTypeId');
-    //entityTypes = group(types, 'entityTypeId');
 }
 
 /**
