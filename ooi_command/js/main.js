@@ -18,6 +18,13 @@ function setCommandButtonsEnabled(areEnabled) {
         $('button.btn-command').attr('disabled', 'disabled');
 }
 
+function cancelPendingCommand() {
+    pendingCommand = null;
+    $('button.btn-command-active').removeClass('btn-command-active');
+    setCommandButtonsEnabled(true);
+    $('.help:visible').hide();
+}
+
 function rebuildUI() {
     var container = $('#container').empty();
 
@@ -116,12 +123,8 @@ function only(array, predicate) {
 }
 
 $(function () {
-    $(document).keypress(function (eventData) {
-        console.log(eventData);
-        if (pendingCommand && eventData.keyCode == 27) {
-            pendingCommand = null;
-            $('button.btn-command-active').removeClass('btn-command-active');
-            setCommandButtonsEnabled(true);
-        }
+    $(document).keyup(function (eventData) {
+        if (pendingCommand && eventData.keyCode == 27)
+            cancelPendingCommand();
     });
 });
