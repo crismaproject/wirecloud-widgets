@@ -1,9 +1,5 @@
 /** @private */
-var entityTypes = { };
-/** @private */
-var objectsOfInterest = { };
-/** @private */
-var pendingCommand = null;
+var entityTypes = { }, objectsOfInterest = { }, pendingCommand = null;
 
 /**
  * Sets which Objects of Interest are displayed in the UI.
@@ -80,17 +76,14 @@ function rebuildUI() {
                     var commandKey = $(this).attr('data-command');
                     var command = availableCommands[ooiType][commandKey];
 
-                    $(this).trigger('command', {
-                        'command': command,
-                        'oois': objectsOfInterest[ooiType]
-                    });
+                    pendingCommand = $.extend({ entityTypeId: ooiType, command: commandKey}, command);
 
                     if (command.targetType) {
                         $(this).addClass('btn-command-active');
-
                         setCommandButtonsEnabled(false);
                         setHelp(this, 'Please select a point on the map.');
-                        pendingCommand = command;
+                    } else {
+                        executePendingWith(null);
                     }
                 });
 
@@ -125,6 +118,28 @@ function setHelp(scope, text) {
  */
 function isCommandable(ooi) {
     return ooi.entityTypeId in availableCommands;
+}
+
+function executeCommand(command, data) {
+    var executedCommand = { command: command, param: data };
+    var group = objectsOfInterest[command.entityTypeId];
+    var affected = [ ];
+
+    for (var i = 0; i < group.length; i++) {
+        group[i].command = executedCommand;
+        affected.push(group[i].entityId);
+    }
+
+    $('body').trigger('command', $.extend({ affected: affected }, executedCommand));
+}
+
+function executePendingWith(data) {
+    if (!pendingCommand) return;
+
+    // TODO: check if data is valid, then..
+
+    executeCommand(pendingCommand, data);
+    cancelPendingCommand();
 }
 
 /**
