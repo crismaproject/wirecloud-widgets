@@ -133,10 +133,28 @@ function executeCommand(command, data) {
     $('body').trigger('command', $.extend({ affected: affected }, executedCommand));
 }
 
-function executePendingWith(data) {
-    if (!pendingCommand) return;
+/**
+ * Executes a pending command with the given argument.
+ * @param data the command's argument, if it requires any.
+ * @param {object?} options
+ * @param {boolean?} options.failSilently if false, any failed validation steps will raise an exception; otherwise no
+ * exceptions will be raised.
+ */
+function executePendingWith(data, options) {
+    var defaultOptions = {
+        failSilently: false
+    };
 
-    // TODO: check if data is valid, then..
+    options = typeof options === 'undefined' ? defaultOptions : $.extend(defaultOptions, options);
+    if (!pendingCommand) {
+        if (!options.failSilently) throw 'No command to execute.';
+        return;
+    }
+
+    if (!options.failSilently && pendingCommand.targetType == 'point' && (typeof data !== 'array' || data.length < 2))
+        throw 'Command expects a point as an argument (array with two components).';
+
+    // TODO: further checks if data is valid, then..
 
     executeCommand(pendingCommand, data);
     cancelPendingCommand();

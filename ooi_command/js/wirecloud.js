@@ -18,7 +18,7 @@ $(function () {
         });
 
         MashupPlatform.wiring.registerCallback('point_in', function (data) {
-            executePendingWith(JSON.parse(data));
+            executePendingWith(JSON.parse(data), { failSilently: true });
         });
 
         $('body').on('command', function(event, data) {
