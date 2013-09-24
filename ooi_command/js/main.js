@@ -49,26 +49,26 @@ function cancelPendingCommand() {
 function rebuildUI() {
     var container = $('#container').empty();
 
-    for (var ooiType in objectsOfInterest) {
-        var group = objectsOfInterest[ooiType];
-        var displayName = ooiType in entityTypes ? entityTypes[ooiType][0].entityTypeName : 'OOI type #' + ooiType;
-
-        var listing = $('<ul></ul>')
-            .addClass('list-unstyled');
-        for (var i = 0; i < group.length; i++) {
-            var ooi = group[i];
-            var ooiName = ooi.hasOwnProperty('entityName') && ooi.entityName ? ooi.entityName : 'OOI #' + ooi.entityId;
-            listing.append($('<li></li>')
-                .attr('data-id', ooi.entityId)
-                .text(ooiName));
+    function createFieldsetFor(groupKey, displayName) {
+        var group = objectsOfInterest[groupKey];
+        if (group) {
+            var listing = $('<ul></ul>')
+                .addClass('list-unstyled');
+            for (var i = 0; i < group.length; i++) {
+                var ooi = group[i];
+                var ooiName = ooi.hasOwnProperty('entityName') && ooi.entityName ? ooi.entityName : 'OOI #' + ooi.entityId;
+                listing.append($('<li></li>')
+                    .attr('data-id', ooi.entityId)
+                    .text(ooiName));
+            }
         }
 
         var commands = $('<div></div>').addClass('btn-group');
-        for (var commandKey in availableCommands[ooiType]) {
+        for (var commandKey in availableCommands[groupKey]) {
             var commandBtn = $('<button></button>')
                 .addClass('btn btn-default btn-command')
                 .attr('data-command', commandKey)
-                .text(availableCommands[ooiType][commandKey].displayName || commandKey)
+                .text(availableCommands[groupKey][commandKey].displayName || commandKey)
                 .prepend($('<i></i>').addClass('ico-cmd-' + commandKey))
                 .click(function () {
                     // reinitializing variables locally from the DOM to avoid problems with closure
@@ -90,12 +90,25 @@ function rebuildUI() {
             commands.append(commandBtn);
         }
 
-        container.append($('<fieldset></fieldset>')
-            .attr('data-type', ooiType)
-            .append($('<legend></legend>').text(displayName))
+        var fieldset = $('<fieldset></fieldset>')
+            .attr('data-type', groupKey)
             .append(listing)
             .append(commands)
-            .append($('<div></div>').addClass('help')));
+            .append($('<div></div>').addClass('help'));
+
+        if (displayName)
+            fieldset.append($('<legend></legend>').text(displayName));
+
+        return fieldset;
+    }
+
+    if ('*' in availableCommands)
+        container.append(createFieldsetFor('*'));
+
+    for (var ooiType in objectsOfInterest) {
+        var displayName = entityTypes[ooiType] && entityTypes[ooiType][0] && entityTypes[ooiType][0]['entityTypeName'] ?
+            entityTypes[ooiType][0]['entityTypeName'] : '';
+        container.append(createFieldsetFor(ooiType, displayName));
     }
 }
 
@@ -125,10 +138,11 @@ function executeCommand(command, data) {
     var group = objectsOfInterest[command.entityTypeId];
     var affected = [ ];
 
-    for (var i = 0; i < group.length; i++) {
-        group[i].command = executedCommand;
-        affected.push(group[i].entityId);
-    }
+    if (group)
+        for (var i = 0; i < group.length; i++) {
+            group[i].command = executedCommand;
+            affected.push(group[i].entityId);
+        }
 
     $('body').trigger('command', $.extend({ affected: affected }, executedCommand));
 }
@@ -151,7 +165,7 @@ function executePendingWith(data, options) {
         return;
     }
 
-    if (!options.failSilently && pendingCommand.targetType == 'point' && (typeof data !== 'array' || data.length < 2))
+    if (!options.failSilently && pendingCommand.targetType == 'point' && data.length < 2)
         throw 'Command expects a point as an argument (array with two components).';
 
     // TODO: further checks if data is valid, then..
@@ -205,3 +219,5 @@ $(function () {
             cancelPendingCommand();
     });
 });
+
+$(rebuildUI);

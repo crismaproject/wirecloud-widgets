@@ -18,6 +18,19 @@ div.help {
     border: 1pt solid #cccccc;
 }
 
+#container > fieldset {
+    border-top: 1pt solid #ccc;
+    padding-top: 1ex;
+    margin-top: 1ex;
+    padding-left: 2pt;
+}
+
+#container > fieldset:first-child {
+    border-top: 0 none;
+    padding-top: 0;
+    margin-top: 0;
+}
+
 /* true for all button icons: */
 .ico-cmd-treat {
     display: inline-block;
