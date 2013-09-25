@@ -102,7 +102,7 @@ GroupManager.prototype.ungroupSelected = function () {
     var scope = $('tbody', this.container).find('tr[data-index].selected');
     var ungroup = [ ];
     for (var i = 0; i < scope.length; i++) {
-        var index = parseInt($(scope).attr('data-index'));
+        var index = parseInt($(scope[i]).attr('data-index'));
         if (this.oois[index].length > 1)
             ungroup.push(index);
     }
