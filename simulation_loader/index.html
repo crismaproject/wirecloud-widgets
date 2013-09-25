@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simulation loader</title>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js" type="text/javascript"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css"></script>
+    <script src="js/wirecloud.js" type="text/javascript"></script>
+</head>
+<body>
+
+<div id="simulationDetails">
+    <div class="row">
+        <div class="col-sm-4"><strong>Simulation name:</strong></div>
+        <div class="col-sm-6"><select id="simulation" name="simulation" class="form-control" placeholder="Pick a simulation"></select></div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4"><strong>Date/time:</strong></div>
+        <div class="col-sm-6">&hellip;</div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4"><strong>Description:</strong></div>
+        <div class="col-sm-6">&hellip;</div>
+    </div>
+
+    <hr />
+
+    <div class="row">
+        <div class="btn-group col-sm-offset-4 col-sm-8">
+            <button class="btn btn-primary" id="btn-load"><img src="img/load.png" alt=""> Load simulation</button>
+            <button class="btn btn-default" id="btn-refresh"><img src="img/refresh.png" alt=""> Reload</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

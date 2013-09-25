@@ -1,0 +1,7 @@
+#simulationDetails {
+    margin: 2em 2em 0;
+    padding: 4pt;
+    border-radius: 3pt;
+    box-shadow: 2pt 2pt 4pt 0 rgba(0, 0, 0, .125);
+    border: 1px solid #cccccc;
+}
