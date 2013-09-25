@@ -1,4 +1,4 @@
-/*global table,MashupPlatform*/
+/*global groupManager,MashupPlatform*/
 
 /*
  * Iff the Wirecloud environment is available, register endpoints.
@@ -9,27 +9,14 @@ $(function () {
     };
 
     MashupPlatform.wiring.registerCallback('oois_in', function (data) {
-        var oois = JSON.parse(data);
-
-        table.clear();
-        for (var i = 0; i < oois.length; i++)
-            table.addRow(oois[i]);
+        groupManager.setOOIs(JSON.parse(data));
     });
 
     MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {
-        var oois = JSON.parse(data);
-        table.unselectAll();
-        for (var i = 0; i < oois.length; i++)
-            table.select(oois[i].entityId);
+        // TODO
     });
 
     MashupPlatform.wiring.registerCallback('types', function (data) {
-        var ooiTypes = JSON.parse(data);
-        var typeDisplayNames = { };
-        for (var i = 0; i < ooiTypes.length; i++) {
-            var ooiType = ooiTypes[i];
-            typeDisplayNames[ooiType.entityTypeId] = ooiType.entityTypeName;
-        }
-        table.display = { 'entityTypeId': typeDisplayNames };
+        groupManager.setOOITypes(JSON.parse(data));
     });
 });

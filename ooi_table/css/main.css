@@ -3,6 +3,11 @@ table {
     font-size: 11pt;
 }
 
+tr.grouped td:first-child {
+    padding-left: 2em;
+    font-size: 90%;
+}
+
 tr.selected {
     background-color: #e2edff;
 }

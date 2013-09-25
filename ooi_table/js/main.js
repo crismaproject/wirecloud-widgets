@@ -1,143 +1,153 @@
-window.ooi_wsr_uri = 'http://localhost/api';
-
-function OOITable(container, columns) {
+var GroupManager = function (container) {
     /** @private */
     this.container = container;
 
     /** @private */
-    this.columns = [ ];
+    this.oois = [ ];
 
     /** @private */
-    this.display = { };
+    this.ooiTypes = { };
+}
 
-    /**
-     * @param selected an array of selected rows
-     */
-    this.onSelectionChanged = null;
+/** @private */
+GroupManager.prototype.rebuildUI = function () {
+    var container = $('tbody', this.container);
+    container.empty();
 
-    if (!$('tbody', container).length) $(container).prepend($('<tbody></tbody>'));
-    if (!$('thead', container).length) $(container).prepend($('<thead></thead>'));
-    if (!$('thead tr', container).length) $('thead', container).append($('<tr></tr>'));
+    for (var i = 0; i < this.oois.length; i++) {
+        var currentGroup = this.oois[i];
+        var row = $('<tr></tr>')
+                .attr('data-index', i);
+        container.append(row);
+        if (currentGroup.length > 1) {
+            row
+                .append($('<td></td>').text('Group'))
+                .append($('<td></td>').text(currentGroup.length + ' entities'));
 
-    for (var key in columns) {
-        $('thead tr', container).append($('<th></th>').text(key));
-        this.columns.push(columns[key]);
+            for (var j = 0; j < currentGroup.length; j++) {
+                container.append($('<tr></tr>')
+                    .addClass('grouped')
+                    .attr('data-parent-id', i)
+                    .append($('<td></td>').text(currentGroup[j].entityName))
+                    .append($('<td></td>').text(this.ooiTypes[currentGroup[j].entityTypeId] ? this.ooiTypes[currentGroup[j].entityTypeId].entityTypeName : '(' + currentGroup[0].entityTypeId + ')'))
+                    .click(function () {
+                        var parentId = $(this).attr('data-parent-id');
+                        var parent = $('tr[data-index='+parentId+']', container).click();
+                    }));
+            }
+        } else {
+            row
+                .append($('<td></td>').text(currentGroup[0].entityName))
+                .append($('<td></td>').text(this.ooiTypes[currentGroup[0].entityTypeId] ? this.ooiTypes[currentGroup[0].entityTypeId].entityTypeName : '(' + currentGroup[0].entityTypeId + ')'));
+        }
+
+        row.click(function () {
+            var clickedRow = $(this);
+            var rowOoiIndex = $(this).attr('data-index');
+            if (clickedRow.is('.selected')) {
+                clickedRow.removeClass('selected');
+                $('tr[data-parent-id')
+            } else {
+                clickedRow.addClass('selected');
+            }
+        });
     }
 }
 
+GroupManager.prototype.setOOIs = function (oois) {
+    this.oois = [ ];
+
+    for (var i = 0; i < oois.length; i++)
+        this.oois.push([ oois[i] ]);
+
+    this.rebuildUI();
+}
+
+GroupManager.prototype.setOOITypes = function (ooiTypes) {
+    this.ooiTypes = ooiTypes.group('entityTypeId');
+}
+
+GroupManager.prototype.getSelected = function () {
+    var selected = [ ];
+    var scope = $('tbody', this.container).find('tr[data-index].selected');
+    for (var i = 0; i < scope.length; i++) {
+        var index = parseInt($(scope[i]).attr('data-index'));
+        selected = selected.concat(this.oois[index].flatten());
+    }
+    return selected;
+}
+
+GroupManager.prototype.setSelected = function (selected) {
+}
+
+GroupManager.prototype.groupSelected = function () {
+    var newGroup = [ ];
+    var remove = [ ];
+    var scope = $('tbody', this.container).find('tr[data-index].selected');
+    for (var i = 0; i < scope.length; i++) {
+        var index = parseInt($(scope[i]).attr('data-index'));
+        newGroup = newGroup.concat(this.oois[index].flatten());
+        remove.push(index);
+    }
+
+    if (!remove.length || !newGroup.length) return;
+
+    for (var i = remove.length - 1; i >= 0; i--)
+        this.oois.splice(remove[i], 1);
+    this.oois.insertAt(remove[0], newGroup);
+    this.rebuildUI();
+}
+
+GroupManager.prototype.ungroupSelected = function () {
+    var scope = $('tbody', this.container).find('tr[data-index].selected');
+    var ungroup = [ ];
+    for (var i = 0; i < scope.length; i++) {
+        var index = parseInt($(scope).attr('data-index'));
+        if (this.oois[index].length > 1)
+            ungroup.push(index);
+    }
+
+    for (var i = this.oois.length - 1; i >= 0; i--)
+        if (ungroup.indexOf(i) >= 0) {
+            var original = this.oois.splice(i, 1)[0];
+            for (var j = 0; j < original.length; j++)
+                this.oois.insertAt(i + j, [ original[j] ]);
+        }
+
+    this.rebuildUI();
+}
+
 /**
+ * Groups the provided array of objects into an object where the object's properties are values extracted
+ * from the keyProperty property of array elements, and each keyed entry in the object is an array of
+ * elements sharing the same key.
  *
- * @param row the row to add
- * @param {string} row.entityId the OOI's unique identifier
- * @param {string} row.entityTypeId the OOI's type
+ * @param {string} keyProperty
+ * @returns {{}}
  */
-OOITable.prototype.addRow = function (row) {
-    var me = this;
-    var tr = $('<tr></tr>')
-        .attr('data-row-id', row.entityId)
-        .click(function () {
-            if ($(this).is('.selected'))
-                $(this).removeClass('selected');
-            else
-                $(this).addClass('selected');
-            me.updateSelectionCount();
-            if (me.onSelectionChanged)
-                me.onSelectionChanged(me.getSelection());
-        });
+Array.prototype.group = function (keyProperty) {
+    var groups = { };
 
-    for (var i = 0; i < this.columns.length; i++) {
-        var column = this.columns[i];
-        var value = row[column];
-        if (typeof value !== 'undefined' && this.display.hasOwnProperty(column) && this.display[column].hasOwnProperty(value))
-            value = this.display[column][value];
-        tr.append($('<td></td>').text(value));
+    for (var i = 0; i < this.length; i++) {
+        var obj = this[i];
+        if (!obj.hasOwnProperty(keyProperty)) continue;
+        var key = obj[keyProperty];
+        if (!(key in groups))
+            groups[key] = [ obj ];
+        else
+            groups[key].push(obj);
     }
 
-    tr.attr('data-orig', JSON.stringify(row));
-    $('tbody', this.container).append(tr);
+    return groups;
 };
 
-OOITable.prototype.clear = function () {
-    $('tbody', this.container).empty();
-    this.updateSelectionCount();
-};
-
-OOITable.prototype.unselectAll = function () {
-    $('tr.selected', this.container).removeClass('selected');
-    this.updateSelectionCount();
-};
-
-OOITable.prototype.selectAll = function () {
-    $('tr', this.container).not('.selected').addClass('selected');
-    this.updateSelectionCount();
-};
-
-OOITable.prototype.select = function (id) {
-    $('tr[data-row-id="' + id + '"]', this.container).not('.selected').addClass('selected');
-    this.updateSelectionCount();
-};
-
-OOITable.prototype.updateSelectionCount = function () {
-    $('.selection-count').text($('tr[data-row-id].selected').length);
-};
-
-OOITable.prototype.getSelection = function () {
-    var selection = [];
-    $('tr.selected[data-orig]', this.container).each(function (index, value) {
-        var ooi = JSON.parse($(value).attr('data-orig'));
-        selection.push(ooi);
-    });
-    return selection;
-};
-
-function GroupManager() {
-    this.groups = {};
-
-    this.dirty = false;
-
-    if (supportsLocalStorage()) { // HTML5 local storage available
-        this.groups = localStorage.getItem('groups');
-        var groupManager = this;
-        $(window).unload(function () {
-            if (groupManager.dirty)
-                localStorage.setItem('groups', groupManager.groups);
-        });
-    }
+Array.prototype.flatten = function () {
+    var items = [ ];
+    for (var i = 0; i < this.length; i++)
+        items = items.concat(this[i]);
+    return items;
 }
 
-GroupManager.prototype.get = function (groupId) {
-    return groupId in this.groups ? this.groups[groupId] : [];
+Array.prototype.insertAt = function (index, item) {
+    this.splice(index, 0, item);
 };
-
-GroupManager.prototype.set = function (groupId, items) {
-    this.groups[groupId] = items;
-    this.dirty = true;
-};
-
-GroupManager.prototype.addTo = function (groupId, item) {
-    if (!this.groups.hasOwnProperty(groupId)) this.groups[groupId] = [ item ];
-    else if (this.groups[groupId].indexOf(item) != -1) return;
-    else this.groups.push(item);
-    this.dirty = true;
-};
-
-GroupManager.prototype.removeFrom = function (groupId, item) {
-    if (!this.groups.hasOwnProperty(groupId)) return;
-    var index = this.groups[groupId].indexOf(item);
-    if (index == -1) return;
-    this.groups[groupId].splice(index, 1);
-    if (this.groups[groupId].length == 0) delete this.groups[groupId];
-    this.dirty = true;
-};
-
-/**
- * Determines if HTML5 local storage is available.
- * @returns {boolean}
- */
-function supportsLocalStorage() {
-    try {
-        return 'localStorage' in window && window['localStorage'] !== null;
-    } catch (e) {
-        return false;
-    }
-}

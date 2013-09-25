@@ -11,18 +11,32 @@
 </head>
 <body>
 
-<table id="ooi-table" class="table table-condensed sortable">
+<table id="ooiContainer" class="table table-condensed">
+    <thead>
+    <tr>
+        <th>Entity</th>
+        <th>Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td colspan="2">
+            <div class="btn-group">
+                <button class="btn btn-default btn-xs" id="btn-grp-oois">Group</button>
+                <button class="btn btn-default btn-xs" id="btn-ugrp-oois">Ungroup</button>
+            </div>
+        </td>
+    </tr>
+    </tfoot>
 </table>
-<div class="text-muted text-right">
-    <span class="selection-count">0</span> item(s) selected.
-</div>
+
 
 <script type="text/javascript">
-    var table = new OOITable('table#ooi-table', {
-        'ID': 'entityId',
-        'Entity': 'entityName',
-        'Type': 'entityTypeId'
-    });
+    var groupManager = new GroupManager('#ooiContainer');
+    $('#btn-grp-oois').click(function () { groupManager.groupSelected(); });
+    $('#btn-ugrp-oois').click(function () { groupManager.ungroupSelected(); });
 </script>
 
 </body>
