@@ -5,3 +5,17 @@
     box-shadow: 2pt 2pt 4pt 0 rgba(0, 0, 0, .125);
     border: 1px solid #cccccc;
 }
+
+#btn-load {
+    background-image: url('../img/load.png');
+    background-position: 6pt center;
+    background-repeat: no-repeat;
+    padding-left: 19pt;
+}
+
+#btn-refresh {
+    background-image: url('../img/refresh.png');
+    background-position: 6pt center;
+    background-repeat: no-repeat;
+    padding-left: 19pt;
+}
