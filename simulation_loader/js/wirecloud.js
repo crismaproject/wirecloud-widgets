@@ -8,16 +8,28 @@ $(function () {
         console.warn('Wirecloud environment not detected.');
     } else {
         var applyPreferences = function () {
-//            toConsole = MashupPlatform.prefs.get('to_console');
+            window.ooiWsrApiUri = MashupPlatform.prefs.get('api');
         };
 
         MashupPlatform.prefs.registerCallback(applyPreferences);
         applyPreferences();
 
-        $('#btn-load').click(function () {
-        });
+        var jqueryGet = $.fn.get;
+        $.fn.get = function (uri, callback, type) {
+            var proxyUri = MashupPlatform.http.buildProxyURL(uri);
+            return jqueryGet(proxyUri, callback, type);
+        };
 
-        $('#btn-refresh').click(function () {
+        $('#btn-load').click(function () {
+            var simulationId = $('select#simulationId option:selected').val();
+            if (!simulationId) return;
+            // ALWAYS load the most recent simulation data from the server on load
+            $.get(window.ooiWsrApiUri + '/Simulation/' + simulationId, function (simulation) {
+                $('#simulationLoadedNotification').fadeIn();
+                $('button#btn-load,button#btn-refresh,select#simulationId').attr('disabled', 'disabled');
+                MashupPlatform.wiring.pushEvent('simulation', JSON.stringify(simulation));
+            }, 'json');
         });
     }
+
 });

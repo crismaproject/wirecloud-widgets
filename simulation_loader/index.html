@@ -6,33 +6,40 @@
     <link href="css/main.css" rel="stylesheet">
     <script src="//code.jquery.com/jquery-2.0.3.min.js" type="text/javascript"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css"></script>
-    <script src="js/main.js" type="text/javascript"></script>
     <script src="js/wirecloud.js" type="text/javascript"></script>
+    <script src="js/main.js" type="text/javascript"></script>
 </head>
 <body>
 
 <div id="simulationDetails">
     <div class="row">
         <div class="col-sm-4"><strong>Simulation name:</strong></div>
-        <div class="col-sm-6"><select id="simulationId" name="simulationId" class="form-control" placeholder="Pick a simulation"></select></div>
+        <div class="col-sm-8"><select id="simulationId" name="simulationId" class="form-control" placeholder="Pick a simulation"></select></div>
     </div>
 
-
     <div class="row">
-        <div id="simulationDescription" class="col-sm-offset-4 col-sm-6"></div>
+        <div id="simulationDescription" class="col-sm-offset-4 col-sm-8"></div>
     </div>
 
     <div class="row">
         <div class="col-sm-4"><strong>Date/time:</strong></div>
-        <div class="col-sm-6" id="simulationDateTime"></div>
+        <div class="col-sm-8" id="simulationDateTime"></div>
     </div>
 
     <hr />
 
+    <div class="row" style="display: none" id="simulationLoadedNotification">
+        <p class="col-sm-offset-4 col-sm-8 text-primary">
+            The simulation has been loaded.
+        </p>
+    </div>
+
     <div class="row">
         <div class="btn-group col-sm-offset-4 col-sm-8">
-            <button class="btn btn-primary" id="btn-load">Load simulation</button>
-            <button class="btn btn-default" id="btn-refresh">Reload</button>
+            <button class="btn btn-primary" id="btn-load"
+                    title="Loads the selected simulation">Load simulation</button>
+            <button class="btn btn-default" id="btn-refresh"
+                    title="Reloads the list of available simulations from the server">Reload</button>
         </div>
     </div>
 </div>
