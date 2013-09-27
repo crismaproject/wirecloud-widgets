@@ -51,6 +51,15 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         }
     });
 
+    var selectControl = new OpenLayers.Control.SelectFeature([geometryLayer], { clickout: true });
+    selectControl.onSelect = function(e) {
+        if (e.layer == geometryLayer) mapClickEvent(e, { area: e.attributes });
+        else if (e.layer.name == 'OOI-WFS-Entities') mapClickEvent(e, { ooi: e.attributes });
+        else mapClickEvent(e);
+    }
+    map.addControl(selectControl);
+    selectControl.activate();
+
     /** @private */
     this.map = map;
 
@@ -123,14 +132,8 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
 
             this.map.addLayer(wfsLayer);
 
-            var selectControl = new OpenLayers.Control.SelectFeature(wfsLayer, {
-                clickout: true,
-                onSelect: function (feature) {
-                    fireEvent('poiClicked', { clicked: feature.data });
-                }
-            });
-
-            this.map.addControl(selectControl);
+            selectControl.deactivate();
+            selectControl.setLayer([geometryLayer, wfsLayer]);
             selectControl.activate();
         }
     };
@@ -187,10 +190,17 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         geometryLayer.redraw();
     };
 
+    /**
+     * @param {object} area
+     * @param {string} area.id
+     * @param {Number} area.lat
+     * @param {Number} area.lon
+     * @param {string?} area.name
+     */
     this.createArea = function (area) {
         var center = new OpenLayers.Geometry.Point(area.lon, area.lat).transform(EPSG_4326_PROJECTION, mapProjection());
         var radius = 150; // WARNING: This is an arbitrary constant
-        var steps = 29;   // WARNING: This is an arbitrary constant
+        var steps = 25;   // WARNING: This is an arbitrary constant
         var stept = 2 * Math.PI / steps;
         var points = [ ];
         for (var i = 0; i < steps; i++)
@@ -205,7 +215,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
             labelOutlineWidth: 2
         }));
         geometryLayer.addFeatures(vector);
-        return vector;
     };
 
     /**
@@ -245,9 +254,11 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @private
      */
     function mapClickEvent(ev) {
-        var opx = map.getLonLatFromViewPortPx(ev.xy);
+        console.log(ev);
+        var opx = typeof ev.xy !== 'undefined' ? map.getLonLatFromViewPortPx(ev.xy) : ev.geometry.getCentroid();
         var clickCenter = opx.transform(mapProjection(), EPSG_4326_PROJECTION);
-        var coordData = { 'lat': clickCenter.lat, 'lon': clickCenter.lon };
+        var coordData = { 'lat': clickCenter.lat || clickCenter.x, 'lon': clickCenter.lon || clickCenter.y };
+        if (arguments[1]) coordData = $.extend(arguments[1], coordData);
         fireEvent('mapClicked', coordData);
     }
 

@@ -21,7 +21,6 @@ $(function () {
         $('#map')
             .bind('mapFocusChanged', logEvent)
             .bind('mapClicked', logEvent)
-            .bind('poiClicked', logEvent)
             .bind('featureAdded', logEvent);
     } else if (typeof map === 'undefined') {
         console.warn('"map" variable is not defined.');
@@ -53,6 +52,7 @@ $(function () {
 
         MashupPlatform.wiring.registerCallback('areas_created_in', function (area) {
             var areaData = JSON.parse(area);
+            map.createArea(areaData);
         });
 
         $('#map')
@@ -60,17 +60,15 @@ $(function () {
                 MashupPlatform.wiring.pushEvent('center_point', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));
             })
             .bind('mapClicked', function (event) {
-                MashupPlatform.wiring.pushEvent('pos_click', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));
-            })
-            .bind('poiClicked', function (event) {
+                MashupPlatform.wiring.pushEvent('clicked', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));
+
+                if (!event.originalEvent.detail.ooi) return;
                 // inconsistent property name casing between WFS and OOI-WSR, so let's just take the ID
                 // and look it up in our table
-                var clickedOoiId = event.originalEvent.detail.clicked.EntityId; // NOTE: WFS uses 'EntityId', OOI-WSR uses 'entityId'
+                var clickedOoiId = event.originalEvent.detail.ooi.EntityId; // NOTE: WFS uses 'EntityId', OOI-WSR uses 'entityId'
                 if (!entitiesLookupTable.hasOwnProperty(clickedOoiId))
                     throw 'Entities table (received through oois_in) is inconsistent with WFS data!';
                 var clickedOoi = entitiesLookupTable[clickedOoiId];
-
-                MashupPlatform.wiring.pushEvent('ooi_click', JSON.stringify(clickedOoi));
 
                 var selectedIndex = -1;
                 for (var i = 0; i < selected.length && selectedIndex == -1; i++)
