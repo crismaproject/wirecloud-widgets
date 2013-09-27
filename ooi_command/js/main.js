@@ -1,6 +1,8 @@
 /** @private */
 var entityTypes = { }, objectsOfInterest = { }, pendingCommand = null;
 
+var sequence = 1;
+
 /**
  * Sets which Objects of Interest are displayed in the UI.
  * @param {Array} oois
@@ -145,6 +147,13 @@ function executeCommand(command, data) {
         }
 
     $('body').trigger('command', $.extend({ affected: affected }, executedCommand));
+
+    if (command.hasOwnProperty('spawnArea'))
+        $('body').trigger('areaCreated', {
+            id: command.spawnArea + '-' + sequence++,
+            type: command.spawnArea,
+            location: data
+        });
 }
 
 /**

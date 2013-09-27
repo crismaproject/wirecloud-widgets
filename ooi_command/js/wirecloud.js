@@ -6,8 +6,11 @@
 $(function () {
     if (typeof MashupPlatform === 'undefined') {
         console.warn('Wirecloud environment not detected.');
+        var logFunction = function(event, data) { console.log(data); };
 
-        $('body').on('command', function(event, data) { console.log(data); });
+        $('body')
+            .on('command', logFunction)
+            .on('areaCreated', logFunction);
     } else {
         MashupPlatform.wiring.registerCallback('oois_in', function (data) {
             setObjectsOfInterest(JSON.parse(data));
@@ -21,9 +24,13 @@ $(function () {
             executePendingWith(JSON.parse(data), { failSilently: true });
         });
 
-        $('body').on('command', function(event, data) {
-            MashupPlatform.wiring.pushEvent('commands', JSON.stringify(data));
-        });
+        $('body')
+            .on('command', function (event, data) {
+                MashupPlatform.wiring.pushEvent('commands', JSON.stringify(data));
+            })
+            .on('areaCreated', function (event, data) {
+                MashupPlatform.wiring.pushEvent('areas_created_out', JSON.stringify(data));
+            });
     }
 });
 

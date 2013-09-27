@@ -1,8 +1,14 @@
 var availableCommands = {
     '*': {
-        'createArea': {
-            displayName: 'Create area',
-            targetType: 'point'
+        'createStagingArea': {
+            displayName: 'Create staging area',
+            targetType: 'point',
+            spawnArea: 'staging'
+        },
+        'createDeconArea': {
+            displayName: 'Create decontamination area',
+            targetType: 'point',
+            spawnArea: 'decontamination'
         }
     },
     7: {

@@ -19,6 +19,7 @@
     <InputEndpoint name="ooi-types_in" type="text" label="OOI types" description="" friendcode="ooi-types" />
     <InputEndpoint name="point_in" type="text" label="Coordinates" description="" friendcode="geo-lonlat" />
 
+    <OutputEndpoint name="areas_created_out" type="text" label="Created Areas" description="Areas that were created during an action" friendcode="areas" />
     <OutputEndpoint name="oois_out" type="text" label="OOIs" description="OOIs with commands" friendcode="oois" />
     <OutputEndpoint name="commands" type="text" label="Commands" description="Commands" friendcode="commands" />
   </Platform.Wiring>
