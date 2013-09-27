@@ -51,6 +51,10 @@ $(function () {
             map.loadWfsFor(worldStateId);
         });
 
+        MashupPlatform.wiring.registerCallback('areas_created_in', function (area) {
+            var areaData = JSON.parse(area);
+        });
+
         $('#map')
             .bind('mapFocusChanged', function (event) {
                 MashupPlatform.wiring.pushEvent('center_point', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));

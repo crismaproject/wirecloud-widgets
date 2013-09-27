@@ -27,6 +27,7 @@
     <InputEndpoint name="worldstate_in" type="text" label="Worldstate" description="Worldstate" friendcode="worldstate"/>
     <InputEndpoint name="oois_in" type="text" label="OOIs" description="Objects of interest" friendcode="oois"/>
     <InputEndpoint name="oois_selected_in" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
+    <InputEndpoint name="areas_created_in" type="text" label="Created Areas" description="Areas that were created during an action" friendcode="areas" />
 
     <OutputEndpoint name="oois_selected_out" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
     <OutputEndpoint name="center_point" type="text" label="Coordinates" description="Sends a signal whenever the shown center changes" friendcode="geo-lonlat"/>

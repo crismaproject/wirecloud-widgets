@@ -187,24 +187,31 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
         geometryLayer.redraw();
     };
 
-    /**
-     * Creates an array of points from an array of [x, y] tuples.
-     *
-     * @param {Array} points an array of [x, y] tuples.
-     * @returns {Array} an array of Point instances with the correct map projection.
-     * @private
-     */
-    function project(points) {
-        var projectedPoints = [];
-        for (var i = 0; i < points.length; i++)
-            projectedPoints[i] = latLon(points[i][0], points[i][1]);
-        return projectedPoints;
-    }
+    this.createArea = function (area) {
+        var center = new OpenLayers.Geometry.Point(area.lon, area.lat).transform(EPSG_4326_PROJECTION, mapProjection());
+        var radius = 150; // WARNING: This is an arbitrary constant
+        var steps = 29;   // WARNING: This is an arbitrary constant
+        var stept = 2 * Math.PI / steps;
+        var points = [ ];
+        for (var i = 0; i < steps; i++)
+            points[i] = new OpenLayers.Geometry.Point(
+                center.x + radius * Math.cos(stept * i),
+                center.y + radius * Math.sin(stept * i)
+            );
+
+        var poly = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(points)]);
+        var vector = new OpenLayers.Feature.Vector(poly, { id: area.id }, $.extend(OpenLayers.Feature.Vector.style['default'], {
+            label: area.hasOwnProperty('name') ? area.name : 'Area',
+            labelOutlineWidth: 2
+        }));
+        geometryLayer.addFeatures(vector);
+        return vector;
+    };
 
     /**
      * Converts latitude-longitude coordinate pairs to a properly projected OpenLayers.LonLat instance.
-     * @param {float} latitude
-     * @param {float} longitude
+     * @param {Number} latitude
+     * @param {Number} longitude
      * @returns {OpenLayers.Geometry.Point}
      * @private
      */
