@@ -4,7 +4,7 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>crisma-debug-pusher</Name>
-    <Version>0.2.2</Version>
+    <Version>0.2.3</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Simple widget to send data</Description>

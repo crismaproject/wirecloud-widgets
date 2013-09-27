@@ -3,28 +3,22 @@
 /*
  * Iff the Wirecloud environment is available, register endpoints.
  */
-$(function () {
-    if (typeof MashupPlatform === 'undefined') {
-        console.warn('Wirecloud environment not detected.');
-    } else {
-        var toConsole = false;
+if (typeof MashupPlatform === 'undefined')
+    console.warn('Wirecloud environment not detected.');
 
-        var applyPreferences = function () {
-            toConsole = MashupPlatform.prefs.get('to_console');
-        };
+var toConsole = false;
+var applyPreferences = function () {
+    toConsole = MashupPlatform.prefs.get('to_console');
+};
 
-        MashupPlatform.prefs.registerCallback(applyPreferences);
-        applyPreferences();
+MashupPlatform.prefs.registerCallback(applyPreferences);
+applyPreferences();
 
-        MashupPlatform.wiring.registerCallback('data', function (data) {
-            appendData(data);
-            if (toConsole)
-                console.log({
-                    'received': true,
-//                    'local-event': 'data',
-//                    'remote-event': '??',
-                    'data': data
-                });
+MashupPlatform.wiring.registerCallback('data', function (data) {
+    appendData(data);
+    if (toConsole)
+        console.log({
+            'received': true,
+            'data': data
         });
-    }
 });

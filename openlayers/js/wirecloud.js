@@ -57,10 +57,10 @@ $(function () {
 
         $('#map')
             .bind('mapFocusChanged', function (event) {
-                MashupPlatform.wiring.pushEvent('center_point', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));
+                MashupPlatform.wiring.pushEvent('center_point', JSON.stringify({ lat: event.originalEvent.detail.lat, lon: event.originalEvent.detail.lon }));
             })
             .bind('mapClicked', function (event) {
-                MashupPlatform.wiring.pushEvent('clicked', JSON.stringify({ latitude: event.originalEvent.detail.lat, longitude: event.originalEvent.detail.lon }));
+                MashupPlatform.wiring.pushEvent('clicked', JSON.stringify(event.originalEvent.detail));
 
                 if (!event.originalEvent.detail.ooi) return;
                 // inconsistent property name casing between WFS and OOI-WSR, so let's just take the ID

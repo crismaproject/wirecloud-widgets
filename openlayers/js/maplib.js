@@ -254,7 +254,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * @private
      */
     function mapClickEvent(ev) {
-        console.log(ev);
         var opx = typeof ev.xy !== 'undefined' ? map.getLonLatFromViewPortPx(ev.xy) : ev.geometry.getCentroid();
         var clickCenter = opx.transform(mapProjection(), EPSG_4326_PROJECTION);
         var coordData = { 'lat': clickCenter.lat || clickCenter.x, 'lon': clickCenter.lon || clickCenter.y };

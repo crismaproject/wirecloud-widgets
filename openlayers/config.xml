@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>ooi-gis-map</Name>
     <DisplayName>OOI GIS Map</DisplayName>
-    <Version>0.5.8</Version>
+    <Version>0.5.8.2</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
@@ -30,7 +30,7 @@
     <InputEndpoint name="areas_created_in" type="text" label="Created Areas" description="Areas that were created during an action" friendcode="areas" />
 
     <OutputEndpoint name="oois_selected_out" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
-    <OutputEndpoint name="center_point" type="text" label="Coordinates" description="Sends a signal whenever the shown center changes" friendcode="geo-lonlat"/>
+    <OutputEndpoint name="center_point" type="text" label="Center" description="Sends a signal whenever the shown center changes" friendcode="geo-lonlat"/>
     <OutputEndpoint name="clicked" type="text" label="Click" description="Sends a signal whenever an empty area of the map is clicked" friendcode="geo-lonlat"/>
   </Platform.Wiring>
 
