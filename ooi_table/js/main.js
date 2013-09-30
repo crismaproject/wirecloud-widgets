@@ -10,6 +10,19 @@ var GroupManager = function (container) {
 
     /** @private */
     this.skipRebuild = false;
+};
+
+/** @private */
+function toggleSelection() {
+    var clickedRow = $(this);
+    var rowOoiIndex = $(this).attr('data-index');
+    if (clickedRow.is('.selected')) {
+        clickedRow.removeClass('selected');
+        $('tr[data-parent-id="' + rowOoiIndex + '"]').removeClass('selectedChild');
+    } else {
+        clickedRow.addClass('selected');
+        $('tr[data-parent-id="' + rowOoiIndex + '"]').addClass('selectedChild');
+    }
 }
 
 /** @private */
@@ -34,10 +47,7 @@ GroupManager.prototype.rebuildUI = function () {
                     .attr('data-parent-id', i)
                     .append($('<td></td>').text(currentGroup[j].entityName))
                     .append($('<td></td>').text(this.ooiTypes[currentGroup[j].entityTypeId] ? this.ooiTypes[currentGroup[j].entityTypeId].entityTypeName : '(' + currentGroup[0].entityTypeId + ')'))
-                    .click(function () {
-                        var parentId = $(this).attr('data-parent-id');
-                        var parent = $('tr[data-index='+parentId+']', container).click();
-                    }));
+                    .click(function () { $('tr[data-index='+$(this).attr('data-parent-id')+']', container).click(); }));
             }
         } else {
             row
@@ -46,18 +56,11 @@ GroupManager.prototype.rebuildUI = function () {
         }
 
         row.click(function () {
-            var clickedRow = $(this);
-            var rowOoiIndex = $(this).attr('data-index');
-            if (clickedRow.is('.selected')) {
-                clickedRow.removeClass('selected');
-                $('tr[data-parent-id="' + rowOoiIndex +'"]').removeClass('selectedChild');
-            } else {
-                clickedRow.addClass('selected');
-                $('tr[data-parent-id="' + rowOoiIndex +'"]').addClass('selectedChild');
-            }
+            toggleSelection.call(this);
+            $(this).trigger('selectionChanged');
         });
     }
-}
+};
 
 GroupManager.prototype.setOOIs = function (oois) {
     /* we need to remember what was grouped and selected before we replace the data with the new one.
@@ -107,7 +110,7 @@ GroupManager.prototype.setOOIs = function (oois) {
             for (var j = 0; j < group.length; j++) {
                 var ooiIndex = findOoiIndexByEntityId.call(this, group[j]);
                 if (ooiIndex != -1)
-                    $('tr[data-index="' + ooiIndex + '"]:not(.selected)').click();
+                    toggleSelection.call($('tr[data-index="' + ooiIndex + '"]:not(.selected)'));
             }
             this.groupSelected();
             $('tr.selected').removeClass('selected');
@@ -120,14 +123,14 @@ GroupManager.prototype.setOOIs = function (oois) {
     if (selected.length) {
         for (var i = 0; i < selected.length; i++) {
             var ooiIndex = findOoiIndexByEntityId.call(this, selected[i]);
-            $('tr[data-index="' + ooiIndex + '"]:not(.selected)').click();
+            toggleSelection.call($('tr[data-index="' + ooiIndex + '"]:not(.selected)'));
         }
     }
-}
+};
 
 GroupManager.prototype.setOOITypes = function (ooiTypes) {
     this.ooiTypes = ooiTypes.group('entityTypeId');
-}
+};
 
 GroupManager.prototype.getSelected = function () {
     var selected = [ ];
@@ -137,7 +140,7 @@ GroupManager.prototype.getSelected = function () {
         selected = selected.concat(this.oois[index].flatten());
     }
     return selected;
-}
+};
 
 GroupManager.prototype.setSelected = function (selected) {
     var scope = $('tbody', this.container).find('tr[data-index]');
@@ -145,13 +148,15 @@ GroupManager.prototype.setSelected = function (selected) {
     for (var i = 0; i < scope.length; i++) {
         var ooiIndex = parseInt(scope[i].attr('data-index'));
         var ooi = this.oois[ooiIndex];
-        var selectedIndex = selected.indexOfWhere(function (obj) { return obj.entityId == ooi.entityId; });
+        var selectedIndex = selected.indexOfWhere(function (obj) {
+            return obj.entityId == ooi.entityId;
+        });
         if (selectedIndex >= 0 && !scope[i].hasClass('selected'))
             scope[i].addClass('selected');
         else if (selectedIndex == -1 && scope.hasClass('selected'))
             scope[i].removeClass('selected');
     }
-}
+};
 
 GroupManager.prototype.groupSelected = function () {
     var newGroup = [ ];
@@ -171,7 +176,7 @@ GroupManager.prototype.groupSelected = function () {
         this.oois.splice(remove[i], 1);
     this.oois.insertAt(remove[0], newGroup);
     this.rebuildUI();
-}
+};
 
 GroupManager.prototype.ungroupSelected = function () {
     var scope = $('tbody', this.container).find('tr[data-index].selected');
@@ -190,7 +195,7 @@ GroupManager.prototype.ungroupSelected = function () {
         }
 
     this.rebuildUI();
-}
+};
 
 /**
  * Groups the provided array of objects into an object where the object's properties are values extracted
@@ -221,7 +226,7 @@ Array.prototype.flatten = function () {
     for (var i = 0; i < this.length; i++)
         items = items.concat(this[i]);
     return items;
-}
+};
 
 Array.prototype.insertAt = function (index, item) {
     this.splice(index, 0, item);
@@ -235,4 +240,4 @@ Array.prototype.indexOfWhere = function (predicate) {
     for (var i = 0; i < this.length; i++)
         if (predicate(this[i])) return i;
     return -1;
-}
+};
