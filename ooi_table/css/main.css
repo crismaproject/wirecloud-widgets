@@ -11,9 +11,21 @@ tr.grouped td:first-child {
 tr.selected {
     background-color: #e2edff;
 }
+
+tr.grouped.selectedChild {
+    background-color: #f2f7ff;
+}
+
 tr.selected>td,
-tr.selected>th {
+tr.selected>th,
+tr.selectedChild>td,
+tr.selectedChild>th {
     color: #363d4f;
+}
+
+tr.grouped.selectedChild>td:first-child {
+    border-left: 1em solid #99c0ff;
+    padding-left: 1.5em;
 }
 
 @media (max-width: 520px) {
@@ -22,6 +34,9 @@ tr.selected>th {
 
 @media (max-width: 420px) {
     table { font-size: 9pt }
+    tr.grouped.selectedChild>td:first-child {
+        border-left: .5em solid #99c0ff;
+    }
 }
 
 @media (max-width: 320px) {

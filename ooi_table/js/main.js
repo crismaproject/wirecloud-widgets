@@ -7,17 +7,21 @@ var GroupManager = function (container) {
 
     /** @private */
     this.ooiTypes = { };
+
+    /** @private */
+    this.skipRebuild = false;
 }
 
 /** @private */
 GroupManager.prototype.rebuildUI = function () {
+    if (this.skipRebuild) return;
+
     var container = $('tbody', this.container);
     container.empty();
 
     for (var i = 0; i < this.oois.length; i++) {
         var currentGroup = this.oois[i];
-        var row = $('<tr></tr>')
-                .attr('data-index', i);
+        var row = $('<tr></tr>').attr('data-index', i);
         container.append(row);
         if (currentGroup.length > 1) {
             row
@@ -46,21 +50,79 @@ GroupManager.prototype.rebuildUI = function () {
             var rowOoiIndex = $(this).attr('data-index');
             if (clickedRow.is('.selected')) {
                 clickedRow.removeClass('selected');
-                $('tr[data-parent-id')
+                $('tr[data-parent-id="' + rowOoiIndex +'"]').removeClass('selectedChild');
             } else {
                 clickedRow.addClass('selected');
+                $('tr[data-parent-id="' + rowOoiIndex +'"]').addClass('selectedChild');
             }
         });
     }
 }
 
 GroupManager.prototype.setOOIs = function (oois) {
-    this.oois = [ ];
+    /* we need to remember what was grouped and selected before we replace the data with the new one.
+     * it's a bit of a dirty workaround, but it will suffice for now. */
+    var selected = [ ];
+    var grouped = [ ];
+    if (this.oois.length) {
+        var selectedScope = $('tr[data-index].selected', this.container);
+        for (var i = 0; i < selectedScope.length; i++) {
+            var ooiGroup = this.oois[$(selectedScope[i]).attr('data-index')];
+            for (var j = 0; j < ooiGroup.length; j++)
+                selected.push(ooiGroup[j].entityId);
+        }
 
+        for (var i = 0; i < this.oois.length; i++) {
+            if (this.oois[i].length == 1) continue;
+            var group = [ ];
+            for (var j = 0; j < this.oois[i].length; j++)
+                group.push(this.oois[i][j].entityId);
+            grouped.push(group);
+        }
+    }
+
+    // now replace the old data with the new one
+    this.oois = [ ];
     for (var i = 0; i < oois.length; i++)
         this.oois.push([ oois[i] ]);
 
     this.rebuildUI();
+
+    function findOoiIndexByEntityId(entityId) {
+        return this.oois.indexOfWhere(function (a) {
+            return a.indexOfWhere(function (b) {
+                return b.entityId == entityId;
+            }) != -1;
+        });
+    }
+
+    // now re-apply original groups..
+    if (grouped.length) {
+        // we 'emulate' clicking each OOI in the group so we benefit from additional logic that would not happen if we
+        // just stamped the 'selected' class to each <tr>. We also skip UI rebuilding until completely done with
+        // the grouping process to avoid unnecessary actions.
+        this.skipRebuild = true;
+        for (var i = 0; i < grouped.length; i++) {
+            var group = grouped[i];
+            for (var j = 0; j < group.length; j++) {
+                var ooiIndex = findOoiIndexByEntityId.call(this, group[j]);
+                if (ooiIndex != -1)
+                    $('tr[data-index="' + ooiIndex + '"]:not(.selected)').click();
+            }
+            this.groupSelected();
+            $('tr.selected').removeClass('selected');
+        }
+        this.skipRebuild = false;
+        this.rebuildUI();
+    }
+
+    // ..and selections
+    if (selected.length) {
+        for (var i = 0; i < selected.length; i++) {
+            var ooiIndex = findOoiIndexByEntityId.call(this, selected[i]);
+            $('tr[data-index="' + ooiIndex + '"]:not(.selected)').click();
+        }
+    }
 }
 
 GroupManager.prototype.setOOITypes = function (ooiTypes) {
@@ -78,12 +140,25 @@ GroupManager.prototype.getSelected = function () {
 }
 
 GroupManager.prototype.setSelected = function (selected) {
+    var scope = $('tbody', this.container).find('tr[data-index]');
+    var anythingChanged = false;
+    for (var i = 0; i < scope.length; i++) {
+        var ooiIndex = parseInt(scope[i].attr('data-index'));
+        var ooi = this.oois[ooiIndex];
+        var selectedIndex = selected.indexOfWhere(function (obj) { return obj.entityId == ooi.entityId; });
+        if (selectedIndex >= 0 && !scope[i].hasClass('selected'))
+            scope[i].addClass('selected');
+        else if (selectedIndex == -1 && scope.hasClass('selected'))
+            scope[i].removeClass('selected');
+    }
 }
 
 GroupManager.prototype.groupSelected = function () {
     var newGroup = [ ];
     var remove = [ ];
     var scope = $('tbody', this.container).find('tr[data-index].selected');
+    if (scope.length <= 1) return;
+
     for (var i = 0; i < scope.length; i++) {
         var index = parseInt($(scope[i]).attr('data-index'));
         newGroup = newGroup.concat(this.oois[index].flatten());
@@ -151,3 +226,13 @@ Array.prototype.flatten = function () {
 Array.prototype.insertAt = function (index, item) {
     this.splice(index, 0, item);
 };
+
+/**
+ * @param {function} predicate
+ * @returns {number}
+ */
+Array.prototype.indexOfWhere = function (predicate) {
+    for (var i = 0; i < this.length; i++)
+        if (predicate(this[i])) return i;
+    return -1;
+}
