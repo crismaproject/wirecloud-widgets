@@ -6,7 +6,7 @@
 if (typeof MashupPlatform !== 'undefined') {
     $(function () {
         $(document).on('selectionChanged', function () {
-            MashupPlatform.wiring.pushEvent('oois_selected_out', JSON.stringify(getSelection()));
+            MashupPlatform.wiring.pushEvent('oois_selected_out', JSON.stringify(groupManager.getSelected()));
         });
     });
 

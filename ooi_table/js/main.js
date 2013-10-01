@@ -144,7 +144,6 @@ GroupManager.prototype.getSelected = function () {
 
 GroupManager.prototype.setSelected = function (selected) {
     var scope = $('tbody', this.container).find('tr[data-index]');
-    var anythingChanged = false;
     for (var i = 0; i < scope.length; i++) {
         var ooiIndex = parseInt(scope[i].attr('data-index'));
         var ooi = this.oois[ooiIndex];
