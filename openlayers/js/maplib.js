@@ -13,6 +13,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     this.wfsUri = 'http://localhost/ows';
 
     function graphicFor(typeIdentifier) {
+        //noinspection FallthroughInSwitchStatementJS
         switch (typeIdentifier) {
             case 'Ambulance':
             case 'Ambulance Station':
@@ -52,11 +53,11 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     });
 
     var selectControl = new OpenLayers.Control.SelectFeature([geometryLayer], { clickout: true });
-    selectControl.onSelect = function(e) {
+    selectControl.onSelect = function (e) {
         if (e.layer == geometryLayer) mapClickEvent(e, { area: e.attributes });
         else if (e.layer.name == 'OOI-WFS-Entities') mapClickEvent(e, { ooi: e.attributes });
         else mapClickEvent(e);
-    }
+    };
     map.addControl(selectControl);
     selectControl.activate();
 
@@ -179,15 +180,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                     bounds.extend(element['points'][j]);
         }
         map.zoomToExtent(bounds);
-    };
-
-    /**
-     * Removes all elements from the map.
-     */
-    this.clear = function () {
-        geometryLayer.removeAllFeatures();
-        this.elements = [];
-        geometryLayer.redraw();
     };
 
     /**

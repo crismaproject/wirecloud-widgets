@@ -146,10 +146,11 @@ function executeCommand(command, data) {
             affected.push(group[i].entityId);
         }
 
-    $('body').trigger('command', $.extend({ affected: affected }, executedCommand));
+    var body = $('body');
+    body.trigger('command', $.extend({ affected: affected }, executedCommand));
 
     if (command.hasOwnProperty('spawnArea'))
-        $('body').trigger('areaCreated', {
+        body.trigger('areaCreated', {
             id: command.spawnArea + '-' + sequence++,
             type: command.spawnArea,
             location: data

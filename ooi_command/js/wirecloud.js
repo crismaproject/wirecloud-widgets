@@ -33,10 +33,3 @@ $(function () {
             });
     }
 });
-
-function getObjectsOfInterestAsArray() {
-    var array = [ ];
-    for (var ooiType in objectsOfInterest)
-        array = array.concat(objectsOfInterest[ooiType]);
-    return array;
-}

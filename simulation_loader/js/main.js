@@ -36,7 +36,7 @@ function loadSimulations() {
 
 /**
  * @param {object} simulation the simulation to create a human-friendly displayable string for
- * @param {integer} simulation.simulationId the simulation's internal identifier
+ * @param {number} simulation.simulationId the simulation's internal identifier
  * @param {string} simulation.description a description for the simulation
  * @param {string?} simulation.startDateTime the simulation's start time, following the ISO 8601 pattern
  * @param {string?} simulation.endDateTime the simulation's end time, following the ISO 8601 pattern
