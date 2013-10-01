@@ -145,15 +145,14 @@ GroupManager.prototype.getSelected = function () {
 GroupManager.prototype.setSelected = function (selected) {
     var scope = $('tbody', this.container).find('tr[data-index]');
     for (var i = 0; i < scope.length; i++) {
-        var ooiIndex = parseInt(scope[i].attr('data-index'));
-        var ooi = this.oois[ooiIndex];
-        var selectedIndex = selected.indexOfWhere(function (obj) {
-            return obj.entityId == ooi.entityId;
-        });
-        if (selectedIndex >= 0 && !scope[i].hasClass('selected'))
-            scope[i].addClass('selected');
-        else if (selectedIndex == -1 && scope.hasClass('selected'))
-            scope[i].removeClass('selected');
+        var ooiIndex = parseInt($(scope[i]).attr('data-index'));
+        var selectedIndex = selected.indexOfWhere(function (obj, id) {
+            return obj.entityId == id;
+        }, this.oois[ooiIndex][0].entityId);
+        if (selectedIndex >= 0 && !$(scope[i]).hasClass('selected'))
+            $(scope[i]).addClass('selected');
+        else if (selectedIndex == -1 && $(scope[i]).hasClass('selected'))
+            $(scope[i]).removeClass('selected');
     }
 };
 
@@ -233,10 +232,11 @@ Array.prototype.insertAt = function (index, item) {
 
 /**
  * @param {function} predicate
+ * @param {object?} state an optional state that is passed along to the predicate
  * @returns {number}
  */
-Array.prototype.indexOfWhere = function (predicate) {
+Array.prototype.indexOfWhere = function (predicate, state) {
     for (var i = 0; i < this.length; i++)
-        if (predicate(this[i])) return i;
+        if (predicate(this[i], state)) return i;
     return -1;
 };
