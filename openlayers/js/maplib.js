@@ -185,12 +185,13 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
     /**
      * @param {object} area
      * @param {string} area.id
-     * @param {Number} area.lat
-     * @param {Number} area.lon
+     * @param {object} area.location
+     * @param {Number} area.location.lat
+     * @param {Number} area.location.lon
      * @param {string?} area.name
      */
     this.createArea = function (area) {
-        var center = new OpenLayers.Geometry.Point(area.lon, area.lat).transform(EPSG_4326_PROJECTION, mapProjection());
+        var center = new OpenLayers.Geometry.Point(area.location.lon, area.location.lat).transform(EPSG_4326_PROJECTION, mapProjection());
         var radius = 150; // WARNING: This is an arbitrary constant
         var steps = 25;   // WARNING: This is an arbitrary constant
         var stept = 2 * Math.PI / steps;
