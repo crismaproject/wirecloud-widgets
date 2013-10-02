@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>ooi-table</Name>
     <DisplayName>OOI Table</DisplayName>
-    <Version>0.5.2.6</Version>
+    <Version>0.5.2.7</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Table view for Objects of Interest</Description>
@@ -13,6 +13,12 @@
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
+
+  <Platform.Preferences>
+    <Preference name="only_show" type="text"
+                description="A comma-separated list of entity type IDs. If set, only OOIs with that entityTypeId will be shown"
+                label="Only show types" default=""/>
+  </Platform.Preferences>
 
   <Platform.Wiring>
     <InputEndpoint name="oois_in" type="text" label="OOIs" description="All objects of interest" friendcode="oois"/>

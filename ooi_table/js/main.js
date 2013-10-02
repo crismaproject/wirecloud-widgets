@@ -1,3 +1,13 @@
+$(function () {
+    var $floatingActions = $('#floatingActions');
+    var offsetTop = parseFloat($floatingActions.css('top').replace(/[^-\d\.]/g, ''));
+    $(window).scroll(function () {
+        $floatingActions
+            .stop()
+            .animate({'marginTop': ($(window).scrollTop() + offsetTop) + 'px'});
+    });
+});
+
 var GroupManager = function (container) {
     /** @private */
     this.container = container;
@@ -10,6 +20,12 @@ var GroupManager = function (container) {
 
     /** @private */
     this.skipRebuild = false;
+
+    /**
+     * Iff not null, the table will only show OOIs of the specified type ID
+     * @type {Array}
+     */
+    this.showOnly = null;
 };
 
 /** @private */
@@ -34,6 +50,8 @@ GroupManager.prototype.rebuildUI = function () {
 
     for (var i = 0; i < this.oois.length; i++) {
         var currentGroup = this.oois[i];
+        if (this.showOnly && this.showOnly.indexOf(currentGroup[0]['entityTypeId']) == -1) continue;
+
         var row = $('<tr></tr>').attr('data-index', i);
         container.append(row);
         if (currentGroup.length > 1) {
@@ -129,7 +147,7 @@ GroupManager.prototype.setOOIs = function (oois) {
 };
 
 GroupManager.prototype.setOOITypes = function (ooiTypes) {
-    this.ooiTypes = ooiTypes.group('entityTypeId');
+    this.ooiTypes = ooiTypes.toDict('entityTypeId');
 };
 
 GroupManager.prototype.getSelected = function () {
@@ -214,6 +232,28 @@ Array.prototype.group = function (keyProperty) {
             groups[key] = [ obj ];
         else
             groups[key].push(obj);
+    }
+
+    return groups;
+};
+
+/**
+ * Groups the provided array of objects into an object where the object's properties are values extracted
+ * from the keyProperty property of array elements, and each keyed entry in the object is the first
+ * element of the original array sharing the same key.
+ *
+ * @param {string} keyProperty
+ * @returns {{}}
+ */
+Array.prototype.toDict = function(keyProperty) {
+    var groups = { };
+
+    for (var i = 0; i < this.length; i++) {
+        var obj = this[i];
+        if (!obj.hasOwnProperty(keyProperty)) continue;
+        var key = obj[keyProperty];
+        if (!(key in groups))
+            groups[key] = obj;
     }
 
     return groups;
