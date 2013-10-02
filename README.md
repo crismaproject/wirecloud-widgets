@@ -13,14 +13,34 @@ Also note that these components are currently under **early and active developme
 
 ## Content
 
-* **./chart/** — a simple widget that uses jquery and jqplot to render bar charts.
-* **./listener/** — a simple debugging widget that shows incoming events.
-* **./ooi_selector_operator** — operator to synchronize the selection between different widgets that use the synchronized OOI selection sharing mechanic.
-* **./ooi_table/** — OOI table (with synchronized OOI selection mechanic).
-* **./ooi_viewer/** — OOI details viewer *(possibly becoming deprecated)*.
-* **./openlayers/** — a map widget using OpenLayers and OpenStreetMap to display a map with WFS data
-* **./pusher/** — a simple debugging widget that pushes arbitrary data to endpoints.
-* **./worldstate_loader/** — Operator that loads a worldstate from an OOI-WSR instance.
+In the following sections, each listed item is either prefixed with `(o)` or `(w)`. This indicates if a gadget is either
+an **o**perator or a **w**idget.
+
+### Primary widgets and operators
+
+* (w) **./chart/** — a simple widget that uses jquery and jqplot to render bar charts.
+* (w) **./ooi_command/** — widget to issue commands to OOIs.
+* (w) **./ooi_table/** — OOI table (with synchronized OOI selection mechanic).
+* (w) **./openlayers/** — a map widget using OpenLayers and OpenStreetMap to display a map with WFS data
+* (w) **./simulation_loader/** — displays and picks available simulations from the OOI-WSR.
+* (o) **./worldstate_loader/** — Operator that loads a worldstate from an OOI-WSR instance.
+
+### Deprecated widgets and operators
+
+Note that these gadgets are considered deprecated. They could be removed from the repository at any time for any reason.
+
+* (o) **./ooi_selector_operator** — operator to synchronize the selection between different widgets that use the synchronized OOI selection sharing mechanic.
+* (w) **./ooi_viewer/** — OOI details viewer.
+
+### Development-only widgets and operators
+
+The following gadgets are only used for development and debugging purposes and serve no practical use in a
+production environment.
+
+* (w) **./listener/** — a simple debugging widget that shows incoming events.
+* (w) **./pusher/** — a simple debugging widget that pushes arbitrary data to endpoints.
+
+### Documentations
 
 **Documentation** for endpoints can be found in each of the widgets' respective subdirectory, in a file aptly
 named `ENDPOINTS.md`. These files are automatically generated from Wirecloud metadata in each `config.xml`.
