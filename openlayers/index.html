@@ -10,6 +10,13 @@
 <div id="map"></div>
 <script type="text/javascript">
     var map = new OpenLayersFacade('map');
+
+    $(function () {
+        var bounds = new OpenLayers.Bounds();
+        bounds.extend(new OpenLayers.LonLat(-1284142, 7696291));
+        bounds.extend(new OpenLayers.LonLat(4087240, 3684875));
+        map.map.zoomToExtent(bounds, false);
+    });
 </script>
 <script src="js/wirecloud.js" type="text/javascript"></script>
 </body>

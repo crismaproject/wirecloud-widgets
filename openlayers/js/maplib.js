@@ -1,12 +1,9 @@
 /**
  * A facade-like interface to handle interaction with the OpenLayers library.
  * @param {string} container the id of the DOM element where the map should be rendered
- * @param {float=} initLat the initial center latitude to display (optional)
- * @param {float=} initLong the initial center longitude to display (optional)
- * @param {int=} initZ the initial zoom factor to display (optional)
  * @constructor
  */
-function OpenLayersFacade(container, initLat, initLong, initZ) {
+function OpenLayersFacade(container) {
     /** @const */
     var EPSG_4326_PROJECTION = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
     var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer');
@@ -34,8 +31,7 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
      * Contains the OpenLayers map object
      * @type {OpenLayers.Map}
      */
-    var map = new OpenLayers.Map({
-        div: container,
+    var map = new OpenLayers.Map(container, {
         layers: [
             new OpenLayers.Layer.OSM("OpenStreetMap",
                 ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
@@ -43,8 +39,6 @@ function OpenLayersFacade(container, initLat, initLong, initZ) {
                     "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
             geometryLayer
         ],
-        center: latLon(initLat || 51.75, initLong || -1.25),
-        zoom: initZ || 3,
         eventListeners: {
             moveend: mapEvent,
             zoomend: mapEvent,
