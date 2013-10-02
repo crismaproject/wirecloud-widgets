@@ -197,10 +197,7 @@ function OpenLayersFacade(container) {
             );
 
         var poly = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(points)]);
-        var vector = new OpenLayers.Feature.Vector(poly, { id: area.id }, $.extend(OpenLayers.Feature.Vector.style['default'], {
-            label: area.hasOwnProperty('name') ? area.name : 'Area',
-            labelOutlineWidth: 2
-        }));
+        var vector = new OpenLayers.Feature.Vector(poly, { id: area.id });
         geometryLayer.addFeatures(vector);
     };
 
