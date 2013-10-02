@@ -21,11 +21,26 @@ var GroupManager = function (container) {
     /** @private */
     this.skipRebuild = false;
 
+    /** @private */
+    this.skipStorage = false;
+
+    /** @private */
+    this.enableStorage = true;
+
     /**
      * Iff not null, the table will only show OOIs of the specified type ID
      * @type {Array}
      */
     this.showOnly = null;
+
+    $(window).unload(this, function (event) {
+        var eventData = event.data;
+        if (!eventData.enableStorage) return;
+        if (eventData.oois.length) {
+            var grouped = eventData.getGroups();
+            remember('grpMngr_groups', grouped);
+        }
+    });
 };
 
 /** @private */
@@ -80,6 +95,20 @@ GroupManager.prototype.rebuildUI = function () {
     }
 };
 
+GroupManager.prototype.getGroups = function () {
+    var grouped = [ ];
+
+    for (var i = 0; i < this.oois.length; i++) {
+        if (this.oois[i].length == 1) continue;
+        var group = [ ];
+        for (var j = 0; j < this.oois[i].length; j++)
+            group.push(this.oois[i][j].entityId);
+        grouped.push(group);
+    }
+
+    return grouped;
+};
+
 GroupManager.prototype.setOOIs = function (oois) {
     /* we need to remember what was grouped and selected before we replace the data with the new one.
      * it's a bit of a dirty workaround, but it will suffice for now. */
@@ -93,13 +122,10 @@ GroupManager.prototype.setOOIs = function (oois) {
                 selected.push(ooiGroup[j].entityId);
         }
 
-        for (var i = 0; i < this.oois.length; i++) {
-            if (this.oois[i].length == 1) continue;
-            var group = [ ];
-            for (var j = 0; j < this.oois[i].length; j++)
-                group.push(this.oois[i][j].entityId);
-            grouped.push(group);
-        }
+        grouped = this.getGroups.call(this);
+    } else if(!this.skipStorage && this.enableStorage) {
+        grouped = recall('grpMngr_groups', [ ]);
+        this.skipStorage = true;
     }
 
     // now replace the old data with the new one

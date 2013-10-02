@@ -22,6 +22,8 @@ if (typeof MashupPlatform !== 'undefined') {
                 throw 'Invalid value for "only_show"';
             }
         }
+
+        storeGroups = MashupPlatform.prefs.get('enable_group_storage');
     };
     MashupPlatform.prefs.registerCallback(applyPreferences);
     applyPreferences();
