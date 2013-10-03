@@ -19,6 +19,9 @@ var GroupManager = function (container) {
     this.ooiTypes = { };
 
     /** @private */
+    this.areas = [ ];
+
+    /** @private */
     this.skipRebuild = false;
 
     /** @private */
@@ -92,6 +95,17 @@ GroupManager.prototype.rebuildUI = function () {
             toggleSelection.call(this);
             $(this).trigger('selectionChanged');
         });
+    }
+
+    for (var i = 0; i < this.areas.length; i++) {
+        var currentArea = this.areas[i];
+        container.append($('<tr></tr>')
+            .attr('data-area-index', i)
+            .append($('<td></td>').text(currentArea.entityName))
+            .append($('<td></td>').text('Area'))
+            .click(function () {
+                $(this).trigger('areaSelected');
+            }));
     }
 };
 
@@ -174,6 +188,11 @@ GroupManager.prototype.setOOIs = function (oois) {
 
 GroupManager.prototype.setOOITypes = function (ooiTypes) {
     this.ooiTypes = ooiTypes.toDict('entityTypeId');
+};
+
+GroupManager.prototype.setAreas = function (areas) {
+    this.areas = areas;
+    this.rebuildUI();
 };
 
 GroupManager.prototype.getSelected = function () {

@@ -150,11 +150,10 @@ function executeCommand(command, data) {
     body.trigger('command', $.extend({ affected: affected }, executedCommand));
 
     if (command.hasOwnProperty('spawnArea'))
-        body.trigger('areaCreated', {
-            id: command.spawnArea + '-' + sequence++,
-            type: command.spawnArea,
-            location: data
-        });
+        body.trigger('areaCreated', $.extend({
+            '_areaId': '_tmp_area-' + sequence++,
+            '_areaLocation': data
+        }, command.spawnArea));
 }
 
 /**

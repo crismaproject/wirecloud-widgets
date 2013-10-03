@@ -26,7 +26,9 @@ $(function () {
         console.warn('"map" variable is not defined.');
     } else {
         var applyPreferences = function () {
-            map.wfsUri = MashupPlatform.prefs.get('wfs_server');
+            var wfsUri = MashupPlatform.prefs.get('wfs_server');
+            var wfsProxyUri = MashupPlatform.http.buildProxyURL(wfsUri);
+            map.wfsUri = wfsProxyUri;
         };
         MashupPlatform.prefs.registerCallback(applyPreferences);
         applyPreferences();

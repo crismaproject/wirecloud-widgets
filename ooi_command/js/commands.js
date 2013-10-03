@@ -1,14 +1,20 @@
 var availableCommands = {
     '*': {
-        'createStagingArea': {
-            displayName: 'Create staging area',
+        'createTreatmentArea': {
+            displayName: 'Create treatment area',
             targetType: 'point',
-            spawnArea: 'staging'
+            spawnArea: {
+                entityName: 'Treatment area',
+                entityTypeId: 14
+            }
         },
         'createDeconArea': {
             displayName: 'Create decontamination area',
             targetType: 'point',
-            spawnArea: 'decontamination'
+            spawnArea: {
+                entityName: 'Decontamination area',
+                entityTypeId: 14
+            }
         }
     },
     7: {

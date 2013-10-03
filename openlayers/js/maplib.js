@@ -185,7 +185,8 @@ function OpenLayersFacade(container) {
      * @param {string?} area.name
      */
     this.createArea = function (area) {
-        var center = new OpenLayers.Geometry.Point(area.location.lon, area.location.lat).transform(EPSG_4326_PROJECTION, mapProjection());
+        var areaLocation = area['_areaLocation'];
+        var center = new OpenLayers.Geometry.Point(areaLocation.lon, areaLocation.lat).transform(EPSG_4326_PROJECTION, mapProjection());
         var radius = 150; // WARNING: This is an arbitrary constant
         var steps = 25;   // WARNING: This is an arbitrary constant
         var stept = 2 * Math.PI / steps;
@@ -197,7 +198,7 @@ function OpenLayersFacade(container) {
             );
 
         var poly = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(points)]);
-        var vector = new OpenLayers.Feature.Vector(poly, { id: area.id });
+        var vector = new OpenLayers.Feature.Vector(poly, { area: area });
         geometryLayer.addFeatures(vector);
     };
 
