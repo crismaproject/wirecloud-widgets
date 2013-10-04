@@ -4,6 +4,7 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>crisma-debug-listener</Name>
+    <DisplayName>(Debug) Listener</DisplayName>
     <Version>0.2.3</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>

@@ -4,6 +4,7 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>simulation_loader</Name>
+    <DisplayName>Simulation Loader</DisplayName>
     <Version>0.1.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
