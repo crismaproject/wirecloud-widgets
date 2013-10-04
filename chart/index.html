@@ -9,7 +9,6 @@
     <script src="//cdn.jsdelivr.net/jqplot/1.0.8/plugins/jqplot.barRenderer.min.js" charset="utf-8"></script>
     <script src="//cdn.jsdelivr.net/jqplot/1.0.8/plugins/jqplot.pointLabels.min.js" charset="utf-8"></script>
     <script src="js/main.js" type="text/javascript"></script>
-    <script src="js/wirecloud.js" type="text/javascript"></script>
 </head>
 <body>
 <div id="chart_container">
@@ -17,30 +16,7 @@
 
 <script type="text/javascript">
     var series = new Series('Performance', 'chart_container');
-
-    /*
-    // this is only set-up this way for readability purposes.
-    var seriesData = [
-        { g: 7, r: 4, d: 0 },
-        { g: 6, r: 5, d: 0 },
-        { g: 3, r: 6, d: 2 },
-        { g: 2, r: 7, d: 2 },
-        { g: 2, r: 6, d: 3 },
-        { g: 4, r: 2, d: 5 },
-        { g: 5, r: 0, d: 6 }
-    ];
-
-    var plotData = [ [], [], [] ];
-    for (var i = 0; i < seriesData.length; i++) {
-        plotData[0].push([i, seriesData[i].g]);
-        plotData[1].push([i, seriesData[i].r]);
-        plotData[2].push([i, seriesData[i].d]);
-    }
-
-    series.setData(plotData);
-    series.setLabels(['Healthy', 'Injured', 'Dead'], [ '#90EE90', '#DC143C', '#696969' ]);
-    series.redraw();
-    */
 </script>
+<script src="js/wirecloud.js" type="text/javascript"></script>
 </body>
 </html>

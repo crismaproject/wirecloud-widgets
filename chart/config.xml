@@ -4,6 +4,7 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>crisma-chart</Name>
+    <DisplayName>Charts</DisplayName>
     <Version>0.4.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
@@ -18,8 +19,8 @@
   </Platform.Preferences>
 
   <Platform.Wiring>
-    <InputEndpoint name="worldstate" type="text" label="Worldstate"
-                   description="Displays indicators for the specified worldstate" friendcode="wsid"/>
+    <InputEndpoint name="worldstate_in" type="text" label="Worldstate"
+                   description="Displays indicators for the specified worldstate" friendcode="worldstate"/>
   </Platform.Wiring>
 
   <Platform.Link>
