@@ -2,9 +2,10 @@ require 'zip/zip'
 require 'nokogiri'
 
 desc 'Create zipped Wirecloud widget file for the specified project'
-task :bundle, [:what] do |_, args|
+task :bundle, [:what, :suffix] do |_, args|
+  args.with_defaults(:suffix => '')
   project = args[:what]
-  archive = "#{project}.wgt"
+  archive = "#{project}#{args[:suffix]}.wgt"
 
   if project && Dir.exists?(project)
     File.delete(archive) if File.exists?(archive)
@@ -46,11 +47,23 @@ end
 
 desc 'Create all zipped Wirecloud widget files'
 task :all do
+  suffix = "-#{Time.now.strftime('%y%m%d-%H%M')}-git-#{run_process 'gitzz rev-parse --short HEAD'}"
+
   Dir.glob('**').each do |subdirectory|
     if File.exists?(File.join(subdirectory, '.bundle'))
-      Rake::Task[:bundle].invoke subdirectory
+      Rake::Task[:bundle].invoke subdirectory, suffix
       Rake::Task[:bundle].reenable
     end
+  end
+end
+
+def run_process(process)
+  begin
+    IO.popen(process, 'r') do |p|
+      return p.gets.strip
+    end
+  rescue
+    return nil
   end
 end
 
