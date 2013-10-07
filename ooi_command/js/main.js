@@ -45,6 +45,17 @@ function cancelPendingCommand() {
     $('.help:visible').hide();
 }
 
+function getMessageFor(targetType, command) {
+    switch (targetType) {
+        case 'point': return 'Please select a point on the map.';
+        case 'ooi': {
+            var targetName = command.targetRestrictedTo && entityTypes.hasOwnProperty(command.targetRestrictedTo) ?
+                entityTypes[command.targetRestrictedTo].entityTypeName : 'OOI';
+            var article = targetName.search(/^[aeiou]/i) != -1 ? 'an' : 'a';
+            return 'Please select ' + article + ' ' + targetName + ' on the map.';
+        }
+    }
+}
 /**
  * Completely rebuilds the user interface's DOM.
  */
@@ -83,7 +94,7 @@ function rebuildUI() {
                     if (command.targetType) {
                         $(this).addClass('btn-command-active');
                         setCommandButtonsEnabled(false);
-                        setHelp(this, 'Please select a point on the map.');
+                        setHelp(this, getMessageFor(command.targetType, command));
                     } else {
                         executePendingWith(null);
                     }
@@ -135,16 +146,15 @@ function isCommandable(ooi) {
     return ooi.entityTypeId in availableCommands;
 }
 
+/** @private */
 function executeCommand(command, data) {
     var executedCommand = { command: command, param: data };
     var group = objectsOfInterest[command.entityTypeId];
     var affected = [ ];
 
     if (group)
-        for (var i = 0; i < group.length; i++) {
-            group[i].command = executedCommand;
+        for (var i = 0; i < group.length; i++)
             affected.push(group[i].entityId);
-        }
 
     var body = $('body');
     body.trigger('command', $.extend({ affected: affected }, executedCommand));
@@ -174,8 +184,16 @@ function executePendingWith(data, options) {
         return;
     }
 
-    if (!options.failSilently && pendingCommand.targetType == 'point' && data.length < 2)
-        throw 'Command expects a point as an argument (array with two components).';
+    var failReason;
+    if (pendingCommand.targetType == 'point' && data.length < 2)
+        failReason = 'Command expects a point as an argument (array with two components).';
+    else if (pendingCommand.targetRestrictedTo && data.entityTypeId != pendingCommand.targetRestrictedTo)
+        failReason = 'Command expects an OOI of type ' + pendingCommand.targetRestrictedTo;
+
+    if (failReason) {
+        if (!options.failSilently) throw failReason;
+        return;
+    }
 
     // TODO: further checks if data is valid, then..
 
