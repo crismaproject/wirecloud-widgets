@@ -1,5 +1,12 @@
 /** @private */
 var entityTypes = { }, objectsOfInterest = { }, pendingCommand = null;
+/**
+ * @private
+ * @const
+ * */
+var uiStyle = {
+    btnClass: 'btn btn-default btn-sm'
+}
 
 var sequence = 1;
 
@@ -79,7 +86,7 @@ function rebuildUI() {
         var commands = $('<div></div>').addClass('btn-group');
         for (var commandKey in availableCommands[groupKey]) {
             var commandBtn = $('<button></button>')
-                .addClass('btn btn-default btn-command')
+                .addClass('btn-command ' + uiStyle.btnClass)
                 .attr('data-command', commandKey)
                 .text(availableCommands[groupKey][commandKey].displayName || commandKey)
                 .prepend($('<i></i>').addClass('ico-cmd-' + commandKey))
@@ -116,7 +123,7 @@ function rebuildUI() {
     }
 
     if ('*' in availableCommands)
-        container.append(createFieldsetFor('*'));
+        container.append(createFieldsetFor('*', 'General commands'));
 
     for (var ooiType in objectsOfInterest) {
         var displayName = entityTypes[ooiType] && entityTypes[ooiType]['entityTypeName'] ?

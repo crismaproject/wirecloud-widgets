@@ -5,6 +5,12 @@ button[disabled].btn-command-active {
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, .5);
 }
 
+fieldset ul {
+    margin-left: 15pt;
+    max-height: 92pt;
+    overflow-y: auto;
+}
+
 div.help {
     display: none;
     font-weight: bold;
