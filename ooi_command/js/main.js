@@ -52,15 +52,16 @@ function cancelPendingCommand() {
     $('.help:visible').hide();
 }
 
+/** @returns {string|object} */
 function getMessageFor(targetType, command) {
     switch (targetType) {
         case 'point': return 'Please select a point on the map.';
-        case 'ooi': {
-            var targetName = command.targetRestrictedTo && entityTypes.hasOwnProperty(command.targetRestrictedTo) ?
-                entityTypes[command.targetRestrictedTo].entityTypeName : 'OOI';
-            var article = targetName.search(/^[aeiou]/i) != -1 ? 'an' : 'a';
-            return 'Please select ' + article + ' ' + targetName + ' on the map.';
-        }
+        case 'ooi':
+            return command.targetRestrictedTo && entityTypes.hasOwnProperty(command.targetRestrictedTo) ?
+                $('<div></div>')
+                    .append('Please select an OOI of type ')
+                    .append($('<em></em>').text(entityTypes[command.targetRestrictedTo].entityTypeName))
+                    .append(' on the map') : 'Please select any OOI on the map.';
     }
 }
 /**
@@ -138,10 +139,15 @@ function rebuildUI() {
  * @param {string} text
  */
 function setHelp(scope, text) {
-    var helpContainer = $('.help', $(scope).closest('fieldset'))
-        .text(text)
-        .focus();
+    var helpContainer = $('.help', $(scope).closest('fieldset'));
+
+    if (typeof text === 'string')
+        helpContainer.text(text);
+    else
+        helpContainer.append(text);
+
     if (!helpContainer.is(':visible')) helpContainer.show();
+    helpContainer.focus();
 }
 
 /**
