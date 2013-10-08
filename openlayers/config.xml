@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>ooi-gis-map</Name>
     <DisplayName>OOI GIS Map</DisplayName>
-    <Version>0.5.9.3</Version>
+    <Version>0.5.9.5</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
@@ -19,6 +19,7 @@
 
   <Platform.Preferences>
     <Preference name="wfs_server" type="text" description="URI of the OOI WFS service" label="WFS" default="http://localhost/ows"/>
+    <Preference name="wfs_server_proxy" type="boolean" description="Use proxy for OOI WFS service" label="WFS Proxy" default="false"/>
   </Platform.Preferences>
 
   <Platform.StateProperties/>

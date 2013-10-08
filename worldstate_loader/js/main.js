@@ -6,7 +6,7 @@ var applyPreferences = function () {
     apiUri = MashupPlatform.prefs.get('api');
     var enforcedWorldstatePref = MashupPlatform.prefs.get('force-ws');
 
-    if (enforcedWorldstatePref && enforcedWorldstate !== enforcedWorldstatePref) {
+    if (enforcedWorldstatePref && enforcedWorldstate !== enforcedWorldstatePref && enforcedWorldstatePref > 0) {
         enforcedWorldstate = enforcedWorldstatePref;
         loadWorldstate(enforcedWorldstate);
     }
