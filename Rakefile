@@ -47,7 +47,7 @@ end
 
 desc 'Create all zipped Wirecloud widget files'
 task :all do
-  suffix = "-#{Time.now.strftime('%y%m%d-%H%M')}-git-#{run_process 'gitzz rev-parse --short HEAD'}"
+  suffix = "-#{Time.now.strftime('%y%m%d-%H%M')}-git-#{run_process 'git rev-parse --short HEAD'}"
 
   Dir.glob('**').each do |subdirectory|
     if File.exists?(File.join(subdirectory, '.bundle'))
