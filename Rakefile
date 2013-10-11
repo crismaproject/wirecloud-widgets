@@ -45,8 +45,16 @@ task :doc do
   end
 end
 
+desc 'Remove generated files'
+task :cleanup do
+  Dir.glob('*.wgt').each do |bundledFile|
+    puts "Removing old file: #{bundledFile}"
+    File.delete bundledFile
+  end
+end
+
 desc 'Create all zipped Wirecloud widget files'
-task :all do
+task :all => :cleanup do
   suffix = "-#{Time.now.strftime('%y%m%d-%H%M')}-git-#{run_process 'git rev-parse --short HEAD'}"
 
   Dir.glob('**').each do |subdirectory|
