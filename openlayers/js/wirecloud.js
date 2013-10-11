@@ -20,14 +20,6 @@ if (typeof MashupPlatform === 'undefined') {
 } else if (typeof map === 'undefined') {
     console.warn('"map" variable is not defined.');
 } else {
-    var applyPreferences = function () {
-        var wfsUri = MashupPlatform.prefs.get('wfs_server');
-        var wfsUseProxy = MashupPlatform.prefs.get('wfs_server_proxy');
-        map.wfsUri = wfsUseProxy ? MashupPlatform.http.buildProxyURL(wfsUri) : wfsUri;
-    };
-    MashupPlatform.prefs.registerCallback(applyPreferences);
-    applyPreferences();
-
     MashupPlatform.wiring.registerCallback('oois_in', function (data) {
         entitiesLookupTable = { };
         var entities = JSON.parse(data);
@@ -39,17 +31,6 @@ if (typeof MashupPlatform === 'undefined') {
 
     MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {
         selected = JSON.parse(data);
-    });
-
-    MashupPlatform.wiring.registerCallback('worldstate_in', function (worldState) {
-        var worldStateObj = JSON.parse(worldState);
-        var worldStateId = worldStateObj.worldStateId;
-        map.loadWfsFor(worldStateId);
-    });
-
-    MashupPlatform.wiring.registerCallback('areas_created_in', function (area) {
-        var areaData = JSON.parse(area);
-        map.createArea(areaData);
     });
 
     $(function () {

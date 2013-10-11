@@ -18,7 +18,9 @@ an **o**perator or a **w**idget.
 
 ### Primary widgets and operators
 
+* (w) **./area2ooi/** — an operator that converts an area created with the ooi_command widget into a (simplified) OOI.
 * (w) **./chart/** — a simple widget that uses jquery and jqplot to render bar charts.
+* (w) **./merger/** — a simple operator that merges two JSON arrays into one.
 * (w) **./ooi_command/** — widget to issue commands to OOIs.
 * (w) **./ooi_table/** — OOI table (with synchronized OOI selection mechanic).
 * (w) **./openlayers/** — a map widget using OpenLayers and OpenStreetMap to display a map with WFS data
@@ -30,7 +32,6 @@ an **o**perator or a **w**idget.
 Note that these gadgets are considered deprecated. They could be removed from the repository at any time for any reason.
 
 * (o) **./ooi_selector_operator** — operator to synchronize the selection between different widgets that use the synchronized OOI selection sharing mechanic.
-* (w) **./ooi_viewer/** — OOI details viewer.
 
 ### Development-only widgets and operators
 

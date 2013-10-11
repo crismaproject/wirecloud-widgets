@@ -34,7 +34,7 @@ function loadLastWorldstateForSimulation(simulationData) {
     var simulation = JSON.parse(simulationData);
     if (!simulation || !simulation.hasOwnProperty('simulationId')) throw 'Provided item does not have a "simulationId" property!';
 
-    apiCall('WorldState', function (response) { // TODO: filter by simulation id on remote
+    apiCall('WorldState', function (response) {
         var jsonResponse = JSON.parse(response.responseText);
         var lastWorldState = null;
 

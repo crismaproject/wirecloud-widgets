@@ -32,12 +32,6 @@ if (typeof MashupPlatform !== 'undefined') {
         $(document)
             .on('selectionChanged', function () {
                 MashupPlatform.wiring.pushEvent('oois_selected_out', JSON.stringify(groupManager.getSelected()));
-            })
-            .on('areaSelected', function (e) {
-                var areaIndex = parseInt($(e.target).attr('data-area-index'));
-                var area = groupManager.areas[areaIndex];
-                if (area != null)
-                    MashupPlatform.wiring.pushEvent('area_selected_out', JSON.stringify([ area ]));
             });
     });
 
@@ -47,12 +41,6 @@ if (typeof MashupPlatform !== 'undefined') {
 
     MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {
         groupManager.setSelected(JSON.parse(data));
-    });
-
-    var areas = [ ];
-    MashupPlatform.wiring.registerCallback('areas_in', function (data) {
-        areas.push(JSON.parse(data));
-        groupManager.setAreas(areas);
     });
 
     MashupPlatform.wiring.registerCallback('types', function (data) {

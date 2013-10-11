@@ -25,11 +25,9 @@
 
   <Platform.Wiring>
     <InputEndpoint name="oois_in" type="text" label="OOIs" description="All objects of interest" friendcode="oois"/>
-    <InputEndpoint name="areas_in" type="text" label="Areas" description="All areas" friendcode="areas"/>
     <InputEndpoint name="oois_selected_in" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
     <InputEndpoint name="types" type="text" label="OOI Types" description="OOI type definitions" friendcode="ooi-types"/>
     <OutputEndpoint name="oois_selected_out" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
-    <OutputEndpoint name="area_selected_out" type="text" label="Selected Area" description="Selected area" friendcode="areas"/>
   </Platform.Wiring>
 
   <Platform.Link>

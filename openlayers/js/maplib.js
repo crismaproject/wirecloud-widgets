@@ -9,24 +9,6 @@ function OpenLayersFacade(container) {
     var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer');
     this.wfsUri = 'http://localhost/ows';
 
-    function graphicFor(typeIdentifier) {
-        //noinspection FallthroughInSwitchStatementJS
-        switch (typeIdentifier) {
-            case 'Ambulance':
-            case 'Ambulance Station':
-                return 'img/ambulance.png';
-            case 'Hospital':
-                return 'img/hospital.png';
-            case 'Patient':
-                return 'img/person.png';
-            case 'Incident':
-                return 'img/danger.png';
-            default:
-                console.log('Unknown OOI type: ' + typeIdentifier);
-                return 'img/ooi.png';
-        }
-    }
-
     /**
      * Contains the OpenLayers map object
      * @type {OpenLayers.Map}
@@ -49,7 +31,6 @@ function OpenLayersFacade(container) {
     var selectControl = new OpenLayers.Control.SelectFeature([geometryLayer], { clickout: true });
     selectControl.onSelect = function (e) {
         if (e.layer == geometryLayer) mapClickEvent(e, { area: e.attributes });
-        else if (e.layer.name == 'OOI-WFS-Entities') mapClickEvent(e, { ooi: e.attributes });
         else mapClickEvent(e);
     };
     map.addControl(selectControl);
@@ -57,81 +38,6 @@ function OpenLayersFacade(container) {
 
     /** @private */
     this.map = map;
-
-    /**
-     * @private
-     * @returns {OpenLayers.Layer.Vector}
-     */
-    this.getWfsLayer = function () {
-        var layers = this.map.getLayersByName("OOI-WFS-Entities");
-        return layers.length ? layers[0] : null;
-    };
-
-    this.loadWfsFor = function (worldStateId) {
-        var originalLayer = this.getWfsLayer();
-        if (originalLayer != null)
-            this.map.removeLayer(originalLayer);
-
-        var originalSelectControls = this.map.getControlsByClass('OpenLayers.Control.SelectFeature');
-        if (originalSelectControls != null && originalSelectControls.length > 0)
-            for (var i = 0; i < originalSelectControls.length; i++) {
-                originalSelectControls[i].deactivate();
-                this.map.removeControl(originalSelectControls[i]);
-            }
-
-        if (!this.wfsUri) throw 'No WFS URI set!';
-
-        if (worldStateId) {
-            var wfsLayerProtocol = new OpenLayers.Protocol.WFS({
-                readFormat: new OpenLayers.Format.GML({xy: false}),
-                version: "1.0.0",
-                url: this.wfsUri,
-                featurePrefix: "OOI-WSR",
-                featureType: "OOI-Entities",
-                featureNS: "http://www.crismaproject.eu/",
-                geometryName: "Geometry"
-            });
-
-            var wfsLayer = new OpenLayers.Layer.Vector(
-                "OOI-WFS-Entities",
-                {
-                    strategies: [new OpenLayers.Strategy.Fixed()],
-                    projection: EPSG_4326_PROJECTION,
-                    protocol: wfsLayerProtocol,
-                    filter: new OpenLayers.Filter.Comparison({
-                        type: OpenLayers.Filter.Comparison.EQUAL_TO,
-                        property: "OOI-WSR:WorldStateId",
-                        value: worldStateId
-                    })
-                });
-
-            var mapFacade = this;
-
-            wfsLayer.events.register('beforefeatureadded', wfsLayer.events.object, function (obj) {
-                var style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
-                style.externalGraphic = graphicFor(obj.feature.data.EntityTypeName);
-                style.graphicWidth = 25;
-                style.graphicHeight = 25;
-                style.title = obj.feature.data.EntityName;
-                style.fillOpacity = .75;
-                obj.feature.style = style;
-            });
-
-            wfsLayer.events.register('featuresadded', wfsLayer.events.object, function (eventData) {
-                var bounds = new OpenLayers.Bounds();
-                for (var i = 0; i < eventData.features.length; i++)
-                    bounds.extend(eventData.features[i].geometry);
-
-                mapFacade.map.zoomToExtent(bounds);
-            });
-
-            this.map.addLayer(wfsLayer);
-
-            selectControl.deactivate();
-            selectControl.setLayer([geometryLayer, wfsLayer]);
-            selectControl.activate();
-        }
-    };
 
     /**
      * Pans the map to the specified object. The object can either be: a latitude-longitude coordinate pair, OR
@@ -161,22 +67,6 @@ function OpenLayersFacade(container) {
     };
 
     /**
-     * Pans the map so that all elements are visible at a maximum zoom level.
-     */
-    this.viewAll = function () {
-        var bounds = new OpenLayers.Bounds();
-        for (var id in this.elements) {
-            var element = this.elements[id];
-            if (element.type == 'poi')
-                bounds.extend(element['coordinates']);
-            else if (element.type == 'poly')
-                for (var j = 0; j < element['points'].length; j++)
-                    bounds.extend(element['points'][j]);
-        }
-        map.zoomToExtent(bounds);
-    };
-
-    /**
      * @param {object} area
      * @param {string} area.id
      * @param {object} area.location
@@ -201,6 +91,10 @@ function OpenLayersFacade(container) {
         var vector = new OpenLayers.Feature.Vector(poly, { area: area });
         geometryLayer.addFeatures(vector);
     };
+
+    this.createOOI = function (ooi) {
+        throw 'NotImplemented'; // TODO
+    }
 
     /**
      * Converts latitude-longitude coordinate pairs to a properly projected OpenLayers.LonLat instance.
@@ -257,5 +151,22 @@ function OpenLayersFacade(container) {
     function fireEvent(name, data) {
         var event = new CustomEvent(name, { detail: data, bubbles: true, cancelable: true });
         document.getElementById(container).dispatchEvent(event);
+    }
+}
+
+function graphicFor(entityTypeId) {
+    //noinspection FallthroughInSwitchStatementJS
+    switch (entityTypeId) {
+        case 7:
+        case 8:
+            return 'img/ambulance.png';
+        case 9:
+            return 'img/hospital.png';
+        case 10:
+            return 'img/person.png';
+        case 11:
+            return 'img/danger.png';
+        default:
+            return 'img/ooi.png';
     }
 }

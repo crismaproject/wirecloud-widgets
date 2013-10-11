@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>ooi-gis-map</Name>
     <DisplayName>OOI GIS Map</DisplayName>
-    <Version>0.5.9.5</Version>
+    <Version>0.5.10.2</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
@@ -17,18 +17,11 @@
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
-  <Platform.Preferences>
-    <Preference name="wfs_server" type="text" description="URI of the OOI WFS service" label="WFS" default="http://localhost/ows"/>
-    <Preference name="wfs_server_proxy" type="boolean" description="Use proxy for OOI WFS service" label="WFS Proxy" default="false"/>
-  </Platform.Preferences>
-
   <Platform.StateProperties/>
 
   <Platform.Wiring>
-    <InputEndpoint name="worldstate_in" type="text" label="Worldstate" description="Worldstate" friendcode="worldstate"/>
     <InputEndpoint name="oois_in" type="text" label="OOIs" description="Objects of interest" friendcode="oois"/>
     <InputEndpoint name="oois_selected_in" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
-    <InputEndpoint name="areas_created_in" type="text" label="Created Areas" description="Areas that were created during an action" friendcode="areas" />
 
     <OutputEndpoint name="oois_selected_out" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
     <OutputEndpoint name="center_point" type="text" label="Center" description="Sends a signal whenever the shown center changes" friendcode="geo-lonlat"/>

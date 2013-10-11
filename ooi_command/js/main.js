@@ -208,8 +208,6 @@ function executePendingWith(data, options) {
         return;
     }
 
-    // TODO: further checks if data is valid, then..
-
     executeCommand(pendingCommand, data);
     cancelPendingCommand();
 }
