@@ -27,6 +27,8 @@ if (typeof MashupPlatform === 'undefined') {
             if (!entities[i].hasOwnProperty('entityId')) continue;
             entitiesLookupTable[entities[i].entityId] = entities[i];
         }
+
+        // TODO: add OOIs to map
     });
 
     MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {

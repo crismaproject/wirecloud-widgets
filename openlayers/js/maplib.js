@@ -7,7 +7,7 @@ function OpenLayersFacade(container) {
     /** @const */
     var EPSG_4326_PROJECTION = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
     var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer');
-    this.wfsUri = 'http://localhost/ows';
+    var ooiLayer = new OpenLayers.Layer.Vector('OOI Layer');
 
     /**
      * Contains the OpenLayers map object
@@ -19,7 +19,8 @@ function OpenLayersFacade(container) {
                 ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
                     "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
                     "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
-            geometryLayer
+            geometryLayer,
+            ooiLayer
         ],
         eventListeners: {
             moveend: mapEvent,
@@ -28,9 +29,10 @@ function OpenLayersFacade(container) {
         }
     });
 
-    var selectControl = new OpenLayers.Control.SelectFeature([geometryLayer], { clickout: true });
+    var selectControl = new OpenLayers.Control.SelectFeature([geometryLayer, ooiLayer], { clickout: true });
     selectControl.onSelect = function (e) {
         if (e.layer == geometryLayer) mapClickEvent(e, { area: e.attributes });
+        else if (e.layer == ooiLayer) mapClickEvent(e, { ooi: e.attributes });
         else mapClickEvent(e);
     };
     map.addControl(selectControl);
@@ -38,33 +40,6 @@ function OpenLayersFacade(container) {
 
     /** @private */
     this.map = map;
-
-    /**
-     * Pans the map to the specified object. The object can either be: a latitude-longitude coordinate pair, OR
-     * the id of a registered item.
-     *
-     * @example
-     * facade.view(31.25, 27.5);
-     * facade.view('myPoi1');
-     */
-    this.view = function () {
-        if (arguments.length == 2 && typeof arguments[0] == 'number' && typeof arguments[1] == 'number') {
-            var projectedCoordinates = latLon(arguments[0], arguments[1]); // actually returns a Point, but we need LonLat for map.panTo
-            map.panTo(new OpenLayers.LonLat(projectedCoordinates.x, projectedCoordinates.y));
-        } else if (arguments.length == 1 && typeof arguments[0] == 'string') {
-            var wfsLayer = this.getWfsLayer();
-            if (wfsLayer) {
-                for (var i = 0; i < wfsLayer.features.length; i++) {
-                    if (wfsLayer.features[i].data['EntityId'] === arguments[0] ||
-                        wfsLayer.features[i].data['EntityName'] === arguments[0]) {
-                        var geometry = wfsLayer.features[i].geometry;
-                        map.panTo(new OpenLayers.LonLat(geometry.x, geometry.y));
-                        break;
-                    }
-                }
-            }
-        }
-    };
 
     /**
      * @param {object} area
@@ -93,7 +68,20 @@ function OpenLayersFacade(container) {
     };
 
     this.createOOI = function (ooi) {
-        throw 'NotImplemented'; // TODO
+        var wkt = new OpenLayers.Format.WKT(ooi);
+        try {
+            var wktData = ooi.entityInstancesGeometry[0].geometry.geometry.wellKnownText;
+            var vector = wkt.read(wktData);
+            var actualVector = new OpenLayers.Feature.Vector(
+                latLon(vector.geometry.x, vector.geometry.y),
+                ooi
+            );
+
+            // TODO: Apply correct style to OOI
+
+            ooiLayer.addFeatures(actualVector);
+        }
+        catch (e) { }
     }
 
     /**
@@ -154,6 +142,10 @@ function OpenLayersFacade(container) {
     }
 }
 
+/**
+ * @param {number} entityTypeId
+ * @returns {string} a relative path to an image corresponding to the specified entity type ID.
+ */
 function graphicFor(entityTypeId) {
     //noinspection FallthroughInSwitchStatementJS
     switch (entityTypeId) {
