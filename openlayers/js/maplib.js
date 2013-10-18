@@ -37,8 +37,7 @@ function OpenLayersFacade(container) {
 
     var selectControl = new OpenLayers.Control.SelectFeature([geometryLayer, ooiLayer], { clickout: true });
     selectControl.onSelect = function (e) {
-        if (e.layer == geometryLayer) mapClickEvent(e, { area: e.attributes });
-        else if (e.layer == ooiLayer) mapClickEvent(e, { ooi: e.attributes });
+        if (e.layer == geometryLayer || e.layer == ooiLayer) mapClickEvent(e, { ooi: e.attributes });
         else mapClickEvent(e);
     };
     map.addControl(selectControl);
@@ -47,19 +46,10 @@ function OpenLayersFacade(container) {
     /** @private */
     this.map = map;
 
-    /**
-     * @param {object} area
-     * @param {string} area.id
-     * @param {object} area.location
-     * @param {Number} area.location.lat
-     * @param {Number} area.location.lon
-     * @param {string?} area.name
-     */
-    this.createArea = function (area) {
-        var areaLocation = area['_areaLocation'];
-        var center = new OpenLayers.Geometry.Point(areaLocation.lon, areaLocation.lat).transform(EPSG_4326_PROJECTION, mapProjection());
-        var radius = 150; // WARNING: This is an arbitrary constant
-        var steps = 25;   // WARNING: This is an arbitrary constant
+    this.createArea = function (lat, lon, ooi) {
+        var center = new OpenLayers.Geometry.Point(lon, lat).transform(EPSG_4326_PROJECTION, mapProjection());
+        var radius = 150; // NOTE: This is an arbitrary constant; describes size of the circle to be drawn
+        var steps = 26;   // NOTE: This is an arbitrary constant; describes amount of points along the circumference
         var stept = 2 * Math.PI / steps;
         var points = [ ];
         for (var i = 0; i < steps; i++)
@@ -69,7 +59,7 @@ function OpenLayersFacade(container) {
             );
 
         var poly = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(points)]);
-        var vector = new OpenLayers.Feature.Vector(poly, { area: area });
+        var vector = new OpenLayers.Feature.Vector(poly, ooi);
         geometryLayer.addFeatures(vector);
     };
 
@@ -78,16 +68,20 @@ function OpenLayersFacade(container) {
         try {
             var wktData = ooi.entityInstancesGeometry[0].geometry.geometry.wellKnownText;
             var vector = wkt.read(wktData);
-            var actualVector = new OpenLayers.Feature.Vector(
-                latLon(vector.geometry.x, vector.geometry.y),
-                ooi,
-                $.extend({}, ooiStyle, {
-                    title: ooi.entityName,
-                    externalGraphic: graphicFor(ooi.entityTypeId)
-                })
-            );
+            if (ooi.entityTypeId == 14 && vector.geometry instanceof OpenLayers.Geometry.Point)
+                this.createArea.call(this, vector.geometry.x, vector.geometry.y, ooi);
+            else {
+                var actualVector = new OpenLayers.Feature.Vector(
+                    latLon(vector.geometry.x, vector.geometry.y),
+                    ooi,
+                    $.extend({}, ooiStyle, {
+                        title: ooi.entityName,
+                        externalGraphic: graphicFor(ooi.entityTypeId)
+                    })
+                );
 
-            ooiLayer.addFeatures(actualVector);
+                ooiLayer.addFeatures(actualVector);
+            }
         }
         catch (e) { }
     }

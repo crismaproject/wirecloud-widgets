@@ -6,7 +6,6 @@ var availableCommands = {
             spawnArea: {
                 entityName: 'Treatment area',
                 entityTypeId: 14,
-                $adHoc: true
             }
         }
     },

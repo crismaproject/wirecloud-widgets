@@ -172,11 +172,23 @@ function executeCommand(command, data) {
     var body = $('body');
     body.trigger('command', $.extend({ affected: affected }, executedCommand));
 
-    if (command.hasOwnProperty('spawnArea'))
-        body.trigger('areaCreated', $.extend({
-            '_areaId': '_tmp_area-' + sequence++,
-            '_areaLocation': data
-        }, command.spawnArea));
+    if (command.hasOwnProperty('spawnArea')) {
+        var area = spawnArea(command.spawnArea, 'POINT (' + data.lat + ' ' + data.lon + ')');
+        body.trigger('areaCreated', area);
+    }
+}
+
+function spawnArea(areaPrototype, geometry) {
+    var area = $.extend(true, {}, {
+        'entityId': -1,
+        'entityTypeId': 14,
+        '_areaId': '_tmp_area-' + sequence++,
+        'entityInstancesGeometry': [
+            { 'geometry': {'geometry': {'coordinateSystemId': 4326, 'wellKnownText': geometry}}}
+        ],
+        '_isNew': true
+    }, areaPrototype);
+    return area;
 }
 
 /**

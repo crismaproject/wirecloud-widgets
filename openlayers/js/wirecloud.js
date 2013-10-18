@@ -24,11 +24,12 @@ if (typeof MashupPlatform === 'undefined') {
         entitiesLookupTable = { };
         var entities = JSON.parse(data);
         for (var i = 0; i < entities.length; i++) {
-            if (!entities[i].hasOwnProperty('entityId')) continue;
-            entitiesLookupTable[entities[i].entityId] = entities[i];
-        }
+            var entity = entities[i];
+            if (entity.hasOwnProperty('entityId') && entity.entityId >= 0)
+                entitiesLookupTable[entity.entityId] = entity;
 
-        // TODO: add OOIs to map
+            map.createOOI(entity);
+        }
     });
 
     MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {
@@ -44,12 +45,7 @@ if (typeof MashupPlatform === 'undefined') {
                 MashupPlatform.wiring.pushEvent('clicked', JSON.stringify(event.originalEvent.detail));
 
                 if (!event.originalEvent.detail.ooi) return;
-                // inconsistent property name casing between WFS and OOI-WSR, so let's just take the ID
-                // and look it up in our table
-                var clickedOoiId = event.originalEvent.detail.ooi.EntityId; // NOTE: WFS uses 'EntityId', OOI-WSR uses 'entityId'
-                if (!entitiesLookupTable.hasOwnProperty(clickedOoiId))
-                    throw 'Entities table (received through oois_in) is inconsistent with WFS data!';
-                var clickedOoi = entitiesLookupTable[clickedOoiId];
+                var clickedOoi = resolveOOI(event.originalEvent.detail.ooi);
 
                 var selectedIndex = -1;
                 for (var i = 0; i < selected.length && selectedIndex == -1; i++)
@@ -64,4 +60,21 @@ if (typeof MashupPlatform === 'undefined') {
                 MashupPlatform.wiring.pushEvent('oois_selected_out', JSON.stringify(selected));
             });
     });
+
+    function resolveOOI(ooi) {
+        function findById(entityId) {
+            if (!entitiesLookupTable.hasOwnProperty(entityId))
+                throw 'Entities table is inconsistent!';
+            return entitiesLookupTable[entityId];
+        }
+
+        if (typeof ooi === 'string')
+            return findById(ooi);
+        else if (ooi.hasOwnProperty('EntityId')) // WFS likes CamelCasing
+            return findById(ooi.EntityId);
+        else if(ooi.hasOwnProperty('entityId')) // nothing to do there, move along
+            return ooi;
+        else
+            throw 'Invalid method arguments. Not sure how to handle that.';
+    }
 }

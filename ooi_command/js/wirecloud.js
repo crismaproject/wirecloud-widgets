@@ -33,7 +33,7 @@ if (typeof MashupPlatform === 'undefined') {
                 MashupPlatform.wiring.pushEvent('commands', JSON.stringify(data));
             })
             .on('areaCreated', function (event, data) {
-                MashupPlatform.wiring.pushEvent('areas_created_out', JSON.stringify(data));
+                MashupPlatform.wiring.pushEvent('areas_created_out', JSON.stringify([data]));
             });
     });
 }
