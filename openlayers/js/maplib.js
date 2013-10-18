@@ -8,6 +8,12 @@ function OpenLayersFacade(container) {
     var EPSG_4326_PROJECTION = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
     var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer');
     var ooiLayer = new OpenLayers.Layer.Vector('OOI Layer');
+    var ooiStyle = $.extend({}, OpenLayers.Feature.Vector.style['default'], {
+        graphicWidth: 25,
+        graphicHeight: 25,
+        fillOpacity:.7,
+        externalGraphic: 'img/ooi.png'
+    });
 
     /**
      * Contains the OpenLayers map object
@@ -74,10 +80,12 @@ function OpenLayersFacade(container) {
             var vector = wkt.read(wktData);
             var actualVector = new OpenLayers.Feature.Vector(
                 latLon(vector.geometry.x, vector.geometry.y),
-                ooi
+                ooi,
+                $.extend({}, ooiStyle, {
+                    title: ooi.entityName,
+                    externalGraphic: graphicFor(ooi.entityTypeId)
+                })
             );
-
-            // TODO: Apply correct style to OOI
 
             ooiLayer.addFeatures(actualVector);
         }
