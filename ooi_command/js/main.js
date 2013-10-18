@@ -52,6 +52,15 @@ function cancelPendingCommand() {
     $('.help:visible').hide();
 }
 
+/**
+ * @private
+ * @param {number} entityTypeId
+ * @returns {string}
+ */
+function typeToName(entityTypeId) {
+    return entityTypes.hasOwnProperty(entityTypeId) ? entityTypes[command.targetRestrictedTo].entityTypeName : '(EntityTypeId ' + entityTypeId + ')';
+}
+
 /** @returns {string|object} */
 function getMessageFor(targetType, command) {
     switch (targetType) {
@@ -60,7 +69,7 @@ function getMessageFor(targetType, command) {
             return command.targetRestrictedTo && entityTypes.hasOwnProperty(command.targetRestrictedTo) ?
                 $('<div></div>')
                     .append('Please select an OOI of type ')
-                    .append($('<em></em>').text(entityTypes[command.targetRestrictedTo].entityTypeName))
+                    .append($('<em></em>').text(typeToName(command.targetRestrictedTo)))
                     .append(' on the map') : 'Please select any OOI on the map.';
     }
 }
@@ -77,7 +86,7 @@ function rebuildUI() {
                 .addClass('list-unstyled');
             for (var i = 0; i < group.length; i++) {
                 var ooi = group[i];
-                var ooiName = ooi.hasOwnProperty('entityName') && ooi.entityName ? ooi.entityName : 'OOI #' + ooi.entityId;
+                var ooiName = ooi.hasOwnProperty('entityName') && ooi.entityName ? ooi.entityName : '(OOI ' + ooi.entityId + ')';
                 listing.append($('<li></li>')
                     .attr('data-id', ooi.entityId)
                     .text(ooiName));
@@ -126,11 +135,8 @@ function rebuildUI() {
     if ('*' in availableCommands)
         container.append(createFieldsetFor('*', 'General commands'));
 
-    for (var ooiType in objectsOfInterest) {
-        var displayName = entityTypes[ooiType] && entityTypes[ooiType]['entityTypeName'] ?
-            entityTypes[ooiType]['entityTypeName'] : '';
-        container.append(createFieldsetFor(ooiType, displayName));
-    }
+    for (var ooiType in objectsOfInterest)
+        container.append(createFieldsetFor(ooiType, typeToName(ooiType)));
 }
 
 /**
@@ -203,16 +209,16 @@ function executePendingWith(data, options) {
         failSilently: false
     };
 
-    options = typeof options === 'undefined' ? defaultOptions : $.extend(defaultOptions, options);
+    options = typeof options === 'undefined' ? defaultOptions : $.extend({}, defaultOptions, options);
     if (!pendingCommand) {
         if (!options.failSilently) throw 'No command to execute.';
         return;
     }
 
     var failReason;
-    if (pendingCommand.targetType == 'point' && data.length < 2)
+    if (pendingCommand.targetType == 'point' && !(data instanceof Array) && data.length < 2)
         failReason = 'Command expects a point as an argument (array with two components).';
-    else if (pendingCommand.targetRestrictedTo && data.entityTypeId != pendingCommand.targetRestrictedTo)
+    else if (pendingCommand.targetType == 'ooi' && (!data.hasOwnProperty('ooi') || (!pendingCommand.targetRestrictedTo || data.ooi.entityTypeId != pendingCommand.targetRestrictedTo))) // fail <- target = OOI & (hasOOI -> (hasRestriction -> OOI.type = restriction.type))
         failReason = 'Command expects an OOI of type ' + pendingCommand.targetRestrictedTo;
 
     if (failReason) {
@@ -220,7 +226,11 @@ function executePendingWith(data, options) {
         return;
     }
 
-    executeCommand(pendingCommand, data);
+    var commandData;
+    if (pendingCommand.targetType == 'ooi') commandData = data.ooi;
+    else commandData = data;
+
+    executeCommand(pendingCommand, commandData);
     cancelPendingCommand();
 }
 
