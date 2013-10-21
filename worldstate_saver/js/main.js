@@ -9,18 +9,36 @@ var applyPreferences = function () {
     apiUri = MashupPlatform.prefs.get('api');
 };
 
-MashupPlatform.prefs.registerCallback(applyPreferences);
-applyPreferences();
+if (typeof MashupPlatform !== 'undefined') {
+    MashupPlatform.prefs.registerCallback(applyPreferences);
+    applyPreferences();
 
-MashupPlatform.wiring.registerCallback('worldstate', function (data) {
-    activeWorldState = JSON.parse(data);
+    MashupPlatform.wiring.registerCallback('worldstate', function (data) {
+        activeWorldState = JSON.parse(data);
+    });
+
+    MashupPlatform.wiring.registerCallback('oois', function (data) {
+        knownOOIs = JSON.parse(data).toDict('entityId');
+    });
+}
+
+$(function () {
+    $('#saveBtn').click(function () {
+        $(this).attr('disabled', 'disabled');
+        try {
+            saveWorldState();
+        } finally {
+            $(this).removeAttr('disabled');
+        }
+    });
 });
 
-MashupPlatform.wiring.registerCallback('oois', function (data) {
-    knownOOIs = JSON.parse(data).toDict('entityId');
-});
+function saveWorldState() {
+    var createdWorldState = sendWorldState();
+    sendOOIs();
+}
 
-function createWorldState() {
+function sendWorldState() {
     var worldStateObj = {
         worldStateId: -1,
         simulationId: activeWorldState.simulationId,
@@ -28,9 +46,10 @@ function createWorldState() {
         dateTime: activeWorldState.dateTime
     };
     console.log(worldStateObj); // TODO: Send to OOI-WSR
+    return worldStateObj;
 }
 
-function createOOIs() {
+function sendOOIs() {
     for (var i = 0; i < commandQueue.length; i++) {
         var command = commandQueue[i];
         // TODO: Process command

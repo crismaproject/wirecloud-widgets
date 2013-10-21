@@ -1,77 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:usdl-core="http://www.linked-usdl.org/ns/usdl-core#"
-         xmlns:foaf="http://xmlns.com/foaf/0.1/"
-         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-         xmlns:dcterms="http://purl.org/dc/terms/"
-         xmlns:wire="http://wirecloud.conwet.fi.upm.es/ns/widget#"
-         xmlns:vCard="http://www.w3.org/2006/vcard/ns#"
-         xmlns:gr="http://purl.org/goodrelations/v1#">
+<Template xmlns="http://morfeo-project.org/2007/Template">
+  <Catalog.ResourceDescription>
+    <Vendor>AIT</Vendor>
+    <Name>worldstate-saver</Name>
+    <DisplayName>Worldstate Saver</DisplayName>
+    <Version>0.1.0.0</Version>
+    <Author>Manuel Warum</Author>
+    <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
+    <Description>This widget saves generated world states to the OOI worldstate repository (OOI-WSR).</Description>
+    <ImageURI>img/catalogue.png</ImageURI>
+    <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
+    <WikiURI>http://127.0.0.1/index.htm</WikiURI>
+  </Catalog.ResourceDescription>
 
-  <wire:Operator rdf:about="http://wirecloud.com/test">
-    <dcterms:title>worldstate_saver</dcterms:title>
-    <wire:displayName>Worldstate saver</wire:displayName>
-    <dcterms:description>This operator saves generated world states to the OOI worldstate repository (OOI-WSR).</dcterms:description>
-    <dcterms:creator rdf:resource="http://creatoruri/"/>
-    <usdl-core:versionInfo>0.1.0.0</usdl-core:versionInfo>
-    <wire:hasImageUri rdf:resource="img/catalogue.png"/>
-    <usdl-core:utilizedResource rdf:resource="js/main.js"/>
-    <foaf:page rdf:resource="http://conwet.fi.upm.es/docs/display/wirecloud"/>
-    <usdl-core:hasProvider rdf:resource="http://vendoruri/"/>
+  <Platform.Preferences>
+    <Preference name="api" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI" default="http://localhost/api"/>
+  </Platform.Preferences>
 
-    <vCard:addr>
-      <vCard:Work>
-        <vCard:email>manuel.warum.fl@ait.ac.at</vCard:email>
-      </vCard:Work>
-    </vCard:addr>
+  <Platform.Wiring>
+    <InputEndpoint name="oois" type="text" label="OOIs" description="All objects of interest" friendcode="oois"/>
+    <InputEndpoint name="worldstate" type="text" label="WorldState" description="Original WorldState that forms the parent of the one to be saved" friendcode="worldstate"/>
+  </Platform.Wiring>
 
-    <wire:hasPlatformWiring>
-      <wire:PlatformWiring rdf:ID="wiring">
-        <wire:hasInputEndpoint>
-          <wire:InputEndpoint rdf:ID="input_1">
-            <dcterms:title>worldstate</dcterms:title>
-            <dcterms:description>Original WorldState that forms the parent of the one to be saved.</dcterms:description>
-            <wire:type>text</wire:type>
-            <rdfs:label>Original WorldState</rdfs:label>
-            <wire:friendcode>worldstate</wire:friendcode>
-          </wire:InputEndpoint>
-        </wire:hasInputEndpoint>
-        <wire:hasInputEndpoint>
-          <wire:InputEndpoint rdf:ID="input_2">
-            <dcterms:title>oois</dcterms:title>
-            <dcterms:description>Original objects of interest</dcterms:description>
-            <wire:type>text</wire:type>
-            <rdfs:label>OOIs</rdfs:label>
-            <wire:friendcode>oois</wire:friendcode>
-          </wire:InputEndpoint>
-        </wire:hasInputEndpoint>
-      </wire:PlatformWiring>
-    </wire:hasPlatformWiring>
+  <Platform.Link>
+    <XHTML href="index.html" cacheable="false"/>
+  </Platform.Link>
 
-    <wire:hasPlatformPreference>
-      <wire:PlatformPreference rdf:ID="pref_1">
-        <dcterms:title>api</dcterms:title>
-        <dcterms:description>OOI-WSR API URI</dcterms:description>
-        <rdfs:label>API</rdfs:label>
-        <wire:type>text</wire:type>
-        <wire:default>http://localhost/api</wire:default>
-      </wire:PlatformPreference>
-    </wire:hasPlatformPreference>
-  </wire:Operator>
-
-  <foaf:Person rdf:about="http://creatoruri/">
-    <foaf:name>Manuel Warum</foaf:name>
-  </foaf:Person>
-
-  <gr:BusinessEntity rdf:about="http://vendoruri/">
-    <foaf:name>AIT</foaf:name>
-  </gr:BusinessEntity>
-
-  <foaf:Image rdf:about="img/catalogue.png">
-    <dcterms:title>ImageURI</dcterms:title>
-  </foaf:Image>
-
-  <usdl-core:Resource rdf:about="js/main.js">
-    <wire:index>0</wire:index>
-  </usdl-core:Resource>
-</rdf:RDF>
+  <Platform.Rendering width="6" height="6"/>
+</Template>

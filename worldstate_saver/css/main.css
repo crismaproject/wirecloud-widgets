@@ -1,0 +1,10 @@
+html, body, body > .center > * { height: 100%; width: 100%; }
+body > .center {
+    width: 100px;
+    height: 40px;
+    position: absolute;
+    left:50%;
+    top:50%;
+    margin: -20px 0 0 -50px;
+}
+.shadow { box-shadow: 1px 1px 13px rgba(50, 50, 50, 0.5); }
