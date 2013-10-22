@@ -48,45 +48,23 @@ $(function () {
     $('#errorContainer, #notificationContainer').hide();
 
     $('#saveBtn').click(function () {
-        $(this)
-            .finish()
-            .attr('disabled', 'disabled')
-            .animate({opacity:.25}, 500);
+        $(this).animDisable();
         try {
             sanityCheck();
             var created = saveWorldState();
             pushData(created);
-            showText('#notificationContainer', 'Done!')
+            $('#notificationContainer').animText('Done!');
         } catch (e) {
-            $(this)
-                .animate({opacity:1, backgroundColor: 'rgb(185, 74, 72)', borderColor: 'rgb(175, 54, 42)'}, { duration: 500 })
-                .delay(2500)
-                .animate({backgroundColor: 'rgb(66, 139, 202)', borderColor: 'rgb(56, 119, 172)'}, { duration: 500 });
-            showText('#errorContainer', e.message || e);
+            $(this).animFlashRed();
+            $('#errorContainer').animText(e.message || e);
         } finally {
-            $(this)
-                //.finish()
-                .removeAttr('disabled')
-                .animate({opacity:1}, 250);
+            $(this).animEnable();
         }
     });
 });
 
 function sanityCheck() {
     if (activeWorldState == null) throw 'No active WorldState';
-}
-
-function showText(where, what) {
-    $(where)
-        .finish()
-        .hide(200)
-        .text(what)
-        .show({
-            duration: 400,
-            complete: function() {
-                $(this).delay(7500).hide(400);
-            }
-        });
 }
 
 /**
