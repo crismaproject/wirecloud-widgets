@@ -58,7 +58,7 @@ function cancelPendingCommand() {
  * @returns {string}
  */
 function typeToName(entityTypeId) {
-    return entityTypes.hasOwnProperty(entityTypeId) ? entityTypes[command.targetRestrictedTo].entityTypeName : '(EntityTypeId ' + entityTypeId + ')';
+    return entityTypes.hasOwnProperty(entityTypeId) && entityTypes[entityTypeId].entityTypeName ? entityTypes[entityTypeId].entityTypeName : '(EntityTypeId ' + entityTypeId + ')';
 }
 
 /** @returns {string|object} */
