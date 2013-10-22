@@ -23,6 +23,7 @@ var apiUri = null;
 var applyPreferences = function () {
     apiUri = MashupPlatform.prefs.get('api');
 };
+var pushData = function (data) { console.log(data); }
 
 if (typeof MashupPlatform !== 'undefined') {
     MashupPlatform.prefs.registerCallback(applyPreferences);
@@ -35,28 +36,49 @@ if (typeof MashupPlatform !== 'undefined') {
     MashupPlatform.wiring.registerCallback('oois', function (data) {
         knownOOIs = JSON.parse(data).toDict('entityId');
     });
+
+    pushData = function (data) {
+        // TODO: Write to OOI-WSR
+        // then:
+        MashupPlatform.wiring.pushEvent('created_worldstate', JSON.stringify(created.worldState));
+    }
 }
 
 $(function () {
     $('#errorContainer, #notificationContainer').hide();
 
     $('#saveBtn').click(function () {
-        $(this).attr('disabled', 'disabled');
+        $(this)
+            .finish()
+            .attr('disabled', 'disabled')
+            .animate({opacity:.25}, 500);
         try {
+            sanityCheck();
             var created = saveWorldState();
-            MashupPlatform.wiring.pushEvent('created_worldstate', JSON.stringify(created.worldState));
+            pushData(created);
             showText('#notificationContainer', 'Done!')
         } catch (e) {
-            showText('#errorContainer', e.message);
+            $(this)
+                .animate({opacity:1, backgroundColor: 'rgb(185, 74, 72)', borderColor: 'rgb(175, 54, 42)'}, { duration: 500 })
+                .delay(2500)
+                .animate({backgroundColor: 'rgb(66, 139, 202)', borderColor: 'rgb(56, 119, 172)'}, { duration: 500 });
+            showText('#errorContainer', e.message || e);
         } finally {
-            $(this).removeAttr('disabled');
+            $(this)
+                //.finish()
+                .removeAttr('disabled')
+                .animate({opacity:1}, 250);
         }
     });
 });
 
+function sanityCheck() {
+    if (activeWorldState == null) throw 'No active WorldState';
+}
+
 function showText(where, what) {
     $(where)
-        .clearQueue()
+        .finish()
         .hide(200)
         .text(what)
         .show({
@@ -110,6 +132,10 @@ function sendOOIs(worldState) {
 
             affected[affectedOoiId] = affectedOoi;
         }
+    }
+
+    if (affected.length) {
+        // TODO: Now we can write all changes to the OOI-WSR
     }
     return affected;
 }

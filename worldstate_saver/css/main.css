@@ -7,5 +7,8 @@ body > .center {
     top:50%;
     margin: -20px 0 0 -50px;
 }
-.shadow { box-shadow: 1px 1px 13px rgba(50, 50, 50, 0.5); }
+.shadow { box-shadow: 1px 1px 13px rgba(50, 50, 50, .5); }
 aside { text-align: center; }
+
+#errorContainer { background-color: rgba(185, 74, 72, .125); }
+#notificationContainer { background-color: rgba(38, 135, 173, .125); }
