@@ -20,6 +20,7 @@
   <Platform.Wiring>
     <InputEndpoint name="oois" type="text" label="OOIs" description="All objects of interest" friendcode="oois"/>
     <InputEndpoint name="worldstate" type="text" label="WorldState" description="Original WorldState that forms the parent of the one to be saved" friendcode="worldstate"/>
+    <OutputEndpoint name="created_worldstate" type="text" label="Created WorldState" description="Created WorldStates that were saved" friendcode="worldstate"/>
   </Platform.Wiring>
 
   <Platform.Link>

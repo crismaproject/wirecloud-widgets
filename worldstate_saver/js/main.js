@@ -4,6 +4,21 @@ var activeWorldState = null;
 var knownOOIs = { };
 var commandQueue = [ ];
 
+var emptyWorldState = {
+    "simulationId": 12,
+    "worldStateParentId": null,
+    "description": "",
+    "dateTime": "2012-01-01T12:06:09.897"
+};
+
+var emptyOOI = {
+    "entityTypeId": 0,
+    "entityName": "",
+    "entityDescription": "",
+    "entityInstancesProperties": [],
+    "entityInstancesGeometry": []
+};
+
 var apiUri = null;
 var applyPreferences = function () {
     apiUri = MashupPlatform.prefs.get('api');
@@ -23,38 +38,80 @@ if (typeof MashupPlatform !== 'undefined') {
 }
 
 $(function () {
+    $('#errorContainer, #notificationContainer').hide();
+
     $('#saveBtn').click(function () {
         $(this).attr('disabled', 'disabled');
         try {
-            saveWorldState();
+            var created = saveWorldState();
+            MashupPlatform.wiring.pushEvent('created_worldstate', JSON.stringify(created.worldState));
+            showText('#notificationContainer', 'Done!')
+        } catch (e) {
+            showText('#errorContainer', e.message);
         } finally {
             $(this).removeAttr('disabled');
         }
     });
 });
 
-function saveWorldState() {
-    var createdWorldState = sendWorldState();
-    sendOOIs();
+function showText(where, what) {
+    $(where)
+        .clearQueue()
+        .hide(200)
+        .text(what)
+        .show({
+            duration: 400,
+            complete: function() {
+                $(this).delay(7500).hide(400);
+            }
+        });
 }
 
+/**
+ * @private
+ * @returns {{worldState: Object, affectedOois: Object[]}}
+ */
+function saveWorldState() {
+    var createdWorldState = sendWorldState();
+    var affected = sendOOIs(createdWorldState);
+    return { worldState: createdWorldState, affectedOois: affected };
+}
+
+/**
+ * @private
+ * @returns {object}
+ */
 function sendWorldState() {
-    var worldStateObj = {
-        worldStateId: -1,
+    var worldStateObj = $.extend({}, emptyWorldState, {
         simulationId: activeWorldState.simulationId,
         worldStateParentId: activeWorldState.worldStateId,
         dateTime: activeWorldState.dateTime
-    };
-    console.log(worldStateObj); // TODO: Send to OOI-WSR
+    });
+    // TODO: POST to WSR and read the response (which includes the new ID; for now, assume an arbitrary number)
+    worldStateObj.worldStateId = 179;
     return worldStateObj;
 }
 
-function sendOOIs() {
+/**
+ * @private
+ * @param {object} worldState
+ * @param {Number} worldState.worldStateId
+ */
+function sendOOIs(worldState) {
+    var affected = { };
     for (var i = 0; i < commandQueue.length; i++) {
         var command = commandQueue[i];
-        // TODO: Process command
-        // TODO: Newly generated OOIs should be processed first and put into knownOOIs as soon as they have an ID
+        for (var j = 0; j < command.affected.length; j++) {
+            var affectedOoiId = command.affected[j];
+            //var existsOnRemote = affected.hasOwnProperty(affectedOoiId) || knownOOIs.hasOwnProperty(affectedOoiId);
+            var affectedOoi = affected.hasOwnProperty(affectedOoi) ? affected[affectedOoiId] : knownOOIs[affectedOoiId];
+
+            // TODO: finish processing, then..
+
+            affected[affectedOoiId] = affectedOoi;
+        }
     }
+    return affected;
 }
 
 /**
