@@ -167,13 +167,20 @@ function isCommandable(ooi) {
 
 /** @private */
 function executeCommand(command, data) {
-    var executedCommand = { command: command, param: data };
+    var executedCommand = { command: command, data: data };
     var group = objectsOfInterest[command.entityTypeId];
     var affected = [ ];
 
     if (group)
         for (var i = 0; i < group.length; i++)
             affected.push(group[i].entityId);
+
+    if (command.hasOwnProperty('setProperties'))
+        for (var key in command.setProperties)
+            command.setProperties[key] = command.setProperties[key].replace(/#\{((data|command)(\.[a-zA-Z0-9_]+|\[[0-9]+\])*)\}/g, function (x,y) {
+                // TODO: evaluate potential security concerns. eval is usually bad. but it gets the job done.
+                return eval(y);
+            });
 
     var body = $('body');
     body.trigger('command', $.extend({ affected: affected }, executedCommand));

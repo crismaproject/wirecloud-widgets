@@ -13,6 +13,13 @@ var availableCommands = {
         'treat': {
             displayName: 'Treat',
             targetType: 'point'
+        },
+        'test': {
+            displayName: 'Test',
+            targetType: 'point',
+            setProperties: {
+                destination: '#{data[0]}, #{data[1]}'
+            }
         }
     },
     14: {
