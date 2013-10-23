@@ -4,6 +4,11 @@ var activeWorldState = null;
 var knownOOIs = { };
 var commandQueue = [ ];
 
+/**
+ * A prototype ("default") instance of a worldstate that is used to fill in missing properties for generated ones.
+ * @const
+ * @type {{simulationId: number, worldStateParentId: null, description: string, dateTime: string}}
+ */
 var emptyWorldState = {
     "simulationId": 12,
     "worldStateParentId": null,
@@ -11,6 +16,11 @@ var emptyWorldState = {
     "dateTime": "2012-01-01T12:06:09.897"
 };
 
+/**
+ * A prototype ("default") instance of an object of interest that is used to fill in missing properties for generated ones.
+ * @const
+ * @type {{entityTypeId: number, entityName: string, entityDescription: string, entityInstancesProperties: Array, entityInstancesGeometry: Array}}
+ */
 var emptyOOI = {
     "entityTypeId": 0,
     "entityName": "",
@@ -23,9 +33,15 @@ var apiUri = null;
 var applyPreferences = function () {
     apiUri = MashupPlatform.prefs.get('api');
 };
-var pushData = function (data) { console.log(data); }
 
-if (typeof MashupPlatform !== 'undefined') {
+/**
+ * This function should notify the rest of the application that data has been sent to the OOI-WSR.
+ * @param {{worldState: Object, affectedOois: Object[]}} data
+ * @private
+ */
+var pushNotification = function (data) { console.log(data); }
+
+if (typeof MashupPlatform !== 'undefined') { // only apply wirings iff the MashupPlatform is available. Otherwise it's likely a local test.
     MashupPlatform.prefs.registerCallback(applyPreferences);
     applyPreferences();
 
@@ -37,7 +53,7 @@ if (typeof MashupPlatform !== 'undefined') {
         knownOOIs = JSON.parse(data).toDict('entityId');
     });
 
-    pushData = function (data) {
+    pushNotification = function (data) {
         // TODO: Write to OOI-WSR
         // then:
         MashupPlatform.wiring.pushEvent('created_worldstate', JSON.stringify(created.worldState));
@@ -52,7 +68,7 @@ $(function () {
         try {
             sanityCheck();
             var created = saveWorldState();
-            pushData(created);
+            pushNotification(created);
             $('#notificationContainer').animText('Done!');
         } catch (e) {
             $(this).animFlashRed();
@@ -63,12 +79,16 @@ $(function () {
     });
 });
 
+/**
+ * This function does brief pre-flight checks before it sends data to the OOI-WSR.
+ * @private
+ */
 function sanityCheck() {
     if (activeWorldState == null) throw 'No active WorldState';
 }
 
 /**
- * @private
+ * This function is the main entry-point for sending the created worldstate and its OOIs.
  * @returns {{worldState: Object, affectedOois: Object[]}}
  */
 function saveWorldState() {
@@ -78,8 +98,9 @@ function saveWorldState() {
 }
 
 /**
+ * This function creates the new worldstate and posts it to the OOI-WSR.
  * @private
- * @returns {object}
+ * @returns {{worldStateId: Number, simulationId: Number, worldStateParentId: Number, dateTime: *, description: String}}
  */
 function sendWorldState() {
     var worldStateObj = $.extend({}, emptyWorldState, {
@@ -93,9 +114,10 @@ function sendWorldState() {
 }
 
 /**
+ * This function modifies and creates OOI instances based on stored commands, then sends them to the OOI-WSR.
  * @private
- * @param {object} worldState
- * @param {Number} worldState.worldStateId
+ * @param {object} worldState the worldstate instance
+ * @param {Number} worldState.worldStateId the worldstate's identifier (as provided by the OOI-WSR)
  */
 function sendOOIs(worldState) {
     var affected = { };
