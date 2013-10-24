@@ -1,7 +1,7 @@
 /*global MashupPlatform*/
 
 var activeWorldState = null;
-var knownOOIs = { };
+var knownOOIs = [ ];
 var commandQueue = [ ];
 
 /**
@@ -10,7 +10,7 @@ var commandQueue = [ ];
  * @type {{simulationId: number, worldStateParentId: null, description: string, dateTime: string}}
  */
 var emptyWorldState = {
-    "simulationId": 12,
+    "simulationId": null,
     "worldStateParentId": null,
     "description": "",
     "dateTime": "2012-01-01T12:06:09.897"
@@ -50,7 +50,7 @@ if (typeof MashupPlatform !== 'undefined') { // only apply wirings iff the Mashu
     });
 
     MashupPlatform.wiring.registerCallback('oois', function (data) {
-        knownOOIs = JSON.parse(data).toDict('entityId');
+        knownOOIs = JSON.parse(data);
     });
 
     pushNotification = function (data) {
@@ -70,9 +70,9 @@ $(function () {
             var created = saveWorldState();
             pushNotification(created);
             $('#notificationContainer').animText('Done!');
-        } catch (e) {
+        /*} catch (e) {
             $(this).animFlashRed();
-            $('#errorContainer').animText(e.message || e);
+            $('#errorContainer').animText(e.message || e);*/
         } finally {
             $(this).animEnable();
         }
@@ -88,56 +88,69 @@ function sanityCheck() {
 }
 
 /**
- * This function is the main entry-point for sending the created worldstate and its OOIs.
- * @returns {{worldState: Object, affectedOois: Object[]}}
+ * @private
+ * @param {{entityInstancesProperties : {entityTypePropertyId: Number}[]}} ooi
+ * @param {Number} key
+ * @param {String} value
+ * @returns {{entityInstancesProperties : {entityTypePropertyId: Number, entityPropertyValue: String}[]}}
  */
-function saveWorldState() {
-    var createdWorldState = sendWorldState();
-    var affected = sendOOIs(createdWorldState);
-    return { worldState: createdWorldState, affectedOois: affected };
+function setProperty(ooi, key, value) {
+    var index = -1;
+    for (var i = 0; index == -1 && i < ooi.entityInstancesProperties.length; i++)
+        if (ooi.entityInstancesProperties[i].entityTypePropertyId == key)
+            index = i;
+
+    if (index != -1)
+        ooi.entityInstancesProperties[index].entityTypePropertyId = value;
+    else
+        ooi.entityInstancesProperties.push({entityTypePropertyId: key, entityPropertyValue: value});
+
+    return ooi;
 }
 
 /**
- * This function creates the new worldstate and posts it to the OOI-WSR.
- * @private
- * @returns {{worldStateId: Number, simulationId: Number, worldStateParentId: Number, dateTime: *, description: String}}
+ * This function is the main entry-point for sending the created worldstate and its OOIs.
+ * @returns {{worldState: object, oois: {}}}
  */
-function sendWorldState() {
+function saveWorldState() {
     var worldStateObj = $.extend({}, emptyWorldState, {
         simulationId: activeWorldState.simulationId,
         worldStateParentId: activeWorldState.worldStateId,
         dateTime: activeWorldState.dateTime
     });
-    // TODO: POST to WSR and read the response (which includes the new ID; for now, assume an arbitrary number)
-    worldStateObj.worldStateId = 179;
-    return worldStateObj;
-}
+    var ooiSnapshot = knownOOIs.toDict('entityId');
 
-/**
- * This function modifies and creates OOI instances based on stored commands, then sends them to the OOI-WSR.
- * @private
- * @param {object} worldState the worldstate instance
- * @param {Number} worldState.worldStateId the worldstate's identifier (as provided by the OOI-WSR)
- */
-function sendOOIs(worldState) {
-    var affected = { };
-    for (var i = 0; i < commandQueue.length; i++) {
-        var command = commandQueue[i];
-        for (var j = 0; j < command.affected.length; j++) {
-            var affectedOoiId = command.affected[j];
-            //var existsOnRemote = affected.hasOwnProperty(affectedOoiId) || knownOOIs.hasOwnProperty(affectedOoiId);
-            var affectedOoi = affected.hasOwnProperty(affectedOoi) ? affected[affectedOoiId] : knownOOIs[affectedOoiId];
+    $.postJSON(apiUri + '/WorldState', worldStateObj, { async: false })
+        .done(function (data) {
+            worldStateObj = data;
 
-            // TODO: finish processing, then..
+            for (var i = 0; i < commandQueue.length; i++) {
+                var command = commandQueue[i];
+                for (var j = 0; j < command.affected.length; j++) {
+                    var affectedOoi = ooiSnapshot[command.affected[j]];
 
-            affected[affectedOoiId] = affectedOoi;
-        }
-    }
+                    affectedOoi.worldStateId = worldStateObj.worldStateId;
+                    if (command.setProperty)
+                        for (var key in command.setProperties)
+                            setProperty(affectedOoi, key, command.setProperties[key]);
+                }
+            }
 
-    if (affected.length) {
-        // TODO: Now we can write all changes to the OOI-WSR
-    }
-    return affected;
+            var updateData = [ ];
+            for (var key in ooiSnapshot) {
+                var ooi = ooiSnapshot[key];
+                // TODO: Push into updateData
+            }
+
+            // TODO: Push updateData to OOI-WSR
+        })
+        .fail(function () {
+            // TODO: Sent data is possibly incomplete or faulty. Graceful error handling should be applied here at one point.
+            worldStateObj = null;
+            throw 'OOI WSR POST to /api/WorldState failed';
+        });
+
+    return { worldState: worldStateObj, oois: ooiSnapshot };
 }
 
 /**

@@ -35,3 +35,23 @@
         }
     });
 })(jQuery);
+
+
+/**
+ * Short-hand method for a JSON POST XHR request. Differs from the regular $.post insofar as that this one
+ * is synchronous.
+ * @param {string} url
+ * @param {*} data
+ * @param {{}?} options
+ * @returns {*}
+ */
+jQuery.postJSON = function(url, data, options) {
+    return $.ajax($.extend({
+        accepts: 'application/json',
+        cache: false,
+        data: data,
+        dataType: 'json',
+        url: url,
+        type: 'POST'
+    }, options || {}));
+}
