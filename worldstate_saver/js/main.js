@@ -19,14 +19,12 @@ var emptyWorldState = {
 /**
  * A prototype ("default") instance of an object of interest that is used to fill in missing properties for generated ones.
  * @const
- * @type {{entityTypeId: number, entityName: string, entityDescription: string, entityInstancesProperties: Array, entityInstancesGeometry: Array}}
+ * @type {{entityTypeId: number, entityName: string, entityDescription: string}}
  */
 var emptyOOI = {
     "entityTypeId": 0,
     "entityName": "",
-    "entityDescription": "",
-    "entityInstancesProperties": [],
-    "entityInstancesGeometry": []
+    "entityDescription": ""
 };
 
 var apiUri = null;
@@ -39,7 +37,7 @@ var applyPreferences = function () {
  * @param {{worldState: Object, affectedOois: Object[]}} data
  * @private
  */
-var pushNotification = function (data) { console.log(data); }
+var pushNotification = function (data) { console.log(data); };
 
 if (typeof MashupPlatform !== 'undefined') { // only apply wirings iff the MashupPlatform is available. Otherwise it's likely a local test.
     MashupPlatform.prefs.registerCallback(applyPreferences);
@@ -53,9 +51,7 @@ if (typeof MashupPlatform !== 'undefined') { // only apply wirings iff the Mashu
         knownOOIs = JSON.parse(data);
     });
 
-    pushNotification = function (data) {
-        // TODO: Write to OOI-WSR
-        // then:
+    pushNotification = function () {
         MashupPlatform.wiring.pushEvent('created_worldstate', JSON.stringify(created.worldState));
     }
 }
@@ -64,18 +60,17 @@ $(function () {
     $('#errorContainer, #notificationContainer').hide();
 
     $('#saveBtn').click(function () {
-        $(this).animDisable();
-        try {
-            sanityCheck();
-            var created = saveWorldState();
-            pushNotification(created);
-            $('#notificationContainer').animText('Done!');
-        /*} catch (e) {
-            $(this).animFlashRed();
-            $('#errorContainer').animText(e.message || e);*/
-        } finally {
-            $(this).animEnable();
-        }
+        var button = $(this);
+        button.animDisable();
+
+        sanityCheck();
+        saveWorldState()
+            .then(
+                function()   { $('#notificationContainer').animText('Done!'); pushNotification(this); },
+                function()   {        $('#errorContainer').animText('Failed to update OOI-WSR!'); })
+            .always(function() {                    button.animEnable(); });
+
+        // TODO: pushNotification(created);
     });
 });
 
@@ -110,7 +105,7 @@ function setProperty(ooi, key, value) {
 
 /**
  * This function is the main entry-point for sending the created worldstate and its OOIs.
- * @returns {{worldState: object, oois: {}}}
+ * @returns {jQuery.Deferred}
  */
 function saveWorldState() {
     var worldStateObj = $.extend({}, emptyWorldState, {
@@ -119,38 +114,58 @@ function saveWorldState() {
         dateTime: activeWorldState.dateTime
     });
     var ooiSnapshot = knownOOIs.toDict('entityId');
+    var deferredResult = new jQuery.Deferred();
 
-    $.postJSON(apiUri + '/WorldState', worldStateObj, { async: false })
-        .done(function (data) {
+    $.post(apiUri + '/WorldState', worldStateObj)
+        .then(function (data) {
             worldStateObj = data;
+            console.log('WorldState created with ID ' + worldStateObj.worldStateId);
 
-            for (var i = 0; i < commandQueue.length; i++) {
+            var i, key;
+
+            for (i = 0; i < commandQueue.length; i++) {
                 var command = commandQueue[i];
                 for (var j = 0; j < command.affected.length; j++) {
                     var affectedOoi = ooiSnapshot[command.affected[j]];
 
                     affectedOoi.worldStateId = worldStateObj.worldStateId;
                     if (command.setProperty)
-                        for (var key in command.setProperties)
+                        for (key in command.setProperties)
                             setProperty(affectedOoi, key, command.setProperties[key]);
                 }
             }
 
             var updateData = [ ];
-            for (var key in ooiSnapshot) {
+            for (key in ooiSnapshot) {
                 var ooi = ooiSnapshot[key];
-                // TODO: Push into updateData
+                for (i = 0; i < ooi.entityInstancesProperties.length; i++)
+                    {
+                        var entityInstancesProperty = ooi.entityInstancesProperties[i];
+                        updateData.push({
+                                                entityId: ooi.entityId,
+                                                entityTypePropertyId: entityInstancesProperty.entityTypePropertyId,
+                                                entityPropertyValue: entityInstancesProperty.entityPropertyValue,
+                                                worldStateId: worldStateObj.worldStateId
+                                            });
+                    }
             }
 
-            // TODO: Push updateData to OOI-WSR
-        })
-        .fail(function () {
-            // TODO: Sent data is possibly incomplete or faulty. Graceful error handling should be applied here at one point.
-            worldStateObj = null;
-            throw 'OOI WSR POST to /api/WorldState failed';
+            console.log('Pushing OOI updates');
+            $.ajax({
+                contentType: 'application/json',
+                data: JSON.stringify(updateData),
+                processData: false,
+                type: 'POST',
+                url: apiUri + '/EntityProperties'
+            }).then(
+                function () { deferredResult.resolveWith({ worldState: worldStateObj, oois: ooiSnapshot }); },
+                function () { deferredResult.rejectWith ({ worldState: worldStateObj }); }
+            );
+        }, function () {
+            deferredResult.reject();
         });
 
-    return { worldState: worldStateObj, oois: ooiSnapshot };
+    return deferredResult;
 }
 
 /**
