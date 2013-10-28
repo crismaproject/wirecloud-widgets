@@ -21,7 +21,7 @@ var emptyWorldState = {
     "simulationId": null,
     "worldStateParentId": null,
     "description": "",
-    "dateTime": "2012-01-01T12:06:09.897"
+    "dateTime": null
 };
 
 /**
