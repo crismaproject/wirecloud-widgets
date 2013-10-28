@@ -23,7 +23,7 @@ var WorldStateRepository = function (apiUri) {
  * the path will point at the resource URL; otherwise it will point to the resource collection.
  * @param {string} path
  * @param {number?} entityId
- * @returns {string}
+ * @returns {string} a fully qualified URL pointing to the specified resource
  * @private
  */
 WorldStateRepository.prototype.createUrl = function(path, entityId) {
@@ -34,9 +34,9 @@ WorldStateRepository.prototype.createUrl = function(path, entityId) {
 
 /**
  * Fetches all entities from a resource collection.
- * @param {string} path
- * @param {*?} data
- * @returns {jQuery.Deferred}
+ * @param {string} path the resource's name
+ * @param {*?} data any data that should be sent to the server
+ * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
  * @private
  */
 WorldStateRepository.prototype.fetch = function(path, data) {
@@ -45,10 +45,10 @@ WorldStateRepository.prototype.fetch = function(path, data) {
 
 /**
  * Fetches a single resource identified by its unique identifier.
- * @param {string} path
- * @param {number} entityId
- * @param {*?} data
- * @returns {jQuery.Deferred}
+ * @param {string} path the resource's name
+ * @param {number} entityId the resource's unique identifier
+ * @param {*?} data any data that should be sent to the server
+ * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
  * @private
  */
 WorldStateRepository.prototype.fetchById = function(path, entityId, data) {
@@ -57,9 +57,9 @@ WorldStateRepository.prototype.fetchById = function(path, entityId, data) {
 
 /**
  * Inserts a single (new) resource instance.
- * @param {string} path
- * @param {object} instance
- * @returns {jQuery.Deferred}
+ * @param {string} path the resource's name
+ * @param {object} instance the instance to insert
+ * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
  * @private
  */
 WorldStateRepository.prototype.singleInsert = function(path, instance) {
@@ -68,10 +68,10 @@ WorldStateRepository.prototype.singleInsert = function(path, instance) {
 
 /**
  * Updates/replaces a single resource instance.
- * @param {string} path
- * @param {number} entityId
- * @param {object} instance
- * @returns {jQuery.Deferred}
+ * @param {string} path the resource's name
+ * @param {number} entityId the resource's unique identifier
+ * @param {object} instance the instance to replace
+ * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
  * @private
  */
 WorldStateRepository.prototype.singleReplace = function(path, entityId, instance) {
@@ -84,9 +84,9 @@ WorldStateRepository.prototype.singleReplace = function(path, entityId, instance
 
 /**
  * Deletes a single resource instance identified by its unique identifier.
- * @param {string} path
- * @param {number} entityId
- * @returns {jQuery.Deferred}
+ * @param {string} path the resource's name
+ * @param {number} entityId the resource's unique identifier
+ * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
  * @private
  */
 WorldStateRepository.prototype.singleDelete = function(path, entityId) {
@@ -98,9 +98,9 @@ WorldStateRepository.prototype.singleDelete = function(path, entityId) {
 
 /**
  * Performs a mass insert of resource instances.
- * @param {string} path
- * @param {object[]} data
- * @returns {jQuery.Deferred}
+ * @param {string} path the resource's name
+ * @param {object[]} data an array of resource instances that will be inserted on the server
+ * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
  * @private
  */
 WorldStateRepository.prototype.massInsert = function(path, data) {
@@ -113,8 +113,17 @@ WorldStateRepository.prototype.massInsert = function(path, data) {
     });
 };
 
+/*
+ * the following function essentially creates all programmatically generated instance methods for the
+ * WorldStateRepository class.
+ */
 (function () {
-    var pathsWithDefautBehaviour = [
+    /**
+     * Resources for which default operations will be generated (list, get, insert, update, delete).
+     * @const
+     * @type {string[]}
+     */
+    var pathsWithDefaultBehaviour = [
         'Entity',
         'EntityTypeProperty',
         'Event',
@@ -125,6 +134,11 @@ WorldStateRepository.prototype.massInsert = function(path, data) {
         'EntityProperty'
     ];
 
+    /**
+     * Resources for which mass operations will be generated (insert).
+     * @const
+     * @type {string[]}
+     */
     var pathsWithCollectionBehaviour = [
         'EntityProperties',
         'EntityGeometries'
@@ -147,8 +161,8 @@ WorldStateRepository.prototype.massInsert = function(path, data) {
     }
 
     var i;
-    for (i = 0; i < pathsWithDefautBehaviour.length; i++)
-        wireDefault(pathsWithDefautBehaviour[i]);
+    for (i = 0; i < pathsWithDefaultBehaviour.length; i++)
+        wireDefault(pathsWithDefaultBehaviour[i]);
     for (i = 0; i < pathsWithCollectionBehaviour.length; i++)
         wireCollection(pathsWithCollectionBehaviour[i]);
 })();
