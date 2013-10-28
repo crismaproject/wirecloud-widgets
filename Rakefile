@@ -49,7 +49,7 @@ task :cleanup do
 end
 
 desc 'Create all zipped Wirecloud widget files'
-task :all => :cleanup do
+task :all => [:cleanup, :update] do
   suffix = "-#{Time.now.strftime('%y%m%d-%H%M')}-git-#{run_process 'git rev-parse --short HEAD'}"
 
   Dir.glob('**').each do |subdirectory|
