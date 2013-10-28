@@ -1,5 +1,13 @@
 /*global MashupPlatform*/
 
+/**
+ * @const
+ * @type {number}
+ */
+var FAIL_DURING_POST_PROPERTIES = 1,
+    FAIL_DURING_POST_GEOMETRIES = 2,
+    FAIL_DURING_POST_WORLDSTATE = 3;
+
 var activeWorldState = null;
 var knownOOIs = [ ];
 var commandQueue = [ ];
@@ -66,9 +74,9 @@ $(function () {
         sanityCheck();
         saveWorldState()
             .then(
-                function()   { $('#notificationContainer').animText('Done!'); pushNotification(this); },
-                function()   {        $('#errorContainer').animText('Failed to update OOI-WSR!'); })
-            .always(function() {                    button.animEnable(); });
+            function() { $('#notificationContainer').animText('Done!'); pushNotification(this); },
+            function() { $('#errorContainer').animText('Failed to update OOI-WSR! Err: ' + this.error); })
+            .always(function() { button.animEnable(); });
 
         // TODO: pushNotification(created);
     });
@@ -116,6 +124,9 @@ function saveWorldState() {
     var ooiSnapshot = knownOOIs.toDict('entityId');
     var deferredResult = new jQuery.Deferred();
 
+    var   okResult = function() { return { worldState: worldStateObj, oois: ooiSnapshot }; };
+    var failResult = function(errorCode) { return $.extend(okResult(), { error: errorCode }) };
+
     $.post(apiUri + '/WorldState', worldStateObj)
         .then(function (data) {
             worldStateObj = data;
@@ -135,35 +146,56 @@ function saveWorldState() {
                 }
             }
 
-            var updateData = [ ];
+            var instancePropertiesUpdate = [ ],
+                instanceGeometriesUpdate = [ ];
             for (key in ooiSnapshot) {
                 var ooi = ooiSnapshot[key];
-                for (i = 0; i < ooi.entityInstancesProperties.length; i++)
-                    {
-                        var entityInstancesProperty = ooi.entityInstancesProperties[i];
-                        updateData.push({
-                                                entityId: ooi.entityId,
-                                                entityTypePropertyId: entityInstancesProperty.entityTypePropertyId,
-                                                entityPropertyValue: entityInstancesProperty.entityPropertyValue,
-                                                worldStateId: worldStateObj.worldStateId
-                                            });
-                    }
+                for (i = 0; i < ooi.entityInstancesProperties.length; i++) {
+                    var entityInstancesProperty = ooi.entityInstancesProperties[i];
+                    instancePropertiesUpdate.push({
+                        entityId: ooi.entityId,
+                        entityTypePropertyId: entityInstancesProperty.entityTypePropertyId,
+                        entityPropertyValue: entityInstancesProperty.entityPropertyValue,
+                        worldStateId: worldStateObj.worldStateId
+                    });
+                }
+                for (i = 0; i < ooi.entityInstancesGeometry.length; i++) {
+                    var entityInstanceGeometry = ooi.entityInstancesGeometry[i];
+                    instanceGeometriesUpdate.push({
+                        entityId: ooi.entityId,
+                        worldStateId: worldStateObj.worldStateId,
+                        geometry: {
+                            geometry: {
+                                coordinateSystemId: 4326,
+                                wellKnownText: entityInstanceGeometry.geometry.geometry.wellKnownText
+                            }
+                        }
+                    });
+                }
             }
 
-            console.log('Pushing OOI updates');
             $.ajax({
                 contentType: 'application/json',
-                data: JSON.stringify(updateData),
+                data: JSON.stringify(instancePropertiesUpdate),
                 processData: false,
                 type: 'POST',
                 url: apiUri + '/EntityProperties'
             }).then(
-                function () { deferredResult.resolveWith({ worldState: worldStateObj, oois: ooiSnapshot }); },
-                function () { deferredResult.rejectWith ({ worldState: worldStateObj }); }
+                function () {
+                    $.ajax({
+                        contentType: 'application/json',
+                        data: JSON.stringify(instanceGeometriesUpdate),
+                        processData: false,
+                        type: 'POST',
+                        url: apiUri + '/EntityGeometries'
+                    }).then(
+                        function () { deferredResult.resolveWith(okResult()); },
+                        function () { deferredResult.rejectWith (failResult(FAIL_DURING_POST_GEOMETRIES)); }
+                    );
+                },
+                function () { deferredResult.rejectWith (failResult(FAIL_DURING_POST_PROPERTIES)); }
             );
-        }, function () {
-            deferredResult.reject();
-        });
+        }, function () { deferredResult.rejectWith (failResult(FAIL_DURING_POST_WORLDSTATE)); });
 
     return deferredResult;
 }
