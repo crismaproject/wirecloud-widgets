@@ -6,7 +6,8 @@
  */
 var FAIL_DURING_POST_PROPERTIES = 1,
     FAIL_DURING_POST_GEOMETRIES = 2,
-    FAIL_DURING_POST_WORLDSTATE = 3;
+    FAIL_DURING_POST_WORLDSTATE = 3,
+    FAIL_DURING_POST_ENTITY = 4;
 
 var activeWorldState = null;
 var knownOOIs = [ ];
@@ -22,17 +23,6 @@ var emptyWorldState = {
     "worldStateParentId": null,
     "description": "",
     "dateTime": null
-};
-
-/**
- * A prototype ("default") instance of an object of interest that is used to fill in missing properties for generated ones.
- * @const
- * @type {{entityTypeId: number, entityName: string, entityDescription: string}}
- */
-var emptyOOI = {
-    "entityTypeId": 0,
-    "entityName": "",
-    "entityDescription": ""
 };
 
 var apiUri = null;
@@ -124,8 +114,8 @@ function saveWorldState() {
     var ooiSnapshot = knownOOIs.toDict('entityId');
     var deferredResult = new jQuery.Deferred();
 
-    var   okResult = function() { return { worldState: worldStateObj, oois: ooiSnapshot }; };
-    var failResult = function(errorCode) { return $.extend(okResult(), { error: errorCode }) };
+    var okResult = function() { return { worldState: worldStateObj, oois: ooiSnapshot }; };
+    var failResult = function(errorCode, details) { return $.extend(details || {}, okResult(), { error: errorCode }) };
 
     $.post(apiUri + '/WorldState', worldStateObj)
         .then(function (data) {
@@ -133,16 +123,45 @@ function saveWorldState() {
             console.log('WorldState created with ID ' + worldStateObj.worldStateId);
 
             var i, key;
+            var createdOOIMappings = { };
 
             for (i = 0; i < commandQueue.length; i++) {
                 var command = commandQueue[i];
                 for (var j = 0; j < command.affected.length; j++) {
-                    var affectedOoi = ooiSnapshot[command.affected[j]];
+                    var affectedOoiId = command.affected[j];
+                    if (affectedOoiId < 0) affectedOoiId = createdOOIMappings[affectedOoiId];
+                    var affectedOoi = ooiSnapshot[affectedOoiId];
 
                     affectedOoi.worldStateId = worldStateObj.worldStateId;
                     if (command.setProperty)
                         for (key in command.setProperties)
                             setProperty(affectedOoi, key, command.setProperties[key]);
+                }
+
+                if (command.command.hasOwnProperty('createOOI')) {
+                    var ooiToBeCreated = command.command.createOOI;
+                    var ooiData = {
+                        entityName: ooiToBeCreated.entityName || 'New OOI',
+                        entityTypeId: ooiToBeCreated.entityTypeId || 14,
+                        entityDescription: ooiToBeCreated.entityDescription || ''
+                    };
+
+                    $.ajax({
+                        async: false,
+                        data: ooiData,
+                        type: 'POST',
+                        url: apiUri + '/Entity'
+                    }).then(
+                        function (response) {
+                            if (ooiToBeCreated.hasOwnProperty('entityInstancesProperties'))
+                                response.entityInstancesProperties = ooiToBeCreated.entityInstancesProperties;
+                            if (ooiToBeCreated.hasOwnProperty('entityInstancesGeometry'))
+                                response.entityInstancesGeometry = ooiToBeCreated.entityInstancesGeometry;
+                            ooiSnapshot[response.entityId] = response;
+                            createdOOIMappings[ooiToBeCreated.entityId] = response.entityId;
+                        },
+                        function () { failResult(FAIL_DURING_POST_ENTITY, { entity: ooiToBeCreated }); }
+                    );
                 }
             }
 

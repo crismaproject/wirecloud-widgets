@@ -183,23 +183,23 @@ function executeCommand(command, data) {
             });
 
     var body = $('body');
-    body.trigger('command', $.extend({ affected: affected }, executedCommand));
 
     if (command.hasOwnProperty('spawnArea')) {
         var area = spawnArea(command.spawnArea, 'POINT (' + data.lat + ' ' + data.lon + ')');
+        command.createOOI = area;
         body.trigger('areaCreated', area);
     }
+
+    body.trigger('command', $.extend({ affected: affected }, executedCommand));
 }
 
 function spawnArea(areaPrototype, geometry) {
     var area = $.extend(true, {}, {
-        'entityId': -1,
+        'entityId': -(sequence++),
         'entityTypeId': 14,
-        '_areaId': '_tmp_area-' + sequence++,
         'entityInstancesGeometry': [
             { 'geometry': {'geometry': {'coordinateSystemId': 4326, 'wellKnownText': geometry}}}
-        ],
-        '_isNew': true
+        ]
     }, areaPrototype);
     return area;
 }
