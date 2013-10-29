@@ -49,6 +49,11 @@ if (typeof MashupPlatform !== 'undefined') { // only apply wirings iff the Mashu
         knownOOIs = JSON.parse(data);
     });
 
+    MashupPlatform.wiring.registerCallback('command', function (data) {
+        var command = JSON.parse(data);
+        commandQueue.push(command);
+    });
+
     pushNotification = function () {
         MashupPlatform.wiring.pushEvent('created_worldstate', JSON.stringify(created.worldState));
     }

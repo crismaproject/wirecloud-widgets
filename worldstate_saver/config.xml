@@ -4,7 +4,7 @@
     <Vendor>AIT</Vendor>
     <Name>worldstate-saver</Name>
     <DisplayName>Worldstate Saver</DisplayName>
-    <Version>0.1.0.1</Version>
+    <Version>0.1.1.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>This widget saves generated world states to the OOI worldstate repository (OOI-WSR).</Description>
@@ -19,6 +19,7 @@
 
   <Platform.Wiring>
     <InputEndpoint name="oois" type="text" label="OOIs" description="All objects of interest" friendcode="oois"/>
+    <InputEndpoint name="command" type="text" label="Command" description="Commands" friendcode="command"/>
     <InputEndpoint name="worldstate" type="text" label="WorldState" description="Original WorldState that forms the parent of the one to be saved" friendcode="worldstate"/>
     <OutputEndpoint name="created_worldstate" type="text" label="Created WorldState" description="Created WorldStates that were saved" friendcode="worldstate"/>
   </Platform.Wiring>
@@ -27,5 +28,5 @@
     <XHTML href="index.html" cacheable="false"/>
   </Platform.Link>
 
-  <Platform.Rendering width="6" height="6"/>
+  <Platform.Rendering width="6" height="12"/>
 </Template>
