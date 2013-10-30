@@ -11,4 +11,5 @@ body > .center {
 aside { text-align: center; }
 
 #errorContainer { background-color: rgba(185, 74, 72, .125); }
-#notificationContainer { background-color: rgba(38, 135, 173, .125); }
+#statusContainer { background-color: rgba(38, 135, 173, .125); }
+#notificationContainer { background-color: rgba(70, 136, 71, .125); }

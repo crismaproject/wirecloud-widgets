@@ -4,7 +4,7 @@
     <Vendor>AIT</Vendor>
     <Name>worldstate-saver</Name>
     <DisplayName>Worldstate Saver</DisplayName>
-    <Version>0.1.1.0</Version>
+    <Version>0.1.2.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>This widget saves generated world states to the OOI worldstate repository (OOI-WSR).</Description>

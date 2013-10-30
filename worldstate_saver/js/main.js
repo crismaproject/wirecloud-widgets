@@ -1,14 +1,5 @@
 /*global MashupPlatform*/
 
-/**
- * @const
- * @type {number}
- */
-var FAIL_DURING_POST_PROPERTIES = 1,
-    FAIL_DURING_POST_GEOMETRIES = 2,
-    FAIL_DURING_POST_WORLDSTATE = 3,
-    FAIL_DURING_POST_ENTITY = 4;
-
 var activeWorldState = null;
 var knownOOIs = [ ];
 var commandQueue = [ ];
@@ -55,23 +46,28 @@ if (typeof MashupPlatform !== 'undefined') { // only apply wirings iff the Mashu
     });
 
     pushNotification = function () {
-        MashupPlatform.wiring.pushEvent('created_worldstate', JSON.stringify(created.worldState));
+        MashupPlatform.wiring.pushEvent('created_worldstate', JSON.stringify(this));
     }
 }
 
 $(function () {
-    $('#errorContainer, #notificationContainer').hide();
+    $('#errorContainer, #notificationContainer, #statusContainer').hide();
 
     $('#saveBtn').click(function () {
         var button = $(this);
         button.animDisable();
 
         sanityCheck();
+        $('#statusContainer').show(150);
         saveWorldState()
             .then(
             function() { $('#notificationContainer').animText('Done!'); pushNotification(this); },
-            function() { $('#errorContainer').animText('Failed to update OOI-WSR! Err: ' + this.error); })
-            .always(function() { button.animEnable(); });
+            function() { $('#errorContainer').animText('Failed to update OOI-WSR!'); },
+            function(status) { $('#statusContainer').delay(500).text(status); })
+            .always(function() {
+                button.animEnable();
+                $('#statusContainer').delay(5000).hide(500);
+            });
 
         // TODO: pushNotification(created);
     });
@@ -86,162 +82,122 @@ function sanityCheck() {
 }
 
 /**
- * @private
- * @param {{entityInstancesProperties : {entityTypePropertyId: Number}[]}} ooi
- * @param {Number} key
- * @param {String} value
- * @returns {{entityInstancesProperties : {entityTypePropertyId: Number, entityPropertyValue: String}[]}}
- */
-function setProperty(ooi, key, value) {
-    var index = -1;
-    for (var i = 0; index == -1 && i < ooi.entityInstancesProperties.length; i++)
-        if (ooi.entityInstancesProperties[i].entityTypePropertyId == key)
-            index = i;
-
-    if (index != -1)
-        ooi.entityInstancesProperties[index].entityTypePropertyId = value;
-    else
-        ooi.entityInstancesProperties.push({entityTypePropertyId: key, entityPropertyValue: value});
-
-    return ooi;
-}
-
-/**
  * This function is the main entry-point for sending the created worldstate and its OOIs.
- * @returns {jQuery.Deferred}
+ * @returns {jQuery.Promise}
  */
 function saveWorldState() {
-    var worldStateObj = $.extend({}, emptyWorldState, {
-        simulationId: activeWorldState.simulationId,
-        worldStateParentId: activeWorldState.worldStateId,
-        dateTime: activeWorldState.dateTime
-    });
-    var ooiSnapshot = knownOOIs.toDict('entityId');
-    var deferredResult = new jQuery.Deferred();
-
-    var okResult = function() { return { worldState: worldStateObj, oois: ooiSnapshot }; };
-    var failResult = function(errorCode, details) { return $.extend(details || {}, okResult(), { error: errorCode }) };
-
-    $.post(apiUri + '/WorldState', worldStateObj)
-        .then(function (data) {
-            worldStateObj = data;
-            console.log('WorldState created with ID ' + worldStateObj.worldStateId);
-
-            var i, key;
-            var createdOOIMappings = { };
-
-            for (i = 0; i < commandQueue.length; i++) {
-                var command = commandQueue[i];
-                for (var j = 0; j < command.affected.length; j++) {
-                    var affectedOoiId = command.affected[j];
-                    if (affectedOoiId < 0) affectedOoiId = createdOOIMappings[affectedOoiId];
-                    var affectedOoi = ooiSnapshot[affectedOoiId];
-
-                    affectedOoi.worldStateId = worldStateObj.worldStateId;
-                    if (command.setProperty)
-                        for (key in command.setProperties)
-                            setProperty(affectedOoi, key, command.setProperties[key]);
-                }
-
-                if (command.command.hasOwnProperty('createOOI')) {
-                    var ooiToBeCreated = command.command.createOOI;
-                    var ooiData = {
-                        entityName: ooiToBeCreated.entityName || 'New OOI',
-                        entityTypeId: ooiToBeCreated.entityTypeId || 14,
-                        entityDescription: ooiToBeCreated.entityDescription || ''
-                    };
-
-                    $.ajax({
-                        async: false,
-                        data: ooiData,
-                        type: 'POST',
-                        url: apiUri + '/Entity'
-                    }).then(
-                        function (response) {
-                            if (ooiToBeCreated.hasOwnProperty('entityInstancesProperties'))
-                                response.entityInstancesProperties = ooiToBeCreated.entityInstancesProperties;
-                            if (ooiToBeCreated.hasOwnProperty('entityInstancesGeometry'))
-                                response.entityInstancesGeometry = ooiToBeCreated.entityInstancesGeometry;
-                            ooiSnapshot[response.entityId] = response;
-                            createdOOIMappings[ooiToBeCreated.entityId] = response.entityId;
-                        },
-                        function () { failResult(FAIL_DURING_POST_ENTITY, { entity: ooiToBeCreated }); }
-                    );
-                }
-            }
-
-            var instancePropertiesUpdate = [ ],
-                instanceGeometriesUpdate = [ ];
-            for (key in ooiSnapshot) {
-                var ooi = ooiSnapshot[key];
-                for (i = 0; i < ooi.entityInstancesProperties.length; i++) {
-                    var entityInstancesProperty = ooi.entityInstancesProperties[i];
-                    instancePropertiesUpdate.push({
-                        entityId: ooi.entityId,
-                        entityTypePropertyId: entityInstancesProperty.entityTypePropertyId,
-                        entityPropertyValue: entityInstancesProperty.entityPropertyValue,
-                        worldStateId: worldStateObj.worldStateId
-                    });
-                }
-                for (i = 0; i < ooi.entityInstancesGeometry.length; i++) {
-                    var entityInstanceGeometry = ooi.entityInstancesGeometry[i];
-                    instanceGeometriesUpdate.push({
-                        entityId: ooi.entityId,
-                        worldStateId: worldStateObj.worldStateId,
-                        geometry: {
-                            geometry: {
-                                coordinateSystemId: 4326,
-                                wellKnownText: entityInstanceGeometry.geometry.geometry.wellKnownText
-                            }
-                        }
-                    });
-                }
-            }
-
-            $.ajax({
-                contentType: 'application/json',
-                data: JSON.stringify(instancePropertiesUpdate),
-                processData: false,
-                type: 'POST',
-                url: apiUri + '/EntityProperties'
-            }).then(
-                function () {
-                    $.ajax({
-                        contentType: 'application/json',
-                        data: JSON.stringify(instanceGeometriesUpdate),
-                        processData: false,
-                        type: 'POST',
-                        url: apiUri + '/EntityGeometries'
-                    }).then(
-                        function () { deferredResult.resolveWith(okResult()); },
-                        function () { deferredResult.rejectWith (failResult(FAIL_DURING_POST_GEOMETRIES)); }
-                    );
-                },
-                function () { deferredResult.rejectWith (failResult(FAIL_DURING_POST_PROPERTIES)); }
-            );
-        }, function () { deferredResult.rejectWith (failResult(FAIL_DURING_POST_WORLDSTATE)); });
-
-    return deferredResult;
-}
-
-/**
- * Groups the provided array of objects into an object where the object's properties are values extracted
- * from the keyProperty property of array elements, and each keyed entry in the object is the first
- * element of the original array sharing the same key.
- *
- * @param {string} keyProperty
- * @returns {{}}
- */
-Array.prototype.toDict = function(keyProperty) {
-    var groups = { };
-
-    for (var i = 0; i < this.length; i++) {
-        var obj = this[i];
-        if (!obj.hasOwnProperty(keyProperty)) continue;
-        var key = obj[keyProperty];
-        if (!(key in groups))
-            groups[key] = obj;
+    function postPayload(uri, data) {
+        return $.ajax({
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            processData: false,
+            type: 'POST',
+            url: uri
+        });
     }
 
-    return groups;
+    function createWorldState() {
+        var worldStateObj = $.extend({}, emptyWorldState, {
+            simulationId: activeWorldState.simulationId,
+            worldStateParentId: activeWorldState.worldStateId,
+            dateTime: activeWorldState.dateTime
+        });
+
+        return $.post(apiUri + '/WorldState', worldStateObj);
+    }
+
+    function createNewOOIs(oois) {
+        return oois.map(function (x) {
+            var deferred = new jQuery.Deferred();
+            $.post(apiUri + '/Entity', {
+                entityName: x.entityName || 'New OOI',
+                entityTypeId: x.entityTypeId || 14,
+                entityDescription: x.entityDescription || ''
+            }).then(function (entity) {
+                    x._replacedByEntityId = entity.entityId;
+                    oois.push(entity);
+                    deferred.resolve();
+                }, deferred.reject);
+            return deferred.promise();
+        });
+    }
+
+    function createOOIPropertiesUpdates(worldStateId, oois) {
+        var updates = oois
+            .filter(function (x) { return x.hasOwnProperty('entityInstancesProperties') && x.entityInstancesProperties.length; })
+            .map(function (ooi) {
+                return ooi.entityInstancesProperties.map(function (x) {
+                    return {
+                        entityId: ooi.entityId,
+                        entityTypePropertyId: x.entityTypePropertyId,
+                        entityPropertyValue: x.entityPropertyValue,
+                        worldStateId: worldStateId
+                    }
+                });
+            }).flatten();
+
+        return postPayload(apiUri + '/EntityProperties', updates);
+    }
+
+    function createOOIGeometryUpdates(worldStateId, oois) {
+        var updates = oois
+            .filter(function (x) { return x.hasOwnProperty('entityInstancesGeometry') && x.entityInstancesGeometry.length; })
+            .map(function (ooi) {
+                var entityInstanceGeometry = ooi.entityInstancesGeometry[0];
+                return {
+                    entityId: ooi.entityId,
+                    worldStateId: worldStateId,
+                    geometry: {
+                        geometry: {
+                            coordinateSystemId: 4326,
+                            wellKnownText: entityInstanceGeometry.geometry.geometry.wellKnownText
+                        }
+                    }
+                };
+            }).flatten();
+
+        return postPayload(apiUri + '/EntityGeometries', updates);
+    }
+
+    var result = new $.Deferred();
+    var oois = knownOOIs;
+    var isNewOOI = function (ooi) { return !ooi.hasOwnProperty('entityId') || ooi.entityId < 0; };
+    var isEstablishedOOI = function (ooi) { return !isNewOOI(ooi); };
+    createWorldState()
+        .then(function (worldState) {
+            result.notifyWith(this, ['WorldState created']);
+            $.whenAll(createNewOOIs(oois.filter(isNewOOI))).then(function () {
+                    result.notifyWith(this, ['Created entities posted']);
+                    $.when( createOOIPropertiesUpdates(worldState.worldStateId, oois.filter(isEstablishedOOI)),
+                            createOOIGeometryUpdates(worldState.worldStateId, oois.filter(isEstablishedOOI)))
+                        .then(function () {
+                            result.notifyWith(this, ['Entities updated']);
+                            result.resolveWith(worldState);
+                        }, result.reject);
+                }, result.reject);
+        }, result.reject);
+
+    return result.promise();
+}
+
+jQuery.extend({
+    /**
+     * @param {jQuery.Promise[]} array
+     */
+    whenAll: function(array) {
+        var deferred = new $.Deferred();
+        var remaining = array.length;
+        for (var i = 0; i < array.length; i++)
+            array[i].then(function () {
+                if (--remaining == 0) deferred.resolve();
+            }, deferred.reject);
+        return deferred.promise();
+    }
+});
+
+Array.prototype.flatten = function() {
+    var result = [];
+    for (var i = 0; i < this.length; i++)
+        result = result.concat(this[i]);
+    return result;
 };
