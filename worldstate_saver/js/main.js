@@ -99,6 +99,11 @@ function saveWorldState() {
         });
     }
 
+    /**
+     * @param {object[]} oois
+     * @param {object[]} commands
+     * @returns {object[]}
+     */
     function applyCommands(oois, commands) {
         var ooiMappings = { };
         oois
@@ -128,7 +133,17 @@ function saveWorldState() {
         return oois;
     }
 
+    /**
+     * Applies a property change to an OOI contained in an array of OOIs.
+     * @param {object[]} oois
+     * @param {number} ooiIndex
+     * @param {number} key
+     * @param {string|number} value
+     */
     function setProperty(oois, ooiIndex, key, value) {
+        // Note: passing in the array and the according index is required here since arrays are the only type that
+        // are passed by reference (and we want that)
+
         var index = -1;
         for (var i = 0; index == -1 && i < ooi.entityInstancesProperties.length; i++)
             if (oois[ooiIndex].entityInstancesProperties[i].entityTypePropertyId == key)
@@ -140,6 +155,9 @@ function saveWorldState() {
             oois[ooiIndex].entityInstancesProperties.push({entityTypePropertyId: key, entityPropertyValue: value});
     }
 
+    /**
+     * @returns {jQuery.Promise}
+     */
     function createWorldState() {
         var worldStateObj = $.extend({}, emptyWorldState, {
             simulationId: activeWorldState.simulationId,
@@ -150,6 +168,10 @@ function saveWorldState() {
         return $.post(apiUri + '/WorldState', worldStateObj);
     }
 
+    /**
+     * @param {object[]} oois
+     * @returns {jQuery.Promise[]}
+     */
     function createNewOOIs(oois) {
         return oois
             .filter(isNewOOI)
@@ -168,6 +190,11 @@ function saveWorldState() {
             });
     }
 
+    /**
+     * @param {number} worldStateId
+     * @param {object[]} oois
+     * @returns {jQuery.Promise}
+     */
     function createOOIPropertiesUpdates(worldStateId, oois) {
         var updates = oois
             .filter(function (x) { return x.hasOwnProperty('entityInstancesProperties') && x.entityInstancesProperties.length; })
@@ -185,6 +212,11 @@ function saveWorldState() {
         return postPayload(apiUri + '/EntityProperties', updates);
     }
 
+    /**
+     * @param {number} worldStateId
+     * @param {object[]} oois
+     * @returns {jQuery.Promise}
+     */
     function createOOIGeometryUpdates(worldStateId, oois) {
         var updates = oois
             .filter(function (x) { return x.hasOwnProperty('entityInstancesGeometry') && x.entityInstancesGeometry.length; })
@@ -241,6 +273,10 @@ jQuery.extend({
     }
 });
 
+/**
+ * @nosideeffects
+ * @returns {Array}
+ */
 Array.prototype.flatten = function() {
     var result = [];
     for (var i = 0; i < this.length; i++)
