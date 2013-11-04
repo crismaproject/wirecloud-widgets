@@ -17,8 +17,10 @@ var emptyWorldState = {
 };
 
 var apiUri = null;
+var wpsUri = null;
 var applyPreferences = function () {
     apiUri = MashupPlatform.prefs.get('api');
+    wpsUri = MashupPlatform.prefs.get('wps');
 };
 
 /**
@@ -63,7 +65,10 @@ $(function () {
             .then(
             function() { $('#notificationContainer').animText('Done!'); pushNotification(this); },
             function() { $('#errorContainer').animText('Failed to update OOI-WSR!'); },
-            function(status) { $('#statusContainer').delay(500).text(status); })
+            function(status) {
+                var text = status.progress ? status.message + ' (' + status.progress + ')' : status.message;
+                $('#statusContainer').text(text);
+            })
             .always(function() {
                 button.animEnable();
                 $('#statusContainer').delay(5000).hide(500);
@@ -78,7 +83,9 @@ $(function () {
  * @private
  */
 function sanityCheck() {
-    if (activeWorldState == null) throw 'No active WorldState';
+    if (!apiUri) throw 'No OOI-WSR REST API URI defined.';
+    if (!wpsUri) throw 'No WPS API URI defined.';
+    if (!activeWorldState) throw 'No active WorldState.';
 }
 
 /**
@@ -145,7 +152,7 @@ function saveWorldState() {
         // are passed by reference (and we want that)
 
         var index = -1;
-        for (var i = 0; index == -1 && i < ooi.entityInstancesProperties.length; i++)
+        for (var i = 0; index == -1 && i < oois[ooiIndex].entityInstancesProperties.length; i++)
             if (oois[ooiIndex].entityInstancesProperties[i].entityTypePropertyId == key)
                 index = i;
 
@@ -237,20 +244,85 @@ function saveWorldState() {
         return postPayload(apiUri + '/EntityGeometries', updates);
     }
 
+    /**
+     * @param {number} worldStateId
+     * @param {object?} options
+     * @param {number} options.duration
+     * @param {number} options.stepDuration
+     * @returns {jQuery.Promise}
+     */
+    function notifyWPS(worldStateId, options) {
+        options = $.extend({ duration: 10, stepDuration: 10 }, options);
+        var uri = wpsUri + '?service=WPS&request=Execute&version=1.0.0&identifier=AgentsResourceModel&datainputs=WorldStateId=' + worldStateId + ';duration=' + options.duration + ';stepduration=' + options.stepDuration;
+        var deferredResult = $.Deferred();
+
+        $.get(uri)
+            .then(function(response) {
+                if (!$('ProcessSucceeded', response).length)
+                    deferredResult.reject();
+                else {
+                    var progressUri = $('Data', response).text().trim();
+                    console.log('Getting processing status updates from: ' + progressUri);
+                    var attempts = 0;
+                    var timeoutId = setInterval(function () {
+                        attempts++;
+                        $.get(progressUri)
+                            .then(function (response) {
+                                console.log(response);
+                                    deferredResult.notifyWith(this, [response]);
+                                if (response.progress == '100%') {
+                                    deferredResult.resolve({
+                                        worldStateIds: response.worldstateids
+                                    });
+                                    clearInterval(timeoutId);
+                                } else if (attempts >= 1000) {
+                                    deferredResult.reject();
+                                    clearInterval(timeoutId);
+                                }
+                            });
+                    }, 10000);
+                }
+            }, deferredResult.reject);
+
+        return deferredResult.promise();
+    }
+
     var result = new $.Deferred();
     var oois = knownOOIs;
 
+    /**
+     * @param {string?} message
+     * @param {object?} worldState
+     * @param {*?} progress
+     * @returns {{}[]}
+     */
+    var notification = function(message, worldState, progress) {
+        return [ {
+            message: message || '',
+            worldState: worldState || {},
+            oois: oois,
+            progress: progress || 0
+        } ];
+    };
+
     createWorldState()
         .then(function (worldState) {
-            result.notifyWith(this, ['WorldState created']);
+            result.notifyWith(this, notification('WorldState sent to OOI-WSR', worldState));
             $.whenAll(createNewOOIs(oois)).then(function () {
-                result.notifyWith(this, ['Created entities posted']);
+                result.notifyWith(this, notification('New entities created on OOI-WSR', worldState));
                 oois = applyCommands(oois, commandQueue);
                 $.when( createOOIPropertiesUpdates(worldState.worldStateId, oois.filter(isEstablishedOOI)),
                         createOOIGeometryUpdates(worldState.worldStateId, oois.filter(isEstablishedOOI)))
                     .then(function () {
-                        result.notifyWith(this, ['Entities updated']);
-                        result.resolveWith(worldState);
+                        result.notifyWith(this, notification('Entity properties updated', worldState));
+                        notifyWPS(worldState.worldStateId)
+                            .then(
+                                function () { result.resolveWith(worldState); }, // all ok
+                                function () { result.reject(); },                // something failed
+                                function (status) {
+                                    result.notifyWith(this, notification('Processing on remote service', worldState, status.progress));
+                                } // progess report
+                            )
                     }, result.reject);
             }, result.reject);
         }, result.reject);
