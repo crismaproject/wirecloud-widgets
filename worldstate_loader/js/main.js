@@ -58,8 +58,9 @@ function loadOOIs(worldStateId) {
         // BEGIN workaround: not all entities belong to the WorldState; ignoring all that don't have properties in the given worldstate
         var oois = JSON.parse(response.responseText).filter(function(x) {
             return x.hasOwnProperty('entityInstancesProperties') &&
+                x.entityInstancesProperties.length &&
                 x.entityInstancesProperties.every(function (y) {
-                    return y.worldStateId === worldStateId;
+                    return y.worldStateId == worldStateId;
                 });
         });
         // END workaround

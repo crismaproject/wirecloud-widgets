@@ -13,7 +13,7 @@
     <wire:displayName>Worldstate loader</wire:displayName>
     <dcterms:description>This operator loads world states from the OOI worldstate repository (OOI-WSR).</dcterms:description>
     <dcterms:creator rdf:resource="http://creatoruri/"/>
-    <usdl-core:versionInfo>0.1.4.3</usdl-core:versionInfo>
+    <usdl-core:versionInfo>0.1.4.5</usdl-core:versionInfo>
     <wire:hasImageUri rdf:resource="img/catalogue.png"/>
     <usdl-core:utilizedResource rdf:resource="js/main.js"/>
     <foaf:page rdf:resource="http://conwet.fi.upm.es/docs/display/wirecloud"/>
