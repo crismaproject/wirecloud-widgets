@@ -51,12 +51,20 @@ function loadLastWorldstateForSimulation(simulationData) {
 }
 
 /**
- * @param {int} worldstateId
+ * @param {int} worldStateId
  */
-function loadOOIs(worldstateId) {
+function loadOOIs(worldStateId) {
     apiCall('Entity', function (response) {
-        MashupPlatform.wiring.pushEvent('oois', response.responseText);
-    }, 'Request to OOI-WSR failed! (during loadOOIs)', { 'wsid': worldstateId });
+        // BEGIN workaround: not all entities belong to the WorldState; ignoring all that don't have properties in the given worldstate
+        var oois = JSON.parse(response.responseText).filter(function(x) {
+            return x.hasOwnProperty('entityInstancesProperties') &&
+                x.entityInstancesProperties.every(function (y) {
+                    return y.worldStateId === worldStateId;
+                });
+        });
+        // END workaround
+        MashupPlatform.wiring.pushEvent('oois', JSON.stringify(oois));
+    }, 'Request to OOI-WSR failed! (during loadOOIs)', { 'wsid': worldStateId });
 }
 
 /**
