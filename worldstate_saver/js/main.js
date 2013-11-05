@@ -183,7 +183,7 @@ function saveWorldState() {
         return oois
             .filter(isNewOOI)
             .map(function (x) {
-                var deferred = new jQuery.Deferred();
+                var deferred = $.Deferred();
                 $.post(apiUri + '/Entity', {
                     entityName: x.entityName || 'New OOI',
                     entityTypeId: x.entityTypeId || 14,
@@ -287,7 +287,7 @@ function saveWorldState() {
         return deferredResult.promise();
     }
 
-    var result = new $.Deferred();
+    var result = $.Deferred();
     var oois = knownOOIs;
 
     /**
