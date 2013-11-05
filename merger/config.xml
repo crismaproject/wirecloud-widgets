@@ -13,7 +13,7 @@
     <wire:displayName>Merger</wire:displayName>
     <dcterms:description>This operator concatenates two JSON arrays.</dcterms:description>
     <dcterms:creator rdf:resource="http://creatoruri/"/>
-    <usdl-core:versionInfo>0.1.0</usdl-core:versionInfo>
+    <usdl-core:versionInfo>0.1.0.1</usdl-core:versionInfo>
     <wire:hasImageUri rdf:resource="img/catalogue.png"/>
     <usdl-core:utilizedResource rdf:resource="js/main.js"/>
     <foaf:page rdf:resource="http://conwet.fi.upm.es/docs/display/wirecloud"/>
@@ -29,7 +29,7 @@
       <wire:PlatformWiring rdf:ID="wiring">
         <wire:hasInputEndpoint>
           <wire:InputEndpoint rdf:ID="input_1">
-            <dcterms:title>a</dcterms:title>
+            <dcterms:title>a_in</dcterms:title>
             <dcterms:description>A</dcterms:description>
             <wire:type>text</wire:type>
             <rdfs:label>A</rdfs:label>
@@ -38,7 +38,7 @@
         </wire:hasInputEndpoint>
         <wire:hasInputEndpoint>
           <wire:InputEndpoint rdf:ID="input_2">
-            <dcterms:title>b</dcterms:title>
+            <dcterms:title>b_in</dcterms:title>
             <dcterms:description>B</dcterms:description>
             <wire:type>text</wire:type>
             <rdfs:label>B</rdfs:label>
