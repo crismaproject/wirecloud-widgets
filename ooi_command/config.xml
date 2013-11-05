@@ -3,7 +3,7 @@
 <Template xmlns="http://morfeo-project.org/2007/Template">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
-    <Name>ooi-command</Name>
+    <Name>ooi_command</Name>
     <DisplayName>OOI Commands</DisplayName>
     <Version>0.1.4.0</Version>
     <Author>Manuel Warum</Author>

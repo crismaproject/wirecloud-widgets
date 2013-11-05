@@ -3,7 +3,7 @@
 <Template xmlns="http://morfeo-project.org/2007/Template">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
-    <Name>crisma-chart</Name>
+    <Name>indicator_charts</Name>
     <DisplayName>Charts</DisplayName>
     <Version>0.4.0</Version>
     <Author>Manuel Warum</Author>

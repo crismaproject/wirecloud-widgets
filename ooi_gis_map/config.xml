@@ -3,7 +3,7 @@
 <Template xmlns="http://morfeo-project.org/2007/Template">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
-    <Name>ooi-gis-map</Name>
+    <Name>ooi_gis_map</Name>
     <DisplayName>OOI GIS Map</DisplayName>
     <Version>0.5.10.8</Version>
     <Author>Manuel Warum</Author>

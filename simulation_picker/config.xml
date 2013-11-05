@@ -3,24 +3,23 @@
 <Template xmlns="http://morfeo-project.org/2007/Template">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
-    <Name>crisma-debug-pusher</Name>
-    <DisplayName>(Debug) Pusher</DisplayName>
-    <Version>0.2.3</Version>
+    <Name>simulation_picker</Name>
+    <DisplayName>Simulation Picker</DisplayName>
+    <Version>0.1.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
-    <Description>Simple widget to send data</Description>
+    <Description>Lets the user pick and load a simulation</Description>
     <ImageURI>img/catalogue.png</ImageURI>
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="to_console" type="boolean" description="Push all data to the console" label="Console"
-                default="true"/>
+    <Preference name="api" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI" default="http://localhost/api"/>
   </Platform.Preferences>
 
   <Platform.Wiring>
-    <OutputEndpoint name="data" type="text" label="Data" description="Data to push" friendcode="any"/>
+    <OutputEndpoint name="simulation" type="text" label="Simulation" description="The simulation selected by the user" friendcode="simulation"/>
   </Platform.Wiring>
 
   <Platform.Link>

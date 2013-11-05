@@ -3,8 +3,8 @@
 <Template xmlns="http://morfeo-project.org/2007/Template" xmlns:doc="crisma://documentation">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
-    <Name>crisma-debug-listener</Name>
-    <DisplayName>(Debug) Listener</DisplayName>
+    <Name>debug_listener</Name>
+    <DisplayName>Listener (Debug)</DisplayName>
     <Version>0.2.3</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>

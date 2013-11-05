@@ -3,7 +3,7 @@
 <Template xmlns="http://morfeo-project.org/2007/Template">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
-    <Name>ooi-table</Name>
+    <Name>ooi_table</Name>
     <DisplayName>OOI Table</DisplayName>
     <Version>0.5.3.2</Version>
     <Author>Manuel Warum</Author>

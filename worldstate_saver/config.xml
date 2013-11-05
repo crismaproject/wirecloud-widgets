@@ -2,8 +2,8 @@
 <Template xmlns="http://morfeo-project.org/2007/Template">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
-    <Name>worldstate-saver</Name>
-    <DisplayName>Worldstate Saver</DisplayName>
+    <Name>worldstate_saver</Name>
+    <DisplayName>WorldState Saver</DisplayName>
     <Version>0.1.3.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>

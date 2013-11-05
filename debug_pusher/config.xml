@@ -3,23 +3,24 @@
 <Template xmlns="http://morfeo-project.org/2007/Template">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
-    <Name>simulation_loader</Name>
-    <DisplayName>Simulation Loader</DisplayName>
-    <Version>0.1.0</Version>
+    <Name>debug_pusher</Name>
+    <DisplayName>Pusher (Debug)</DisplayName>
+    <Version>0.2.3</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
-    <Description>Lets the user pick and load a simulation</Description>
+    <Description>Simple widget to send data</Description>
     <ImageURI>img/catalogue.png</ImageURI>
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="api" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI" default="http://localhost/api"/>
+    <Preference name="to_console" type="boolean" description="Push all data to the console" label="Console"
+                default="true"/>
   </Platform.Preferences>
 
   <Platform.Wiring>
-    <OutputEndpoint name="simulation" type="text" label="Simulation" description="The simulation selected by the user" friendcode="simulation"/>
+    <OutputEndpoint name="data" type="text" label="Data" description="Data to push" friendcode="any"/>
   </Platform.Wiring>
 
   <Platform.Link>
