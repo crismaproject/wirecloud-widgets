@@ -19,8 +19,12 @@ var emptyWorldState = {
 var apiUri = null;
 var wpsUri = null;
 var applyPreferences = function () {
-    apiUri = MashupPlatform.prefs.get('api');
-    wpsUri = MashupPlatform.prefs.get('wps');
+    function proxify(uri) {
+        return proxyUri = MashupPlatform.http.buildProxyURL(uri);
+    }
+
+    apiUri = proxify(MashupPlatform.prefs.get('api'));
+    wpsUri = proxify(MashupPlatform.prefs.get('wps'));
 };
 
 /**
