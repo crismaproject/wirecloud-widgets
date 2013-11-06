@@ -1,0 +1,13 @@
+#btn-load {
+    background-image: url('../img/load.png');
+    background-position: 6pt center;
+    background-repeat: no-repeat;
+    padding-left: 19pt;
+}
+
+#btn-refresh {
+    background-image: url('../img/refresh.png');
+    background-position: 6pt center;
+    background-repeat: no-repeat;
+    padding-left: 19pt;
+}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Template xmlns="http://morfeo-project.org/2007/Template">
+  <Catalog.ResourceDescription>
+    <Vendor>AIT</Vendor>
+    <Name>worldstate_picker</Name>
+    <DisplayName>WorldState Picker</DisplayName>
+    <Version>0.1.0</Version>
+    <Author>Manuel Warum</Author>
+    <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
+    <Description>Lets the user pick and load a world state</Description>
+    <ImageURI>img/catalogue.png</ImageURI>
+    <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
+    <WikiURI>http://127.0.0.1/index.htm</WikiURI>
+  </Catalog.ResourceDescription>
+
+  <Platform.Preferences>
+    <Preference name="api" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI" default="http://localhost/api"/>
+  </Platform.Preferences>
+
+  <Platform.Wiring>
+    <InputEndpoint name="simulation" type="text" label="Simulation" description="The simulation selected by the user" friendcode="simulation"/>
+    <OutputEndpoint name="worldstate" type="text" label="WorldState" description="The world state selected by the user" friendcode="worldstate"/>
+    <OutputEndpoint name="oois" type="text" label="OOIs" description="Objects of Interest for the given Worldstate" friendcode="oois"/>
+    <OutputEndpoint name="ooi-types" type="text" label="OOI types" description="Objects of Interest type definitions" friendcode="ooi-types"/>
+  </Platform.Wiring>
+
+  <Platform.Link>
+    <XHTML href="index.html"/>
+  </Platform.Link>
+
+  <Platform.Rendering width="6" height="12"/>
+</Template>
