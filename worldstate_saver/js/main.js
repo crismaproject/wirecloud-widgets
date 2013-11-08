@@ -20,7 +20,7 @@ var apiUri = null;
 var wpsUri = null;
 var applyPreferences = function () {
     function proxify(uri) {
-        return proxyUri = MashupPlatform.http.buildProxyURL(uri);
+        return MashupPlatform.http.buildProxyURL(uri);
     }
 
     apiUri = proxify(MashupPlatform.prefs.get('api'));

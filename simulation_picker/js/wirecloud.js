@@ -8,7 +8,11 @@ $(function () {
         console.warn('Wirecloud environment not detected.');
     } else {
         var applyPreferences = function () {
-            window.ooiWsrApiUri = MashupPlatform.prefs.get('api');
+            function proxify(uri) {
+                return MashupPlatform.http.buildProxyURL(uri);
+            }
+
+            window.ooiWsrApiUri = proxify(MashupPlatform.prefs.get('api'));
         };
 
         MashupPlatform.prefs.registerCallback(applyPreferences);
