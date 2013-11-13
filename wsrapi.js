@@ -29,8 +29,12 @@ var WorldStateRepository = function (apiUri) {
 WorldStateRepository.prototype.createUrl = function(path, entityId) {
     var uri = this.apiUri + '/' + path;
     if (entityId) uri += '/' + entityId;
-    return uri;
+    return this.proxify(uri);
 };
+
+WorldStateRepository.prototype.proxify = typeof MashupPlatform === 'undefined' ?
+    function(url) { return url; } :
+    function(url) { return MashupPlatform.http.buildProxyURL(url); };
 
 /**
  * Fetches all entities from a resource collection.

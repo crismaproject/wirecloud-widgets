@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>debug_pusher</Name>
     <DisplayName>Pusher (Debug)</DisplayName>
-    <Version>0.2.3</Version>
+    <Version>0.6.0.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Simple widget to send data</Description>

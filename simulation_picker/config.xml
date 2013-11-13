@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>simulation_picker</Name>
     <DisplayName>Simulation Picker</DisplayName>
-    <Version>0.1.0</Version>
+    <Version>0.6.0.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Lets the user pick and load a simulation</Description>
