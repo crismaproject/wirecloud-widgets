@@ -35,25 +35,53 @@ end
 desc 'Create documentation (documentation.htm files)'
 task :doc do
   stylesheet = Nokogiri::XSLT(File.read('widget.xslt'))
+  all_human_readable_files = { }
   Dir.glob('**').each do |subdirectory|
     config_file = File.join(subdirectory, 'config.xml')
     if File.exists? config_file
       config = Nokogiri::XML(File.read(config_file))
-      human_readable = stylesheet.transform(config)
+      human_readable = stylesheet.transform config
       human_readable_file = File.join(subdirectory, 'documentation.htm')
       File.write(human_readable_file, human_readable)
 
       puts "Writing documentation for #{subdirectory} in #{human_readable_file}"
+
+      all_human_readable_files[subdirectory] = human_readable_file
     end
   end
+
+  doc_index = Nokogiri::HTML::Builder.new do |doc|
+    doc.html lang: 'en' do
+      doc.head {
+        doc.title 'Documentation index'
+        doc.meta name: 'viewport', content: 'width=device-width, initial-scale=1.0'
+        doc.link href: 'http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css', rel: 'stylesheet'
+        doc.style 'body { background-color: #eee } .container { background-color: #fff; border: 1px solid #ccc; margin-top: 1em; border-radius: 5px }', type: 'text/css'
+      }
+      doc.body {
+        doc.div class: 'container' do
+          doc.p 'Pick a widget/operator from the list below to see its automatically generated documentation:', class: 'text-info'
+          doc.ul {
+            all_human_readable_files.each { |k,v| doc.li { doc.a k, href: v } }
+          }
+        end
+      }
+    end
+  end
+  File.write('documentation.htm', doc_index.to_html)
 end
 
 desc 'Remove generated files'
 task :cleanup do
   Dir.glob('*.wgt').each do |bundledFile|
-    puts "Removing old file: #{bundledFile}"
+    puts "Removing old bundle: #{bundledFile}"
     File.delete bundledFile
   end
+  Dir.glob('*/documentation.htm').each do |bundledFile|
+    puts "Removing old documentation: #{bundledFile}"
+    File.delete bundledFile
+  end
+  File.delete 'documentation.htm'
 end
 
 desc 'Create all zipped Wirecloud widget files'
