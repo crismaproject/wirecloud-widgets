@@ -1,5 +1,5 @@
 require 'zip/zip'
-require_relative 'rake_helper'
+require 'nokogiri'
 
 desc 'Create zipped Wirecloud widget file for the specified project'
 task :bundle, [:what, :suffix] do |_, args|
@@ -32,13 +32,19 @@ task :update do
   end
 end
 
-## Deprecated task! Will be replaced with XSLT soon
-desc 'Created endpoint documentation (ENDPOINTS.md files) -- DEPRECATED'
+desc 'Create documentation (documentation.htm files)'
 task :doc do
-  puts 'WARNING! This task is deprecated! It will soon be replaced by an XSLT variant!'
+  stylesheet = Nokogiri::XSLT(File.read('widget.xslt'))
   Dir.glob('**').each do |subdirectory|
     config_file = File.join(subdirectory, 'config.xml')
-    create_doc_for(config_file, File.join(subdirectory, 'ENDPOINTS.md')) if File.exists? config_file
+    if File.exists? config_file
+      config = Nokogiri::XML(File.read(config_file))
+      human_readable = stylesheet.transform(config)
+      human_readable_file = File.join(subdirectory, 'documentation.htm')
+      File.write(human_readable_file, human_readable)
+
+      puts "Writing documentation for #{subdirectory} in #{human_readable_file}"
+    end
   end
 end
 
@@ -51,7 +57,7 @@ task :cleanup do
 end
 
 desc 'Create all zipped Wirecloud widget files'
-task :all => [:cleanup, :update] do
+task :all => [:cleanup, :update, :doc] do
   suffix = "-#{Time.now.strftime('%y%m%d-%H%M')}-git-#{run_process 'git rev-parse --short HEAD'}"
 
   Dir.glob('**').each do |subdirectory|
@@ -59,5 +65,15 @@ task :all => [:cleanup, :update] do
       Rake::Task[:bundle].invoke subdirectory, suffix
       Rake::Task[:bundle].reenable
     end
+  end
+end
+
+def run_process(process)
+  begin
+    IO.popen(process, 'r') do |p|
+      return p.gets.strip
+    end
+  rescue
+    return nil
   end
 end

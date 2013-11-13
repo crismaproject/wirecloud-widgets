@@ -8,6 +8,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title><xsl:value-of select="c:Catalog.ResourceDescription/c:Name" /></title>
         <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet"/>
+        <style type="text/css">
+          .container { background-color: #fff; border: 1px solid #ccc; margin-top: 1em; border-radius: 5px }
+          body { background-color: #eee }
+          footer { font-size: 11px }
+        </style>
       </head>
       <body>
         <div class="container">
@@ -62,6 +67,10 @@
               </fieldset>
             </div>
           </div>
+
+          <footer>
+            This file was generated automatically. Do not modify it by hand.
+          </footer>
         </div>
       </body>
     </html>

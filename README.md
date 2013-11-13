@@ -45,8 +45,9 @@ To (re-)generate these files on your own, you can use the `rake doc` rake task.
 
 There are two ways to build these widgets:
 
-* **If you have ruby/rake:** use `rake all`. It will build any widgets in subdirectories containing a `.bundle` file. It requires [rubyzip](https://github.com/rubyzip/rubyzip) to be installed (`gem install rubyzip`).
+* **If you have ruby/rake:** use `rake all`. It will build any widgets in subdirectories containing a `.bundle` file.
 There are also rake tasks to bundle widgets individually; for instance, to build the *openlayers* directory, use `rake bundle[openlayers]`.
+For this to work, you need to have two gems installed (`gem install …`), namely `rubyzip` as well as `nokogiri`.
 * **Build it manually:** use any compression tool to create ZIP files for each of the widgets you are interested in so that the *config.xml* file is in the root directory of the archive. If you want to, exclude Markdown files.
 By convention, you should then change the extension from `.zip` to `.wgt`.
 
@@ -54,8 +55,9 @@ If you want to contribute other ways of building/bundling widgets (or documentat
 
 ## Branches
 
-* **master** — not exactly stable yet, but not as bleeding edge as *v0.5* :)
-* **v0.5** — this is some sort of staging area for the *next* version and most commits are likely to not work completely.
+* **master** — recommended latest version
+* **v0.5** — currently somewhat stable version; receives maintenance updates where applicable.
+* **v0.6** — this is some sort of staging area for the *next* version and most commits are likely to not work completely.
 
 ## Contact
 
