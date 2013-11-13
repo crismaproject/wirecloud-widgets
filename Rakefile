@@ -19,8 +19,9 @@ task :bundle, [:what, :suffix] do |_, args|
   end
 end
 
-desc 'Created endpoint documentation (ENDPOINTS.md files)'
+desc 'Created endpoint documentation (ENDPOINTS.md files) -- DEPRECATED'
 task :doc do
+  puts 'WARNING! This task is deprecated! It will soon be replaced by an XSLT variant!'
   Dir.glob('**').each do |subdirectory|
     config_file = File.join(subdirectory, 'config.xml')
     create_doc_for(config_file, File.join(subdirectory, 'ENDPOINTS.md')) if File.exists? config_file
