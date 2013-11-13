@@ -19,6 +19,19 @@ task :bundle, [:what, :suffix] do |_, args|
   end
 end
 
+desc 'Updates the OOI WSR API library in all subdirectories'
+task :update do
+  src = File.absolute_path 'wsrapi.js'
+  raise "Could not find #{src}" unless File.exists?(src)
+  Dir.glob('**/js').each do |subdirectory|
+    dst = File.absolute_path "#{subdirectory}/wsrapi.js"
+    if File.exists?(dst)
+      FileUtils::cp(src, dst)
+      puts "Updating #{dst}"
+    end
+  end
+end
+
 desc 'Created endpoint documentation (ENDPOINTS.md files)'
 task :doc do
   Dir.glob('**').each do |subdirectory|
@@ -36,7 +49,7 @@ task :cleanup do
 end
 
 desc 'Create all zipped Wirecloud widget files'
-task :all => :cleanup do
+task :all => [:cleanup, :update] do
   suffix = "-#{Time.now.strftime('%y%m%d-%H%M')}-git-#{run_process 'git rev-parse --short HEAD'}"
 
   Dir.glob('**').each do |subdirectory|
