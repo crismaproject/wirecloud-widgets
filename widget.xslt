@@ -68,7 +68,7 @@
             </div>
           </div>
 
-          <footer>
+          <footer class="hidden-print">
             This file was generated automatically. Do not modify it by hand.
           </footer>
         </div>
@@ -78,8 +78,8 @@
 
   <xsl:template match="c:Platform.Wiring/c:InputEndpoint|c:Platform.Wiring/c:OutputEndpoint">
     <li>
-      <div><span><xsl:value-of select="@label"/></span>
-        (<code><xsl:value-of select="@name"/> : <xsl:value-of select="@friendcode"/></code>):
+      <div><strong><xsl:value-of select="@label"/></strong>
+        (<code><span title="internal name"><xsl:value-of select="@name"/></span> : <span title="declared friendcode"><xsl:value-of select="@friendcode"/></span></code>):
         <xsl:value-of select="@description"/></div>
       <xsl:if test="text()">
         <div><xsl:value-of select="text()"/></div>
