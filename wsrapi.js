@@ -10,13 +10,13 @@
  * @param {string} apiUri the OOI-WSR's API URI
  * @constructor
  */
-var WorldStateRepository = function (apiUri) {
+function WorldStateRepository(apiUri) {
     /**
      * @type {string} the OOI-WSR's API URI
      * @private
      */
     this.apiUri = apiUri;
-};
+}
 
 /**
  * Creates a fully qualified URL for the specified resource path. If a resource ID is provided,
