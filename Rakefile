@@ -81,7 +81,7 @@ task :cleanup do
     puts "Removing old documentation: #{bundledFile}"
     File.delete bundledFile
   end
-  File.delete 'documentation.htm'
+  File.delete 'documentation.htm' if File.exists? 'documentation.htm'
 end
 
 desc 'Create all zipped Wirecloud widget files'
