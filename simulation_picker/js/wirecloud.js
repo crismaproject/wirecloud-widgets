@@ -8,32 +8,21 @@ $(function () {
         console.warn('Wirecloud environment not detected.');
     } else {
         var applyPreferences = function () {
-            function proxify(uri) {
-                return MashupPlatform.http.buildProxyURL(uri);
-            }
-
-            window.ooiWsrApiUri = proxify(MashupPlatform.prefs.get('api'));
+            api.apiUri = MashupPlatform.prefs.get('api');
         };
-
         MashupPlatform.prefs.registerCallback(applyPreferences);
         applyPreferences();
-
-        var jqueryGet = $.fn.get;
-        $.fn.get = function (uri, callback, type) {
-            var proxyUri = MashupPlatform.http.buildProxyURL(uri);
-            return jqueryGet(proxyUri, callback, type);
-        };
 
         $('#btn-load').click(function () {
             var simulationId = $('select#simulationId option:selected').val();
             if (!simulationId) return;
             // ALWAYS load the most recent simulation data from the server on load
-            $.get(window.ooiWsrApiUri + '/Simulation/' + simulationId, function (simulation) {
-                $('#simulationLoadedNotification').fadeIn();
-                $('button#btn-load,button#btn-refresh,select#simulationId').attr('disabled', 'disabled');
-                MashupPlatform.wiring.pushEvent('simulation', JSON.stringify(simulation));
-            }, 'json');
+            api.getSimulation(simulationId)
+                .done(function (simulation) {
+                    $('#simulationLoadedNotification').fadeIn();
+                    $('button#btn-load,button#btn-refresh,select#simulationId').attr('disabled', 'disabled');
+                    MashupPlatform.wiring.pushEvent('simulation', JSON.stringify(simulation));
+                }, 'json');
         });
     }
-
 });

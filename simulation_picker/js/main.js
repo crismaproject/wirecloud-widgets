@@ -1,4 +1,4 @@
-window.ooiWsrApiUri = 'http://localhost/api';
+var api = new WorldStateRepository();
 
 var onSimulationSelected = function () {
     var simulation = $('select#simulationId option:selected');
@@ -12,24 +12,25 @@ var onSimulationSelected = function () {
  */
 function loadSimulations() {
     $('button,input,select').attr('disabled', 'disabled');
-    $.get(window.ooiWsrApiUri + '/Simulation', function (data) {
-        var container = $('select#simulationId');
-        var previouslySelected = $(container).val();
-        container.empty();
-        for (var i = 0; i < data.length; i++) {
-            container.append($('<option></option>')
-                .val(data[i].simulationId)
-                .text(getTextFor(data[i]))
-                .attr('data-sim-descr', data[i].description)
-                .attr('data-sim-time', data[i].startDateTime)
-            );
-        }
+    api.listSimulations()
+        .done(function (data) {
+            var container = $('select#simulationId');
+            var previouslySelected = $(container).val();
+            container.empty();
+            for (var i = 0; i < data.length; i++) {
+                container.append($('<option></option>')
+                    .val(data[i].simulationId)
+                    .text(getTextFor(data[i]))
+                    .attr('data-sim-descr', data[i].description)
+                    .attr('data-sim-time', data[i].startDateTime)
+                );
+            }
 
-        if (previouslySelected)
-            container.val(previouslySelected);
+            if (previouslySelected)
+                container.val(previouslySelected);
 
-        onSimulationSelected();
-    }, 'json').always(function () {
+            onSimulationSelected();
+        }).always(function () {
             $('button[disabled],input[disabled],select[disabled]').removeAttr('disabled');
         });
 }
