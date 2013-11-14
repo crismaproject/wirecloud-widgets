@@ -15,6 +15,6 @@ if (typeof MashupPlatform === 'undefined') {
 
     MashupPlatform.wiring.registerCallback('simulation', function (simulation) {
         var simulation = JSON.parse(simulation);
-
+        createWorldStateTree('worldstate-tree', simulation);
     });
 }

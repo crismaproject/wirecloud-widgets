@@ -13,6 +13,11 @@ var treeStyle = {
     }
 };
 
+/**
+ * Creates the visual tree representation of worldstates associated with the specified simulation.
+ * @param {string} containerName the DOM identifier of the container that will host the tree.
+ * @param {object} simulation the simulation object.
+ */
 function createWorldStateTree(containerName, simulation) {
     if (!api) throw 'RESTful service not configured yet.';
 
@@ -30,8 +35,8 @@ function createWorldStateTree(containerName, simulation) {
                 levelDistance: treeStyle.sizes.levelDistance,
                 //enable panning
                 Navigation: {
-                    enable:true,
-                    panning:true
+                    enable: true,
+                    panning: true
                 },
                 //set node and edge styles
                 //set overridable=true for styling individual
@@ -55,7 +60,7 @@ function createWorldStateTree(containerName, simulation) {
                 //style properties before plotting it.
                 //The data properties prefixed with a dollar
                 //sign will override the global node style properties.
-                onBeforePlotNode: function(node){
+                onBeforePlotNode: function (node) {
                     //add some color to the nodes in the path between the
                     //root node and the selected node.
                     if (node.selected) {
@@ -64,10 +69,12 @@ function createWorldStateTree(containerName, simulation) {
                     else {
                         delete node.data.$color;
                         //if the node belongs to the last plotted level
-                        if(!node.anySubnode("exist")) {
+                        if (!node.anySubnode("exist")) {
                             //count children number
                             var count = 0;
-                            node.eachSubnode(function () { count++; });
+                            node.eachSubnode(function () {
+                                count++;
+                            });
                             if (count) node.data.$color = treeStyle.colors.nonLeaf;
                         }
                     }
@@ -76,7 +83,7 @@ function createWorldStateTree(containerName, simulation) {
                 //This method is called on DOM label creation.
                 //Use this method to add event handlers and styles to
                 //your node.
-                onCreateLabel: function(label, node){
+                onCreateLabel: function (label, node) {
                     label.id = node.id;
                     label.innerHTML = node.name;
                     label.onclick = function(){ st.onClick(node.id); };
@@ -97,6 +104,11 @@ function createWorldStateTree(containerName, simulation) {
         });
 }
 
+/**
+ * @param {Array} worldStates an array of (possibly unassociated) WorldStates.
+ * @param {Object} simulation the simulation for which to generate the tree.
+ * @returns {{id: string, name: string, data: *, children: Array}}
+ */
 function toJit(worldStates, simulation) {
     var simulationId = simulation.simulationId;
     worldStates = worldStates
@@ -107,23 +119,36 @@ function toJit(worldStates, simulation) {
     return {
         id: 's' + simulationId,
         name: 'Simulation ' + simulationId,
-        //data: simulation,
+        data: simulation,
         children: worldStates
             .filter(function (x) { return x.worldStateParentId === null; })
             .map(function (x) { return toJitNode(worldStatesLookup, x.worldStateId) })
     };
 }
-
+/**
+ * Creates a JIT-compatible JSON object for the specified WorldState.
+ * Note that this function is recursive. It will also create these objects for any declared children.
+ * @param {Object} worldStatesLookup the WorldState dictionary as created by linkWorldStates
+ * @param {number} nodeId the unique identifier of the WorldState for which to generate the JSON object
+ * @returns {{id: string, name: string, data: *, children: Array}}
+ */
 function toJitNode(worldStatesLookup, nodeId) {
     var node = worldStatesLookup[nodeId];
     return {
         id: 'w' + nodeId,
         name: 'WorldState ' + nodeId,
-        //data: node,
+        data: node,
         children: node.children.map(function (childId) { return toJitNode(worldStatesLookup, childId); })
     };
 }
 
+/**
+ * This method creates a dictionary-version of an WorldState array where each key corresponds to the
+ * WorldState's own identifier. In addition, it creates and populates a 'children' property for each WorldState
+ * that contains identifiers to any other WorldState that declares it as its parent.
+ * @param {Array} worldStates
+ * @returns {Object}
+ */
 function linkWorldStates(worldStates) {
     var worldStatesDict = worldStates.toDict('worldStateId', function (worldState) {
         return $.extend({children: []}, worldState);
@@ -137,16 +162,6 @@ function linkWorldStates(worldStates) {
     return worldStatesDict;
 }
 
-console.logTree = function (jitTreeNode) {
-    function log(node, prefix) {
-        var str = prefix + node.id + '\n';
-        for (var i = 0; i < node.children.length; i++)
-            str += log(node.children[i], prefix + node.id +  '/');
-        return str;
-    }
-    console.log(log(jitTreeNode, ''));
-};
-
 /**
  * Groups the provided array of objects into an object where the object's properties are values extracted
  * from the keyProperty property of array elements, and each keyed entry in the object is the first
@@ -155,7 +170,7 @@ console.logTree = function (jitTreeNode) {
  * @param {string} keyProperty
  * @returns {{}}
  */
-Array.prototype.toDict = function(keyProperty) {
+Array.prototype.toDict = function (keyProperty) {
     var groups = { };
 
     for (var i = 0; i < this.length; i++) {
