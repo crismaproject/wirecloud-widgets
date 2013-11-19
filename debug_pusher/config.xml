@@ -8,15 +8,19 @@
     <Version>0.6.0.2</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
-    <Description>Simple widget to send data</Description>
+    <Description>
+      This widget sends arbitrary data to other wirecloud widgets or operators. This data can either be provided
+      manually, or via the HTML5 FileReader API (if the browser supports it).
+      It is designed as a simple UI-based method for development and diagnosis purposes.
+    </Description>
     <ImageURI>img/catalogue.png</ImageURI>
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="to_console" type="boolean" description="Push all data to the console" label="Console"
-                default="true"/>
+    <Preference name="to_console" type="boolean" description="If checked, all data that is sent is also printed to the browser's JavaScript console"
+                label="Print to console" default="true"/>
   </Platform.Preferences>
 
   <Platform.Wiring>
