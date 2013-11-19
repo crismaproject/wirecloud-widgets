@@ -20,6 +20,11 @@ if (hasMashupPlatform) {
 }
 
 $(function() {
+    /**
+     * Gets data from either the textarea or the file input, depending on which one is currently open in the
+     * accordion. This method returns a promise as file reader operations are asynchronous.
+     * @returns {jQuery.Promise}
+     */
     function getData() {
         var deferred = $.Deferred();
         if ($('div.in#manualInputPanel').length)
@@ -31,8 +36,13 @@ $(function() {
         return deferred.promise();
     }
 
-    function getDataFromFile(s, deferred) {
-        var file = document.getElementById(s).files[0];
+    /**
+     * Reads the text file contained by the specified input tag.
+     * @param {string} fileInputId the DOM identifier of the file input component
+     * @param {jQuery.Deferred} deferred a deferred object that will be resolved with the file data once it has been loaded
+     */
+    function getDataFromFile(fileInputId, deferred) {
+        var file = document.getElementById(fileInputId).files[0];
         var reader = new FileReader();
         reader.onload = function () {
             deferred.resolveWith(null, [reader.result]);
