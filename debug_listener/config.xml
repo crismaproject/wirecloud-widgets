@@ -5,18 +5,22 @@
     <Vendor>AIT</Vendor>
     <Name>debug_listener</Name>
     <DisplayName>Listener (Debug)</DisplayName>
-    <Version>0.6.0.0</Version>
+    <Version>0.6.0.1</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
-    <Description>Simple widget to display incoming data</Description>
+    <Description>
+      This is a simple widget to capture any data it receives. It will display any data received through its
+      endpoint in the UI (as-is).
+      It is designed as a simple UI-based method for development and diagnosis purposes.
+    </Description>
     <ImageURI>img/catalogue.png</ImageURI>
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="to_console" type="boolean" description="Push all data to the console" label="Console"
-                default="true"/>
+    <Preference name="to_console" type="boolean" description="If checked, all data that is received is also printed to the browser's JavaScript console"
+                label="Print to console" default="true"/>
   </Platform.Preferences>
 
   <Platform.Wiring>
