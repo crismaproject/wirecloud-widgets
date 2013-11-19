@@ -6,6 +6,7 @@
     <link href="css/main.css" type="text/css" rel="stylesheet"/>
     <script src="//code.jquery.com/jquery-2.0.3.min.js" type="text/javascript"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+    <script src="js/main.js" type="text/javascript"></script>
     <script src="js/wirecloud.js" type="text/javascript"></script>
 </head>
 <body>
@@ -18,7 +19,10 @@
             <div class="input-group">
                 <input type="text" id="inputEventName" class="form-control" placeholder="Event" disabled="disabled">
                 <span class="input-group-btn">
-                    <button class="btn" type="button" id="btn-refresh-event"><img src="img/refresh.png"></button>
+                    <button class="btn btn-default" type="button" id="btn-refresh-event"
+                            title="Refreshes the list of receiving components">
+                        <span class="glyphicon glyphicon-refresh"></span>
+                    </button>
                 </span>
             </div>
         </div>
@@ -26,26 +30,28 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <a data-toggle="collapse" data-parent="#accordion" href="#manualInputPanel">
-                        Data (manual input)
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        Manual input
                     </a>
                 </div>
                 <div id="manualInputPanel" class="panel-collapse collapse in">
                     <div class="form-group">
                         <textarea id="inputEventData" class="form-control" rows="2"></textarea>
-                        <span class="help-block hide-small">Enter JSON-encoded event data above.</span>
+                        <span class="help-block hide-small">Enter event data above.</span>
                     </div>
                 </div>
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <a data-toggle="collapse" data-parent="#accordion" href="#fileInputPanel">
-                        Data (file upload)
+                        <span class="glyphicon glyphicon-floppy-open"></span>
+                        File upload
                     </a>
                 </div>
                 <div id="fileInputPanel" class="panel-collapse collapse">
                     <div class="form-group">
                         <input type="file" id="inputEventDataFile" class="form-control" multiple="false" accept="application/json">
-                        <span class="help-block hide-small">Alternatively, you can upload JSON-encoded files here.</span>
+                        <span class="help-block hide-small">Alternatively, you can upload event data from your local hard drive here.</span>
                     </div>
                 </div>
             </div>
@@ -53,10 +59,17 @@
         <hr />
         <div class="text-center">
             <span class="btn-group">
-                <button type="reset" class="btn btn-small btn-danger">Clear</button>
-                <button id="btn-send" type="button" class="btn btn-small btn-default">Send</button>
+                <button type="reset" class="btn btn-small btn-default">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                    Clear
+                </button>
+                <button id="btn-send" type="button" class="btn btn-small btn-primary">
+                    <span class="glyphicon glyphicon-transfer"></span>
+                    Send
+                </button>
             </span>
         </div>
+        <div id="dispatchNotification" class="text-center text-success">Data sent</div>
     </fieldset>
 </form>
 
