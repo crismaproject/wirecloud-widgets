@@ -8,6 +8,8 @@
 
 /**
  * @param {string} apiUri the OOI-WSR's API URI
+ * @author Manuel Warum (AIT)
+ * @version 0.6
  * @constructor
  */
 function WorldStateRepository(apiUri) {
@@ -21,8 +23,8 @@ function WorldStateRepository(apiUri) {
 /**
  * Creates a fully qualified URL for the specified resource path. If a resource ID is provided,
  * the path will point at the resource URL; otherwise it will point to the resource collection.
- * @param {string} path
- * @param {number?} entityId
+ * @param {string} path the path (usually the resource's name) to fetch
+ * @param {number?} entityId the unique identifier of the resource to fetch
  * @returns {string} a fully qualified URL pointing to the specified resource
  * @private
  */
