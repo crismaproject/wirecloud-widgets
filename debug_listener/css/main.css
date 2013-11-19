@@ -6,13 +6,30 @@
 #data li {
     padding-top: 2.5pt;
     padding-bottom: 2.5pt;
-    font-family: 'Consolas', monospace
+}
+
+#data li time {
+    font-size: 85%;
+    padding-right: 1em;
+    color: rgba(0, 0, 0, .5);
+}
+
+#data li .raw {
+    font-family: 'Consolas', 'Courier New', monospace;
 }
 
 #data li:nth-child(even) {
-    background-color: #f9f9ff
+    background-color: rgb(240, 247, 250)
 }
 
 #data li:hover {
-    background-color: #ececff
+    background-color: rgb(200, 233, 250)
+}
+
+#data li.text-danger {
+    font-weight: bold;
+}
+
+#data li.text-danger:hover {
+    background-color: rgb(245, 216, 215);
 }

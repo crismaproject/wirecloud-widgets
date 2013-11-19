@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>debug_listener</Name>
     <DisplayName>Listener (Debug)</DisplayName>
-    <Version>0.6.0.1</Version>
+    <Version>0.6.0.2</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
@@ -21,6 +21,8 @@
   <Platform.Preferences>
     <Preference name="to_console" type="boolean" description="If checked, all data that is received is also printed to the browser's JavaScript console"
                 label="Print to console" default="true"/>
+    <Preference name="row_limit" type="number" description="The maximum amount of rows to display"
+                label="Row limit" default="100"/>
   </Platform.Preferences>
 
   <Platform.Wiring>
