@@ -3,49 +3,81 @@
 /*
  * Iff the Wirecloud environment is available, register endpoints.
  */
-if (typeof MashupPlatform === 'undefined')
+var hasMashupPlatform = typeof MashupPlatform !== 'undefined';
+if (!hasMashupPlatform)
     console.warn('Wirecloud environment not detected.');
 
 var toConsole = false;
-var applyPreferences = function () {
-    toConsole = MashupPlatform.prefs.get('to_console');
-};
+if (hasMashupPlatform) {
+    var applyPreferences = function () {
+        toConsole = MashupPlatform.prefs.get('to_console');
+    };
 
-MashupPlatform.prefs.registerCallback(applyPreferences);
-applyPreferences();
+    MashupPlatform.prefs.registerCallback(applyPreferences);
+    applyPreferences();
+} else {
+    toConsole = true;
+}
 
 $(function() {
+    function getData() {
+        var deferred = $.Deferred();
+        if ($('div.in#manualInputPanel').length)
+            deferred.resolveWith(null, [$('#inputEventData').val()]);
+        else if($('div.in#fileInputPanel').length)
+            getDataFromFile('inputEventDataFile', deferred);
+        else
+            deferred.reject();
+        return deferred.promise();
+    }
+
+    function getDataFromFile(s, deferred) {
+        var file = document.getElementById(s).files[0];
+        var reader = new FileReader();
+        reader.onload = function () {
+            deferred.resolveWith(null, [reader.result]);
+        };
+        reader.readAsText(file);
+    }
+
     $('#btn-send').click(function () {
-        var eventData = $('#inputEventData').val();
-        if (toConsole) {
-            var remote = null;
-            var reached = MashupPlatform.wiring.getReachableEndpoints('data');
-            if (reached.length == 1)
-                remote = reached[0].endpoint;
-            else if (reached.length > 1) {
-                remote = [];
-                for (var i = 0; i < reached.length; i++)
-                    remote[i] = reached[i].endpoint;
+        var eventData = getData()
+            .done(function (data) {
+                if (!data) return;
+
+                if (toConsole) {
+                    var remote = null;
+                    var reached = hasMashupPlatform ? MashupPlatform.wiring.getReachableEndpoints('data') : [ ];
+                    if (reached.length == 1)
+                        remote = reached[0].endpoint;
+                    else if (reached.length > 1) {
+                        remote = [];
+                        for (var i = 0; i < reached.length; i++)
+                            remote[i] = reached[i].endpoint;
+                    }
+
+                    console.log({
+                        'sent': true,
+                        'local-event': 'data',
+                        'remote-event': remote,
+                        'data': data
+                    });
+                }
+                if (hasMashupPlatform)
+                    MashupPlatform.wiring.pushEvent('data', data);
+            })
+    });
+
+    if (hasMashupPlatform) {
+        $('#btn-refresh-event').click(function () {
+            var connections = MashupPlatform.wiring.getReachableEndpoints('data');
+            var str = '';
+            for (var i = 0; i < connections.length; i++) {
+                var connection = connections[i];
+                if (i > 0) str += ', ';
+                str += connection.endpoint + ' (' + connection.iWidgetName + ')';
             }
-
-            console.log({
-                'sent': true,
-                'local-event': 'data',
-                'remote-event': remote,
-                'data': eventData
-            });
-        }
-        MashupPlatform.wiring.pushEvent('data', eventData);
-    });
-
-    $('#btn-refresh-event').click(function () {
-        var connections = MashupPlatform.wiring.getReachableEndpoints('data');
-        var str = '';
-        for (var i = 0; i < connections.length; i++) {
-            var connection = connections[i];
-            if (i > 0) str += ', ';
-            str += connection.endpoint + ' (' + connection.iWidgetName + ')';
-        }
-        $('#inputEventName').val(str);
-    });
+            $('#inputEventName').val(str);
+        });
+    }
 });
