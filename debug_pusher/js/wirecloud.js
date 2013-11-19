@@ -50,8 +50,16 @@ $(function() {
         reader.readAsText(file);
     }
 
+    if (!window.File || !window.FileReader) {
+        // browser does not support HTML5 FileReader API!
+        var $input = $('input#inputEventDataFile');
+        $input.attr('disabled', 'disabled');
+        $input.closest('div.panel').hide();
+        console.warn('FileReader API not found. File upload will not be available!');
+    }
+
     $('#btn-send').click(function () {
-        var eventData = getData()
+        getData()
             .done(function (data) {
                 if (!data) return;
 
