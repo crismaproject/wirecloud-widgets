@@ -1,6 +1,12 @@
 require 'zip/zip'
 require 'nokogiri'
 
+BOOTSTRAP_URI = 'http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css'
+XSLT_FILE = 'widget.xslt'
+DOC_FILE = 'documentation.htm'
+BUNDLE_FILE = '.bundle'
+
+
 desc 'Create zipped Wirecloud widget file for the specified project'
 task :bundle, [:what, :suffix] do |_, args|
   args.with_defaults(:suffix => '')
@@ -32,16 +38,16 @@ task :update do
   end
 end
 
-desc 'Create documentation (documentation.htm files)'
+desc "Create documentation (#{DOC_FILE} files)"
 task :doc do
-  stylesheet = Nokogiri::XSLT(File.read('widget.xslt'))
+  stylesheet = Nokogiri::XSLT(File.read(XSLT_FILE))
   all_human_readable_files = { }
   Dir.glob('**').each do |subdirectory|
     config_file = File.join(subdirectory, 'config.xml')
     if File.exists? config_file
       config = Nokogiri::XML(File.read(config_file))
       human_readable = stylesheet.transform config
-      human_readable_file = File.join(subdirectory, 'documentation.htm')
+      human_readable_file = File.join(subdirectory, DOC_FILE)
       File.write(human_readable_file, human_readable)
 
       puts "Writing documentation for #{subdirectory} in #{human_readable_file}"
@@ -55,7 +61,7 @@ task :doc do
       doc.head {
         doc.title 'Documentation index'
         doc.meta name: 'viewport', content: 'width=device-width, initial-scale=1.0'
-        doc.link href: 'http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css', rel: 'stylesheet'
+        doc.link href: BOOTSTRAP_URI, rel: 'stylesheet'
         doc.style 'body { background-color: #eee } .container { background-color: #fff; border: 1px solid #ccc; margin-top: 1em; border-radius: 5px }', type: 'text/css'
       }
       doc.body {
@@ -68,7 +74,7 @@ task :doc do
       }
     end
   end
-  File.write('documentation.htm', doc_index.to_html)
+  File.write(DOC_FILE, doc_index.to_html)
 end
 
 desc 'Remove generated files'
@@ -77,11 +83,11 @@ task :cleanup do
     puts "Removing old bundle: #{bundledFile}"
     File.delete bundledFile
   end
-  Dir.glob('*/documentation.htm').each do |bundledFile|
+  Dir.glob("*/#{DOC_FILE}").each do |bundledFile|
     puts "Removing old documentation: #{bundledFile}"
     File.delete bundledFile
   end
-  File.delete 'documentation.htm' if File.exists? 'documentation.htm'
+  File.delete DOC_FILE if File.exists? DOC_FILE
 end
 
 desc 'Create all zipped Wirecloud widget files'
@@ -89,7 +95,7 @@ task :all => [:cleanup, :update, :doc] do
   suffix = "-git-#{run_process 'git rev-parse --short HEAD'}-#{Time.now.strftime('%y%m%d-%H%M')}"
 
   Dir.glob('**').each do |subdirectory|
-    if File.exists?(File.join(subdirectory, '.bundle'))
+    if File.exists?(File.join(subdirectory, BUNDLE_FILE))
       Rake::Task[:bundle].invoke subdirectory, suffix
       Rake::Task[:bundle].reenable
     end
