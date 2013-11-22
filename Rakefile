@@ -1,5 +1,7 @@
 require 'zip/zip'
 require 'nokogiri'
+require 'rest_client'
+require 'json'
 
 BOOTSTRAP_URI = 'http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css'
 XSLT_FILE = 'widget.xslt'
@@ -100,6 +102,20 @@ task :all => [:cleanup, :update, :doc] do
       Rake::Task[:bundle].reenable
     end
   end
+end
+
+desc 'Update catalogue'
+task :catalogue, [:username, :password] do |_, args|
+  LOGIN_URI = 'https://crisma-cat.ait.ac.at/service/user/login'
+  CATALOGUE_URI = 'https://crisma-cat.ait.ac.at/service/node.json'
+
+  login_data = RestClient.post LOGIN_URI, { :username => args[:username], :password => args[:password] }.to_json, :content_type => :json, :accept => :json
+  node_listing = RestClient.get CATALOGUE_URI, :accept => :json, :cookies => login_data.cookies do |response, _, result|
+    raise "HTTP code #{response.code}" if response.code != 200
+    JSON.parse(result.body)
+  end
+  puts node_listing.inspect
+  # TODO
 end
 
 def run_process(process)
