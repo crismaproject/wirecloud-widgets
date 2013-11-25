@@ -2,6 +2,7 @@ require 'zip/zip'
 require 'nokogiri'
 require 'rest_client'
 require 'json'
+require 'pp'
 
 BOOTSTRAP_URI = 'http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css'
 XSLT_FILE = 'widget.xslt'
@@ -107,15 +108,35 @@ end
 desc 'Update catalogue'
 task :catalogue, [:username, :password] do |_, args|
   LOGIN_URI = 'https://crisma-cat.ait.ac.at/service/user/login'
-  CATALOGUE_URI = 'https://crisma-cat.ait.ac.at/service/node.json'
+  CATALOGUE_URI = 'https://crisma-cat.ait.ac.at/service/node'
 
   login_data = RestClient.post LOGIN_URI, { :username => args[:username], :password => args[:password] }.to_json, :content_type => :json, :accept => :json
-  node_listing = RestClient.get CATALOGUE_URI, :accept => :json, :cookies => login_data.cookies do |response, _, result|
-    raise "HTTP code #{response.code}" if response.code != 200
-    JSON.parse(result.body)
+
+  Dir.glob('*/.catalogue').each do |bundledFile|
+    catalogue_id = File.read bundledFile
+    catalogue_entry_uri = "#{CATALOGUE_URI}/#{catalogue_id}.json"
+    catalogue_data = RestClient.get catalogue_entry_uri, :accept => :json, :cookies => login_data.cookies do |response, _, result|
+      raise "Failed to read entry #{catalogue_id} due to HTTP code #{response.code}" if response.code != 200
+      JSON.parse(result.body)
+    end
+
+    config_file = File.join(File.dirname(bundledFile), 'config.xml')
+    config_data = Nokogiri::XML(File.read(config_file)).remove_namespaces!
+
+    cfg_description = config_data.xpath('//Catalog.ResourceDescription/Description').text
+    cfg_version = config_data.xpath('//Catalog.ResourceDescription/Version').text
+    cfg_description_html = Nokogiri::HTML::DocumentFragment.parse ''
+    Nokogiri::HTML::Builder.with cfg_description_html do |doc|
+      doc.p cfg_description
+    end
+
+    catalogue_data['body']['und'][0]['value'] = cfg_description_html.to_html
+    catalogue_data['field_software_version']['und'][0]['value'] = cfg_version
+    catalogue_data['field_software_version']['und'][0]['safe_value'] = cfg_version
+
+    PP.pp catalogue_data
+    # TODO: Push data to remote server
   end
-  puts node_listing.inspect
-  # TODO
 end
 
 def run_process(process)
