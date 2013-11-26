@@ -57,24 +57,25 @@ if (typeof MashupPlatform !== 'undefined') { // only apply wirings iff the Mashu
 }
 
 $(function () {
+    // hide the initial containers
     $('#errorContainer, #notificationContainer, #statusContainer').hide();
 
+    // when 'save' is clicked, begin with the (rather complex) update process
     $('#saveBtn').click(function () {
-        var button = $(this);
-        button.animDisable();
+        var $btn = $(this);
+        $btn.animDisable();
 
         sanityCheck();
         $('#statusContainer').show(150);
-        saveWorldState()
-            .then(
-            function() { $('#notificationContainer').animText('Done!'); pushNotification(this); },
-            function() { $('#errorContainer').animText('Failed to update OOI-WSR!'); },
-            function(status) {
+        saveWorldState().then(
+            function() { $('#notificationContainer').animText('Done!'); pushNotification(this); }, // on success
+            function() { $('#errorContainer').animText('Failed to update OOI-WSR!'); }, // on failure
+            function(status) { // on progress
                 var text = status.progress ? status.message + ' (' + status.progress + ')' : status.message;
                 $('#statusContainer').text(text);
             })
             .always(function() {
-                button.animEnable();
+                $btn.animEnable();
                 $('#statusContainer').delay(5000).hide(500);
             });
 
@@ -97,9 +98,28 @@ function sanityCheck() {
  * @returns {jQuery.Promise}
  */
 function saveWorldState() {
+    /**
+     * Returns true iff the specified OOI is new and possibly unknown to the OOI-WSR
+     * @param {object} ooi the OOI to inspect
+     * @returns {boolean} true iff the entity is new and thus has no proper ID
+     * @nosideeffects
+     */
     function isNewOOI (ooi) { return !ooi.hasOwnProperty('entityId') || ooi.entityId < 0; }
+
+    /**
+     * Returns true iff the specified OOI is already known to the OOI-WSR
+     * @param {object} ooi the OOI to inspect
+     * @returns {boolean} true iff the entity should already exist on the OOI-WSR
+     * @nosideeffects
+     */
     function isEstablishedOOI (ooi) { return !isNewOOI(ooi); }
 
+    /**
+     * Performs a POST Ajax request to the specified server, sending the specified data as a JSON-encoded string.
+     * @param {string} uri the remote server's address
+     * @param {*} data the object to encode as JSON and send to the server.
+     * @returns {jQuery.Promise}
+     */
     function postPayload(uri, data) {
         return $.ajax({
             contentType: 'application/json',
@@ -111,9 +131,9 @@ function saveWorldState() {
     }
 
     /**
-     * @param {object[]} oois
-     * @param {object[]} commands
-     * @returns {object[]}
+     * @param {object[]} oois all OOIs belonging to the current world state.
+     * @param {object[]} commands an array of commands that are to be applied to the specified OOIs.
+     * @returns {object[]} an array of OOIs with their data updated.
      */
     function applyCommands(oois, commands) {
         var ooiMappings = { };
@@ -145,11 +165,12 @@ function saveWorldState() {
     }
 
     /**
-     * Applies a property change to an OOI contained in an array of OOIs.
-     * @param {object[]} oois
-     * @param {number} ooiIndex
-     * @param {number} key
-     * @param {string|number} value
+     * Applies a property change to an OOI contained in an array of OOIs. This means that it will either update
+     * the value if it already exists, or create it if it wasn't previously set.
+     * @param {object[]} oois all OOIs belonging to the current world state.
+     * @param {number} ooiIndex the index of the OOI to apply the new value to.
+     * @param {number} key the property's key
+     * @param {string|number} value the property's new value
      */
     function setProperty(oois, ooiIndex, key, value) {
         // Note: passing in the array and the according index is required here since arrays are the only type that
@@ -167,6 +188,8 @@ function saveWorldState() {
     }
 
     /**
+     * Creates a new derived world state that is a subordinate of the current world state.
+     * @nosideeffects
      * @returns {jQuery.Promise}
      */
     function createWorldState() {
@@ -180,7 +203,11 @@ function saveWorldState() {
     }
 
     /**
-     * @param {object[]} oois
+     * Notifies the OOI-WSR of all newly created OOIs.
+     * Entities that were updated in this way will receive a new property named _replacedByEntityId that contains
+     * the ID of the newly created entity instance. The created instance with the proper ID will also be added
+     * to the oois array and should be known to the OOI-WSR in future requests.
+     * @param {object[]} oois all OOIs belonging to the current world state.
      * @returns {jQuery.Promise[]}
      */
     function createNewOOIs(oois) {
@@ -202,8 +229,9 @@ function saveWorldState() {
     }
 
     /**
-     * @param {number} worldStateId
-     * @param {object[]} oois
+     * Sends all properties to the OOI-WSR for the specified OOIs and the specified world state.
+     * @param {number} worldStateId the world state's unique identifier
+     * @param {object[]} oois all OOIs belonging to the current world state.
      * @returns {jQuery.Promise}
      */
     function createOOIPropertiesUpdates(worldStateId, oois) {
@@ -224,8 +252,9 @@ function saveWorldState() {
     }
 
     /**
-     * @param {number} worldStateId
-     * @param {object[]} oois
+     * Sends all geometries to the OOI-WSR for the specified OOIs and the specified world state.
+     * @param {number} worldStateId the world state's unique identifier
+     * @param {object[]} oois all OOIs belonging to the current world state.
      * @returns {jQuery.Promise}
      */
     function createOOIGeometryUpdates(worldStateId, oois) {
@@ -249,8 +278,9 @@ function saveWorldState() {
     }
 
     /**
-     * @param {number} worldStateId
-     * @param {object?} options
+     * Notifies the WPS that a new world state has been created.
+     * @param {number} worldStateId the world state's unique identifier
+     * @param {object?} options additional information for the WPS as to how the created data should be handled.
      * @param {number} options.duration
      * @param {number} options.stepDuration
      * @returns {jQuery.Promise}
@@ -273,7 +303,7 @@ function saveWorldState() {
                         $.get(progressUri)
                             .then(function (response) {
                                 console.log(response);
-                                    deferredResult.notifyWith(this, [response]);
+                                deferredResult.notifyWith(this, [response]);
                                 if (response.progress == '100%') {
                                     deferredResult.resolve({
                                         worldStateIds: response.worldstateids
@@ -295,8 +325,9 @@ function saveWorldState() {
     var oois = knownOOIs;
 
     /**
-     * @param {string?} message
-     * @param {object?} worldState
+     * Dispatches a notification to the UI signaling the current processing status.
+     * @param {string?} message the message to display.
+     * @param {object?} worldState the current world state.
      * @param {*?} progress
      * @returns {{}[]}
      */
@@ -321,12 +352,12 @@ function saveWorldState() {
                         result.notifyWith(this, notification('Entity properties updated', worldState));
                         notifyWPS(worldState.worldStateId)
                             .then(
-                                function () { result.resolveWith(worldState); }, // all ok
-                                function () { result.reject(); },                // something failed
-                                function (status) {
-                                    result.notifyWith(this, notification('Processing on remote service', worldState, status.progress));
-                                } // progess report
-                            )
+                            function () { result.resolveWith(worldState); }, // all ok
+                            function () { result.reject(); },                // something failed
+                            function (status) {
+                                result.notifyWith(this, notification('Processing on remote service', worldState, status.progress));
+                            } // progess report
+                        )
                     }, result.reject);
             }, result.reject);
         }, result.reject);
@@ -350,8 +381,11 @@ jQuery.extend({
 });
 
 /**
+ * Flattens the first dimension of the specified array, ie. a 2-dimensional array will become 1-dimensional by
+ * concatenating all values, a 3-dimensional will become 2-dimensional, etc.
  * @nosideeffects
  * @returns {Array}
+ * @example [[1,2], [3,4]].flatten(); // returns [1,2,3,4]
  */
 Array.prototype.flatten = function() {
     var result = [];
