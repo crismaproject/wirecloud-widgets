@@ -2,7 +2,7 @@ require 'rest_client'
 require 'json'
 
 module CRISMA
-  class Catalogue
+  class Catalog
     LOGIN_URI = 'https://crisma-cat.ait.ac.at/service/user/login'
     TOKEN_URI = 'https://crisma-cat.ait.ac.at/services/session/token'
     CATALOGUE_URI = 'https://crisma-cat.ait.ac.at/service/entity_node'

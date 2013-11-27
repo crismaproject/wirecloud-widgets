@@ -1,6 +1,6 @@
 require 'zip/zip'
 require 'nokogiri'
-require_relative 'catalogue'
+require_relative 'catalog'
 
 BOOTSTRAP_URI = 'http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css'
 XSLT_FILE = 'widget.xslt'
@@ -103,15 +103,15 @@ task :all => [:cleanup, :update, :doc] do
   end
 end
 
-desc 'Update catalogue'
-task :catalogue, [:username, :password] do |_, args|
-  api = CRISMA::Catalogue.new
+desc 'Update catalog'
+task :catalog, [:username, :password] do |_, args|
+  api = CRISMA::Catalog.new
   api.authenticate args[:username], args[:password]
 
-  Dir.glob('*/.catalogue').each do |bundledFile|
-    catalogue_id = File.read bundledFile
+  Dir.glob('*/.catalog').each do |bundledFile|
+    catalog_id = File.read bundledFile
     config_file = File.join(File.dirname(bundledFile), 'config.xml')
-    puts "* Updating node #{catalogue_id} using #{config_file}"
+    puts "* Updating node #{catalog_id} using #{config_file}"
     config_data = Nokogiri::XML(File.read(config_file)).remove_namespaces!
 
     cfg_title = config_data.xpath('//Catalog.ResourceDescription/DisplayName').text
@@ -122,8 +122,8 @@ task :catalogue, [:username, :password] do |_, args|
       doc.p cfg_description.strip
     end
 
-    api.update_component catalogue_id, "Wirecloud #{cfg_title}", cfg_description_html.to_html, cfg_version
-    puts "* Node #{catalogue_id} updated"
+    api.update_component catalog_id, "Wirecloud #{cfg_title}", cfg_description_html.to_html, cfg_version
+    puts "* Node #{catalog_id} updated"
   end
 end
 
