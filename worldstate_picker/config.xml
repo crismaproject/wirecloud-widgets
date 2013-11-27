@@ -8,7 +8,9 @@
     <Version>0.6.0.1</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
-    <Description>Lets the user pick and load a world state</Description>
+    <Description>
+      Lets the user pick and load a world state from the OOI-WSR (Objects of Interest World State Repository).
+    </Description>
     <ImageURI>img/catalogue.png</ImageURI>
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
