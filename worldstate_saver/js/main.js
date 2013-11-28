@@ -78,8 +78,6 @@ $(function () {
                 $btn.animEnable();
                 $('#statusContainer').delay(5000).hide(500);
             });
-
-        // TODO: pushNotification(created);
     });
 });
 
