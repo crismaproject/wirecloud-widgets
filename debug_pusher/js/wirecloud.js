@@ -7,28 +7,16 @@ var hasMashupPlatform = typeof MashupPlatform !== 'undefined';
 if (!hasMashupPlatform)
     console.warn('Wirecloud environment not detected.');
 
-var toConsole = false;
-if (hasMashupPlatform) {
-    var applyPreferences = function () {
-        toConsole = MashupPlatform.prefs.get('to_console');
-    };
-
-    MashupPlatform.prefs.registerCallback(applyPreferences);
-    applyPreferences();
-} else {
-    toConsole = true;
-}
-
 $(function() {
     $('#btn-send').click(function () {
         getData()
             .done(function (data) {
-                if (!data) return;
-
-                if (toConsole)
-                    console.logEventData(data);
-                if (hasMashupPlatform)
+                if (typeof data !== 'undefined' && hasMashupPlatform) {
+                    var start = new Date().getTime();
                     MashupPlatform.wiring.pushEvent('data', data);
+                    var end = new Date().getTime();
+                    console.log('Propagating event data took ' + (end - start) + 'ms');
+                }
 
                 showDispatchNotification();
             })

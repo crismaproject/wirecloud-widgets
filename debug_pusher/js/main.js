@@ -22,8 +22,12 @@ function getData() {
 function getDataFromFile(fileInputId, deferred) {
     var file = document.getElementById(fileInputId).files[0];
     var reader = new FileReader();
+
+    var start = new Date().getTime();
     reader.onload = function () {
         deferred.resolveWith(null, [reader.result]);
+        var end = new Date().getTime();
+        console.log('Loading data from file took ' + (end - start) + 'ms');
     };
     reader.readAsText(file);
 }
@@ -35,25 +39,6 @@ function showDispatchNotification() {
         .delay(2000)
         .slideUp();
 }
-
-console.logEventData = function(data) {
-    var remote = null;
-    var reached = hasMashupPlatform ? MashupPlatform.wiring.getReachableEndpoints('data') : [ ];
-    if (reached.length == 1)
-        remote = reached[0].endpoint;
-    else if (reached.length > 1) {
-        remote = [];
-        for (var i = 0; i < reached.length; i++)
-            remote[i] = reached[i].endpoint;
-    }
-
-    console.log({
-        'sent': true,
-        'local-event': 'data',
-        'remote-event': remote,
-        'data': data
-    });
-};
 
 $(function(){
     $('div#dispatchNotification').hide();
