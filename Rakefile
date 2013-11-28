@@ -46,13 +46,17 @@ task :doc do
     config_file = File.join(subdirectory, 'config.xml')
     if File.exists? config_file
       config = Nokogiri::XML(File.read(config_file))
-      human_readable = stylesheet.transform config
-      human_readable_file = File.join(subdirectory, DOC_FILE)
-      File.write(human_readable_file, human_readable)
+      if config.root.namespace.href == 'http://morfeo-project.org/2007/Template'
+        human_readable = stylesheet.transform config
+        human_readable_file = File.join(subdirectory, DOC_FILE)
+        File.write(human_readable_file, human_readable)
 
-      puts "Writing documentation for #{subdirectory} in #{human_readable_file}"
+        puts "Writing documentation for #{subdirectory} in #{human_readable_file}"
 
-      all_human_readable_files[subdirectory] = human_readable_file
+        all_human_readable_files[subdirectory] = human_readable_file
+      else
+        puts "Warning: I don't know how to handle the XML namespace #{config.root.namespace.href} yet! I'll skip #{config_file} for now."
+      end
     end
   end
 
