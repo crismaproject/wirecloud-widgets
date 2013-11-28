@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>debug_pusher</Name>
     <DisplayName>Pusher (Debug)</DisplayName>
-    <Version>0.6.0.2</Version>
+    <Version>0.6.0.3</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
@@ -17,11 +17,6 @@
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
-
-  <Platform.Preferences>
-    <Preference name="to_console" type="boolean" description="If checked, all data that is sent is also printed to the browser's JavaScript console"
-                label="Print to console" default="true"/>
-  </Platform.Preferences>
 
   <Platform.Wiring>
     <OutputEndpoint name="data" type="text" label="Data" description="Data to push" friendcode="any"/>
