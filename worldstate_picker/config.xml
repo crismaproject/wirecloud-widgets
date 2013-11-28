@@ -10,6 +10,8 @@
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
       Lets the user pick and load a world state from the OOI-WSR (Objects of Interest World State Repository).
+      This widget also loads all associated data, such as all OOIs associated with the selected world state and what
+      types of OOIs are known to the system.
     </Description>
     <ImageURI>img/catalogue.png</ImageURI>
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>

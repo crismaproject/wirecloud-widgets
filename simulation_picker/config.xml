@@ -9,6 +9,9 @@
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Lets the user pick and load a simulation</Description>
+    <Description>
+      This widget allows the user to browse through all available simulations and load them into simulation views.
+    </Description>
     <ImageURI>img/catalogue.png</ImageURI>
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>

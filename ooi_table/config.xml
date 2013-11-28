@@ -9,6 +9,12 @@
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Table view for Objects of Interest</Description>
+    <Description>
+      This is a tabular view of objects of interests associated to a given world state.
+      Users can select individual objects of interests and also group or ungroup them.
+      In addition, this widget synchronizes user selection with other connected widgets that support this behaviour,
+      such as the OOI GIS Map widget.
+    </Description>
     <ImageURI>img/catalogue.png</ImageURI>
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>

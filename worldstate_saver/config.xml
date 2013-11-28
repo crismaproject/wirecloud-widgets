@@ -7,7 +7,10 @@
     <Version>0.6.0.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
-    <Description>This widget saves generated world states to the OOI worldstate repository (OOI-WSR).</Description>
+    <Description>
+      This widget saves generated world states to the OOI World State Repository (OOI-WSR).
+      In addition, it notifies a WPS to run its simulation once the world state has been saved successfully.
+    </Description>
     <ImageURI>img/catalogue.png</ImageURI>
     <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
