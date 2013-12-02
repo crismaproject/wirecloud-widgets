@@ -7,7 +7,7 @@ if (typeof MashupPlatform === 'undefined') {
     console.warn('Wirecloud environment not detected.');
 } else {
     var applyPreferences = function () {
-        var api = new WorldStateRepository(MashupPlatform.prefs.get('api'));
+        api = new WorldStateRepository(MashupPlatform.prefs.get('api'));
     };
 
     MashupPlatform.prefs.registerCallback(applyPreferences);

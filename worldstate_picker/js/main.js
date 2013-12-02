@@ -1,6 +1,7 @@
 var api = null;
+var layout = { };
 /** @const */
-var treeStyle = {
+var treeCfg = {
     colors: {
         path: '#E6677A',
         leaf: '#E9E9E9',
@@ -10,9 +11,16 @@ var treeStyle = {
     sizes: {
         nodeWidth: 108,
         levelDistance: 54
-    }
+    },
+    data: [ 'simulationId', 'worldStateId', 'dateTime', 'description' ]
 };
 
+var setLayout = function ($container, st) {
+    layout.w = $container.width();
+    layout.h = $container.height();
+    layout.tree = st;
+    layout.container = $container;
+};
 /**
  * Creates the visual tree representation of worldstates associated with the specified simulation.
  * @param {string} containerName the DOM identifier of the container that will host the tree.
@@ -23,6 +31,9 @@ function createWorldStateTree(containerName, simulation) {
 
     api.listWorldStates()
         .done(function (worldStates) {
+            var $container = $('#' + containerName);
+            $container.empty();
+
             var jitData = toJit(worldStates, simulation);
             var st = new $jit.ST({
                 //id of viz container element
@@ -32,7 +43,7 @@ function createWorldStateTree(containerName, simulation) {
                 //set animation transition type
                 transition: $jit.Trans.Quart.easeInOut,
                 //set distance between node and its children
-                levelDistance: treeStyle.sizes.levelDistance,
+                levelDistance: treeCfg.sizes.levelDistance,
                 //enable panning
                 Navigation: {
                     enable: true,
@@ -43,15 +54,15 @@ function createWorldStateTree(containerName, simulation) {
                 //nodes or edges
                 Node: {
                     height: 20,
-                    width: treeStyle.sizes.nodeWidth,
+                    width: treeCfg.sizes.nodeWidth,
                     type: 'rectangle',
-                    color: treeStyle.colors.leaf,
+                    color: treeCfg.colors.leaf,
                     overridable: true
                 },
 
                 Edge: {
                     type: 'bezier',
-                    color: treeStyle.colors.edge,
+                    color: treeCfg.colors.edge,
                     overridable: true
                 },
 
@@ -64,7 +75,7 @@ function createWorldStateTree(containerName, simulation) {
                     //add some color to the nodes in the path between the
                     //root node and the selected node.
                     if (node.selected) {
-                        node.data.$color = treeStyle.colors.path;
+                        node.data.$color = treeCfg.colors.path;
                     }
                     else {
                         delete node.data.$color;
@@ -75,7 +86,7 @@ function createWorldStateTree(containerName, simulation) {
                             node.eachSubnode(function () {
                                 count++;
                             });
-                            if (count) node.data.$color = treeStyle.colors.nonLeaf;
+                            if (count) node.data.$color = treeCfg.colors.nonLeaf;
                         }
                     }
                 },
@@ -86,10 +97,21 @@ function createWorldStateTree(containerName, simulation) {
                 onCreateLabel: function (label, node) {
                     label.id = node.id;
                     label.innerHTML = node.name;
-                    label.onclick = function(){ st.onClick(node.id); };
+                    label.onclick = function(){
+                        st.onClick(node.id);
+
+                        var propagateData = { };
+                        for (var i = 0; i < treeCfg.data.length; i++) {
+                            var key = treeCfg.data[i];
+                            if (node.data.hasOwnProperty(key))
+                                propagateData[key] = node.data[key];
+                        }
+
+                        $container.trigger('nodeSelected', propagateData);
+                    };
 
                     var style = label.style;
-                    style.width = treeStyle.sizes.nodeWidth + 'px';
+                    style.width = treeCfg.sizes.nodeWidth + 'px';
                     style.height = 17 + 'px';
                     style.color = '#000000';
                     style.textAlign = 'center';
@@ -101,6 +123,8 @@ function createWorldStateTree(containerName, simulation) {
             st.compute();
             //emulate a click on the root node.
             st.onClick(st.root);
+
+            setLayout($container, st);
         });
 }
 
@@ -183,3 +207,24 @@ Array.prototype.toDict = function (keyProperty) {
 
     return groups;
 };
+
+$(function () {
+    var $worldstate = $('#worldstate-info');
+    $worldstate.hide();
+
+    $('#worldstate-tree').on('nodeSelected', function (event, selection) {
+        if (!selection.hasOwnProperty('worldStateId')) return;
+        $worldstate.show();
+        $worldstate.find('.title').text('World State ' + selection.worldStateId);
+        $worldstate.find('.dateTime').text(selection.dateTime);
+    });
+
+    $(window).resize(function () {
+        if (layout && layout.tree && (layout.container.width() != layout.w || layout.container.height() != layout.h)) {
+            var dx = layout.container.width() - layout.w;
+            var dy = layout.container.height() - layout.h;
+            layout.tree.canvas.translate(dx/2, dy/2);
+            setLayout(layout.container, layout.tree);
+        }
+    });
+});
