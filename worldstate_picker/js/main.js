@@ -28,6 +28,8 @@ var setLayout = function ($container, st) {
  */
 function createWorldStateTree(containerName, simulation) {
     if (!api) throw 'RESTful service not configured yet.';
+    var $notification = $('#loadingNotification');
+    $notification.modal('show');
 
     api.listWorldStates()
         .done(function (worldStates) {
@@ -125,6 +127,9 @@ function createWorldStateTree(containerName, simulation) {
             st.onClick(st.root);
 
             setLayout($container, st);
+        })
+        .always(function () {
+            $notification.modal('hide');
         });
 }
 
