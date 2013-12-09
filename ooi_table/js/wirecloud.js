@@ -23,7 +23,7 @@ if (typeof MashupPlatform !== 'undefined') {
             }
         }
 
-        storeGroups = MashupPlatform.prefs.get('enable_group_storage');
+        groupManager.enableStorage = MashupPlatform.prefs.get('enable_group_storage');
     };
     MashupPlatform.prefs.registerCallback(applyPreferences);
     applyPreferences();
