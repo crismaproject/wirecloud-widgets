@@ -15,7 +15,7 @@
                     properties.push(key);
 
             $(function() {
-                $ul = $('ul#wsrApiMethods');
+                var $ul = $('ul#wsrApiMethods');
                 properties.sort().forEach(function(i, v) {
                     $ul.append($('<li></li>').append($('<code></code>').text(i)));
                 });

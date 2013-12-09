@@ -6,7 +6,7 @@ var entityTypes = { }, objectsOfInterest = { }, pendingCommand = null;
  * */
 var uiStyle = {
     btnClass: 'btn btn-default btn-sm'
-}
+};
 
 var sequence = 1;
 
@@ -194,14 +194,13 @@ function executeCommand(command, data) {
 }
 
 function spawnArea(areaPrototype, geometry) {
-    var area = $.extend(true, {}, {
+    return $.extend(true, {}, {
         'entityId': -(sequence++),
         'entityTypeId': 14,
         'entityInstancesGeometry': [
             { 'geometry': {'geometry': {'coordinateSystemId': 4326, 'wellKnownText': geometry}}}
         ]
     }, areaPrototype);
-    return area;
 }
 
 /**

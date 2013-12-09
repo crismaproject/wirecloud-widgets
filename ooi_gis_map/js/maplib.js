@@ -84,7 +84,7 @@ function OpenLayersFacade(container) {
             }
         }
         catch (e) { }
-    }
+    };
 
     /**
      * Converts latitude-longitude coordinate pairs to a properly projected OpenLayers.LonLat instance.
