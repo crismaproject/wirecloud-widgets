@@ -1,5 +1,5 @@
 /**
- * A facade-like interface to handle interaction with the OpenLayers library.
+ * A façade-like interface to handle interaction with the OpenLayers library.
  * @param {string} container the id of the DOM element where the map should be rendered
  * @constructor
  */

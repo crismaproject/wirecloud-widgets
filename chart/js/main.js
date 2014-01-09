@@ -9,6 +9,8 @@ window.indicator_uri = 'http://localhost/api';
  */
 function Series(title, container) {
     /**
+     * id of the DOM element that will contain the chart. Note that all subordinate nodes will be overwritten when
+     * the redraw method is invoked. This value is normally set by the constructor.
      * @private
      * @const
      * @type {string}
@@ -16,12 +18,15 @@ function Series(title, container) {
     this.container = container;
 
     /**
+     * An array of chart labels, one for every data point. This value is normally set by setLabels(..)
      * @private
      * @type {Array}
      */
     this.labels = [ ];
 
     /**
+     * An array of hex-encoded RGB values that denote the color of each chart bar. Colors should be in the same
+     * color as the labels. This value is normally set by setLabels(..)
      * @private
      * @type {Array}
      */
@@ -34,18 +39,21 @@ function Series(title, container) {
     this.data = [ ];
 
     /**
+     * Sets the title of the chart displayed on top of it. This is normally set by setLabel(..)
      * @private
      * @type {string}
      */
     this.title = title;
 
     /**
+     * Sets whether the chart uses stacked bars or not.
      * @default true
      * @type {boolean}
      */
     this.isStacked = true;
 
     /**
+     * Sets whether a legend is displayed next to the chart.
      * @default true
      * @type {boolean}
      */
