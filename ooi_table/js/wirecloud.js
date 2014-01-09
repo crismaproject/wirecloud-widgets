@@ -6,7 +6,7 @@
 if (typeof MashupPlatform !== 'undefined') {
     var applyPreferences = function () {
         var restrictedTo = MashupPlatform.prefs.get('only_show');
-        if (restrictedTo) {
+        if (restrictedTo) { // if only a certain set of entity types is allowed
             var array = [ ];
             try {
                 var elements = restrictedTo.split(',');
@@ -31,6 +31,7 @@ if (typeof MashupPlatform !== 'undefined') {
     $(function () {
         $(document)
             .on('selectionChanged', function () {
+                // this is primarily used to synchronize selected OOIs between widgets that support this behavior
                 MashupPlatform.wiring.pushEvent('oois_selected_out', JSON.stringify(groupManager.getSelected()));
             });
     });
@@ -40,6 +41,7 @@ if (typeof MashupPlatform !== 'undefined') {
     });
 
     MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {
+        // this is primarily used to synchronize selected OOIs between widgets that support this behavior
         groupManager.setSelected(JSON.parse(data));
     });
 

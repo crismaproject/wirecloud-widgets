@@ -1,4 +1,6 @@
 $(function () {
+    // the following lines let the "group", "ungroup" buttons float around in the top right corner of the widget,
+    // even if the viewport changes due to scrolling
     var $floatingActions = $('#floatingActions');
     var offsetTop = parseFloat($floatingActions.css('top').replace(/[^-\d\.]/g, ''));
     $(window).scroll(function () {
@@ -8,6 +10,11 @@ $(function () {
     });
 });
 
+/**
+ * This class manages interactions with the OOI table.
+ * @param {string} container a jQuery selector referencing the OOI table.
+ * @constructor
+ */
 var GroupManager = function (container) {
     /** @private */
     this.container = container;
@@ -29,11 +36,13 @@ var GroupManager = function (container) {
 
     /**
      * Iff not null, the table will only show OOIs of the specified type ID
-     * @type {Array}
+     * @type {int[]}
      */
     this.showOnly = null;
 
     $(window).unload(this, function (event) {
+        // Whenever the widget is unloaded by the browser AND local storage is enabled, all current groups will be
+        // written into the HTML5 storage.
         var eventData = event.data;
         if (!eventData.enableStorage) return;
         if (eventData.oois.length) {
@@ -43,7 +52,10 @@ var GroupManager = function (container) {
     });
 };
 
-/** @private */
+/**
+ * Event handler that selects/unselects the row clicked by the user.
+ * @private
+ */
 function toggleSelection() {
     var clickedRow = $(this);
     var rowOoiIndex = $(this).attr('data-index');
@@ -56,7 +68,10 @@ function toggleSelection() {
     }
 }
 
-/** @private */
+/**
+ * A helper method that completely rebuilds the HTML table containing the list of OOIs.
+ * @private
+ */
 GroupManager.prototype.rebuildUI = function () {
     if (this.skipRebuild) return;
 
@@ -95,6 +110,10 @@ GroupManager.prototype.rebuildUI = function () {
     }
 };
 
+/**
+ * Returns an array containing all groups of OOIs.
+ * @return {Array} a two-dimensional array; one array for each group, containing a set of entity IDs.
+ */
 GroupManager.prototype.getGroups = function () {
     var grouped = [ ];
 
@@ -109,11 +128,18 @@ GroupManager.prototype.getGroups = function () {
     return grouped;
 };
 
+/**
+ * Sets which OOIs are displayed in the table.
+ * Grouping is automatically applied where applicable.
+ * Calling this method will also subsequently rebuild the UI (via the rebuildUI method).
+ * @param {Array} oois
+ */
 GroupManager.prototype.setOOIs = function (oois) {
-    /* we need to remember what was grouped and selected before we replace the data with the new one.
-     * it's a bit of a dirty workaround, but it will suffice for now. */
+    // we need to remember what was grouped and selected before we replace the data with the new one.
+    // it's a bit of a dirty workaround, but it will suffice for now.
     var selected = [ ];
     var grouped = [ ];
+
     if (this.oois.length) {
         var selectedScope = $('tr[data-index].selected', this.container);
         for (var i = 0; i < selectedScope.length; i++) {
@@ -172,10 +198,20 @@ GroupManager.prototype.setOOIs = function (oois) {
     }
 };
 
+/**
+ * Sets the types of entities known to the application.
+ * While optional, this allows the table to use a displayable, human-friendly string to denote an OOI's individual
+ * entity type.
+ * @param {Array} ooiTypes a set of entity types.
+ */
 GroupManager.prototype.setOOITypes = function (ooiTypes) {
     this.ooiTypes = ooiTypes.toDict('entityTypeId');
 };
 
+/**
+ * Gets an array containing all selected OOIs.
+ * @return {Array}
+ */
 GroupManager.prototype.getSelected = function () {
     var selected = [ ];
     var scope = $('tbody', this.container).find('tr[data-index].selected');
@@ -186,6 +222,10 @@ GroupManager.prototype.getSelected = function () {
     return selected;
 };
 
+/**
+ * Sets which OOIs should be selected.
+ * @param {Array} selected
+ */
 GroupManager.prototype.setSelected = function (selected) {
     var scope = $('tbody', this.container).find('tr[data-index]');
     for (var i = 0; i < scope.length; i++) {
@@ -200,13 +240,18 @@ GroupManager.prototype.setSelected = function (selected) {
     }
 };
 
+/**
+ * Forms a new group containing all currently selected OOIs.
+ * This will subsequently rebuild the UI (via the rebuildUI method).
+ */
 GroupManager.prototype.groupSelected = function () {
     var newGroup = [ ];
     var remove = [ ];
     var scope = $('tbody', this.container).find('tr[data-index].selected');
+    var i;
     if (scope.length <= 1) return;
 
-    for (var i = 0; i < scope.length; i++) {
+    for (i = 0; i < scope.length; i++) {
         var index = parseInt($(scope[i]).attr('data-index'));
         newGroup = newGroup.concat(this.oois[index].flatten());
         remove.push(index);
@@ -214,22 +259,27 @@ GroupManager.prototype.groupSelected = function () {
 
     if (!remove.length || !newGroup.length) return;
 
-    for (var i = remove.length - 1; i >= 0; i--)
+    for (i = remove.length - 1; i >= 0; i--)
         this.oois.splice(remove[i], 1);
     this.oois.insertAt(remove[0], newGroup);
     this.rebuildUI();
 };
 
+/**
+ * Disband the currently selected group(s).
+ * This will subsequently rebuild the UI (via the rebuildUI method).
+ */
 GroupManager.prototype.ungroupSelected = function () {
     var scope = $('tbody', this.container).find('tr[data-index].selected');
     var ungroup = [ ];
-    for (var i = 0; i < scope.length; i++) {
+    var i;
+    for (i = 0; i < scope.length; i++) {
         var index = parseInt($(scope[i]).attr('data-index'));
         if (this.oois[index].length > 1)
             ungroup.push(index);
     }
 
-    for (var i = this.oois.length - 1; i >= 0; i--)
+    for (i = this.oois.length - 1; i >= 0; i--)
         if (ungroup.indexOf(i) >= 0) {
             var original = this.oois.splice(i, 1)[0];
             for (var j = 0; j < original.length; j++)
@@ -297,9 +347,11 @@ Array.prototype.insertAt = function (index, item) {
 };
 
 /**
- * @param {function} predicate
- * @param {object?} state an optional state that is passed along to the predicate
- * @returns {number}
+ * An indexOf function that uses a predicate to find the index of the first element in an array that satisfies
+ * the constraint.
+ * @param {function} predicate a function that accepts an element of the array and returns true or false.
+ * @param {object?} state an optional state that is passed along to the predicate.
+ * @returns {number} the index of the first element in the array that satisfies the predicate.
  */
 Array.prototype.indexOfWhere = function (predicate, state) {
     for (var i = 0; i < this.length; i++)

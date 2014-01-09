@@ -35,6 +35,10 @@ function OpenLayersFacade(container) {
         }
     });
 
+    /**
+     * Selection control that captures and relays clicks on OOIs and misc. geometry
+     * @type {OpenLayers.Control.SelectFeature}
+     */
     var selectControl = new OpenLayers.Control.SelectFeature([geometryLayer, ooiLayer], { clickout: true });
     selectControl.onSelect = function (e) {
         if (e.layer == geometryLayer || e.layer == ooiLayer) mapClickEvent(e, { ooi: e.attributes });
@@ -46,6 +50,12 @@ function OpenLayersFacade(container) {
     /** @private */
     this.map = map;
 
+    /**
+     * Creates a new circular area on the map.
+     * @param {float} lat the circle's center latitude.
+     * @param {float} lon the circle's center longitude.
+     * @param {*?} ooi the OOI represented by this circle.
+     */
     this.createArea = function (lat, lon, ooi) {
         var center = new OpenLayers.Geometry.Point(lon, lat).transform(EPSG_4326_PROJECTION, mapProjection());
         var radius = 150; // NOTE: This is an arbitrary constant; describes size of the circle to be drawn
@@ -63,6 +73,13 @@ function OpenLayersFacade(container) {
         geometryLayer.addFeatures(vector);
     };
 
+    /**
+     * Creates a new OOI on the map, depicted as an icon.
+     * @param {object} ooi the OOI to display.
+     * @param {int} ooi.entityTypeId the entity's type identifier
+     * @param {String} ooi.entityName the entity's name
+     * @param {*[]} ooi.entityInstancesGeometry the entity's geometry (WKT format)
+     */
     this.createOOI = function (ooi) {
         var wkt = new OpenLayers.Format.WKT(ooi);
         try {
@@ -145,7 +162,8 @@ function OpenLayersFacade(container) {
 }
 
 /**
- * @param {number} entityTypeId
+ * Returns a relative URI to an image that can be used for the specified entity type.
+ * @param {number} entityTypeId the entity type's unique identifier
  * @returns {string} a relative path to an image corresponding to the specified entity type ID.
  */
 function graphicFor(entityTypeId) {

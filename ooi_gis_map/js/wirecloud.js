@@ -33,6 +33,7 @@ if (typeof MashupPlatform === 'undefined') {
     });
 
     MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {
+        // this is primarily used to synchronize selected OOIs between widgets that support this behavior
         selected = JSON.parse(data);
     });
 
@@ -57,6 +58,7 @@ if (typeof MashupPlatform === 'undefined') {
                 else
                     selected.splice(selectedIndex, 1);
 
+                // this is primarily used to synchronize selected OOIs between widgets that support this behavior
                 MashupPlatform.wiring.pushEvent('oois_selected_out', JSON.stringify(selected));
             });
     });
