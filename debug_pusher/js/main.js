@@ -15,7 +15,7 @@ function getData() {
 }
 
 /**
- * Reads the text file contained by the specified input tag.
+ * Reads the text file contained by the specified input tag using HTML's new FileReader API.
  * @param {string} fileInputId the DOM identifier of the file input component
  * @param {jQuery.Deferred} deferred a deferred object that will be resolved with the file data once it has been loaded
  */

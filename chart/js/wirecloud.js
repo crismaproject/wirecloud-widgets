@@ -7,12 +7,8 @@ if (typeof MashupPlatform === 'undefined') {
 } else if (typeof series === 'undefined') {
     console.warn('"series" variable is not defined.');
 } else {
-    function proxify(uri) {
-        return MashupPlatform.http.buildProxyURL(uri);
-    }
-
     var applyPreferences = function () {
-        window.indicator_uri = proxify(MashupPlatform.prefs.get('indicator-uri'));
+        window.indicator_uri = MashupPlatform.http.buildProxyURL(MashupPlatform.prefs.get('indicator-uri'));
     };
 
     MashupPlatform.prefs.registerCallback(applyPreferences);

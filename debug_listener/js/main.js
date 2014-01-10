@@ -29,6 +29,7 @@ function appendData(data, cssClass) {
  * @returns {string}
  */
 function currentTime() {
+    // helper method to generate two-digit strings from a number by prefixing zeros; very useful for dates and times.
     function pad(s, len) {
         if (typeof s !== 'string')
             s = s.toString();
@@ -40,8 +41,9 @@ function currentTime() {
 
 if (!String.prototype.repeat)
     /**
-     * @param {number} num
-     * @returns {string}
+     * Repeats the string num times.
+     * @param {int} num How often the string should be repeated.
+     * @returns {string} a new string containing the original string repeated num-times.
      */
     String.prototype.repeat = function(num) {
         return new Array(num + 1).join(this);
@@ -49,13 +51,15 @@ if (!String.prototype.repeat)
 
 if (!String.prototype.format)
     /**
+     * Treats the string as a placeholder and injects arguments into it, similar to C#'s String.Format method sans
+     * all the formatting options.
      * @returns {string}
      */
     String.prototype.format = function () {
         var args = arguments;
         return this.replace(/{(\d+)}/g, function (match, number) {
             return typeof args[number] !== 'undefined'
-                ? args[number]
+                ? args[number].toString()
                 : match
                 ;
         });

@@ -24,6 +24,8 @@ $(function() {
 
     if (hasMashupPlatform)
         $('#btn-refresh-event').click(function () {
+            // The following lines of code attempt to perform a look-up of what endpoints are actively connected to
+            // this widget's input endpoint named 'data'.
             var connections = MashupPlatform.wiring.getReachableEndpoints('data');
             var str = '';
             for (var i = 0; i < connections.length; i++) {

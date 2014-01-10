@@ -12,7 +12,6 @@ function Series(title, container) {
      * id of the DOM element that will contain the chart. Note that all subordinate nodes will be overwritten when
      * the redraw method is invoked. This value is normally set by the constructor.
      * @private
-     * @const
      * @type {string}
      */
     this.container = container;
@@ -98,7 +97,6 @@ Series.prototype.redraw = function () {
             xaxis: {
                 tickOptions: {
                     showLabel: false
-                    //,formatString: 'Decision %.0f'
                 },
                 min: 0
             },
@@ -119,7 +117,7 @@ Series.prototype.redraw = function () {
 Series.prototype.setLabels = function (labels, colors) {
     colors = colors || [ '#aa3333', '#33aa33', '#3333aa', '#33aaaa', '#aa33aa', '#aaaa33' ];
     if (this.labels.length > this.colors.length)
-        console.warn('Please provide as many colors as there are labels.');
+        console.warn('Please provide at least as many colors as there are labels.');
     this.labels = labels;
     this.colors = colors;
 };
@@ -153,6 +151,8 @@ Series.prototype.setTitle = function (title) {
 };
 
 /**
+ * Loads the specified world state from the WPS that manages chart series data. This data will then be rendered in the
+ * specified UI container.
  * @param {Series} series
  * @param {int} worldstateId
  */
