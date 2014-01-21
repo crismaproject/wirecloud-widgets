@@ -157,7 +157,7 @@ Series.prototype.setTitle = function (title) {
  * @param {int} worldstateId
  */
 function loadWorldState(series, worldstateId) {
-    $.get(window.indicator_uri + '/pywps.cgi?service=WPS&request=Execute&version=1.0.0&identifier=indicatorExample&datainputs=WorldStateId=' + worldstateId, function (response) {
+        $.get(window.indicator_uri + '/pywps.cgi?service=WPS&request=Execute&version=1.0.0&identifier=lifeIndicator&datainputs=WorldStateId=' + worldstateId, function (response) {
         var wpsOutput = $('Output', response).find('LiteralData').text().replace(/'/g, '"'); // single quotes are evil when parsing JSON
         var wpsJson = JSON.parse(wpsOutput);
         series.setData([[wpsJson.green], [wpsJson.yellow], [wpsJson.red], [wpsJson.dead]]);
