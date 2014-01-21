@@ -1,7 +1,7 @@
 require 'zip/zip'
 require 'nokogiri'
 
-BOOTSTRAP_URI = 'http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css'
+BOOTSTRAP_URI = 'http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css'
 XSLT_FILE = 'widget.xslt'
 DOC_FILE = 'documentation.htm'
 BUNDLE_FILE = '.bundle'
