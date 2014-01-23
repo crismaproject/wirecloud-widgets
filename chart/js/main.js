@@ -157,12 +157,14 @@ Series.prototype.setTitle = function (title) {
  * @param {int} worldStateId
  */
 function loadWorldState(series, worldStateId) {
+    // First, we ask the WPS for the URL to the indicator data:
     $.get(window.indicator_uri + '/pywps.cgi?service=WPS&request=Execute&version=1.0.0&identifier=lifeIndicator&datainputs=WorldStateId=' + worldStateId, function (response) {
         var uriForWorldstate = $('Output', response).find('LiteralData').text(); // should contain an URL
         if (!uriForWorldstate)
             console.log('Did not receive a proper URL pointing at the indicator data!');
         else
             $.get(uriForWorldstate, function (response) {
+                // Secondly, we load the indicator data and prepare the chart series for rendering
                 var indicatorData = $.extend({ green: 0, yellow: 0, red: 0, dead: 0 }, JSON.parse(response.entityPropertyValue));
 
                 series.setData([[indicatorData.green], [indicatorData.yellow], [indicatorData.red], [indicatorData.dead]]);
