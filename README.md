@@ -54,8 +54,8 @@ If you want to contribute other ways of building/bundling widgets (or documentat
 
 ## Branches
 
-* **master** — not exactly stable yet, but not as bleeding edge as *v0.5* :)
-* **v0.5** — this is some sort of staging area for the *next* version and most commits are likely to not work completely.
+* **master** — always points to the latest, almost-stable version.
+* **v0.5** — the current, almost-stable version (but might be dated until the internal development branch throws less errors)
 
 ## Contact
 
