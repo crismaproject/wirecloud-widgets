@@ -7,6 +7,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="170"
@@ -14,9 +15,23 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="Neues Dokument 1">
+   sodipodi:docname="catalogue.svg"
+   inkscape:export-filename="C:\work\wirecloud\indicators\img\catalogue.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs4">
+    <linearGradient
+       id="linearGradient3774">
+      <stop
+         style="stop-color:#000000;stop-opacity:0.627451;"
+         offset="0"
+         id="stop3776" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop3778" />
+    </linearGradient>
     <filter
        id="filter3852"
        style="color-interpolation-filters:sRGB;"
@@ -49,6 +64,35 @@
          operator="over"
          result="composite2" />
     </filter>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3774"
+       id="linearGradient3780"
+       x1="15.404826"
+       y1="71.540436"
+       x2="15.404826"
+       y2="32.898449"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3774"
+       id="linearGradient3784"
+       gradientUnits="userSpaceOnUse"
+       x1="15.404826"
+       y1="71.540436"
+       x2="15.404826"
+       y2="32.898449"
+       gradientTransform="matrix(1,0,0,1.2870813,18.581858,951.73379)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3774"
+       id="linearGradient3788"
+       gradientUnits="userSpaceOnUse"
+       x1="15.404826"
+       y1="71.540436"
+       x2="15.404826"
+       y2="32.898449"
+       gradientTransform="matrix(1,0,0,0.27591708,36.911178,1024.3916)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -57,19 +101,19 @@
      borderopacity="1.0"
      inkscape:pageopacity="1"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="110.08797"
-     inkscape:cy="2.5637364"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="545.16534"
+     inkscape:cy="76.919844"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      borderlayer="true"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1768"
-     inkscape:window-height="976"
-     inkscape:window-x="476"
-     inkscape:window-y="135"
-     inkscape:window-maximized="0" />
+     inkscape:window-width="2560"
+     inkscape:window-height="1378"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -103,26 +147,73 @@
          id="rect3755"
          width="13.207559"
          height="65.230415"
-         x="31.150669"
+         x="29.150669"
          y="978.45703" />
       <rect
          y="1013.1282"
-         x="51.427185"
+         x="47.427185"
          height="30.738298"
          width="13.565702"
          id="rect3757"
          style="fill:#6cbadb;fill-opacity:1;stroke:#000000;stroke-width:1.25;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         style="fill:#000000;fill-opacity:1;stroke:none"
+         id="rect2998"
+         width="21.655146"
+         height="1.6414979"
+         x="6.4712882"
+         y="1003.0349" />
+      <rect
+         y="991.92322"
+         x="24.926876"
+         height="1.6414979"
+         width="21.655146"
+         id="rect3768"
+         style="fill:#000000;fill-opacity:1;stroke:none" />
+      <rect
+         y="1032.0768"
+         x="43.382462"
+         height="1.6414979"
+         width="21.655146"
+         id="rect3770"
+         style="fill:#000000;fill-opacity:1;stroke:none" />
     </g>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-weight:normal;text-align:end;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        x="160.61426"
-       y="1044.5334"
+       y="1014.1763"
        id="text3759"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3761"
          x="160.61426"
-         y="1044.5334">Charts</tspan></text>
+         y="1014.1763">Indicator</tspan><tspan
+         sodipodi:role="line"
+         x="160.61426"
+         y="1044.1763"
+         id="tspan2994">Viewer</tspan></text>
+    <rect
+       style="fill:url(#linearGradient3780);fill-opacity:1;stroke:none"
+       id="rect3772"
+       width="13.131983"
+       height="39.585354"
+       x="10.669736"
+       y="32.27029"
+       transform="translate(0,972.36218)" />
+    <rect
+       y="993.26819"
+       x="29.251595"
+       height="50.94957"
+       width="13.131983"
+       id="rect3782"
+       style="fill:url(#linearGradient3784);fill-opacity:1;stroke:none" />
+    <rect
+       y="1033.2954"
+       x="47.580914"
+       height="10.922276"
+       width="13.131983"
+       id="rect3786"
+       style="fill:url(#linearGradient3788);fill-opacity:1;stroke:none" />
   </g>
 </svg>

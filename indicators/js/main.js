@@ -4,12 +4,12 @@ window.indicator_uri = 'http://localhost/api';
  * Creates a new series object using the specified container.
  *
  * @param {string} title the diagram's title.
- * @param {string} container the id of the DOM element that will contain the chart in question.
+ * @param {string} container the id of the DOM element that will contain the indicators in question.
  * @constructor
  */
 function Series(title, container) {
     /**
-     * id of the DOM element that will contain the chart. Note that all subordinate nodes will be overwritten when
+     * id of the DOM element that will contain the indicators. Note that all subordinate nodes will be overwritten when
      * the redraw method is invoked. This value is normally set by the constructor.
      * @private
      * @type {string}
@@ -17,14 +17,14 @@ function Series(title, container) {
     this.container = container;
 
     /**
-     * An array of chart labels, one for every data point. This value is normally set by setLabels(..)
+     * An array of indicators labels, one for every data point. This value is normally set by setLabels(..)
      * @private
      * @type {Array}
      */
     this.labels = [ ];
 
     /**
-     * An array of hex-encoded RGB values that denote the color of each chart bar. Colors should be in the same
+     * An array of hex-encoded RGB values that denote the color of each indicators bar. Colors should be in the same
      * color as the labels. This value is normally set by setLabels(..)
      * @private
      * @type {Array}
@@ -38,21 +38,21 @@ function Series(title, container) {
     this.data = [ ];
 
     /**
-     * Sets the title of the chart displayed on top of it. This is normally set by setLabel(..)
+     * Sets the title of the indicators displayed on top of it. This is normally set by setLabel(..)
      * @private
      * @type {string}
      */
     this.title = title;
 
     /**
-     * Sets whether the chart uses stacked bars or not.
+     * Sets whether the indicators uses stacked bars or not.
      * @default true
      * @type {boolean}
      */
     this.isStacked = true;
 
     /**
-     * Sets whether a legend is displayed next to the chart.
+     * Sets whether a legend is displayed next to the indicators.
      * @default true
      * @type {boolean}
      */

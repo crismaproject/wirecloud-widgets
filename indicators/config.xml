@@ -4,8 +4,8 @@
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
     <Name>indicator_charts</Name>
-    <DisplayName>Charts</DisplayName>
-    <Version>0.6.0.2</Version>
+    <DisplayName>Indicator Viewer</DisplayName>
+    <Version>0.6.0.3</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Displays bar charts</Description>
