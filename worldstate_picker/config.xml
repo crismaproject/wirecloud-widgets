@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>worldstate_picker</Name>
     <DisplayName>WorldState Picker</DisplayName>
-    <Version>0.6.0.3</Version>
+    <Version>0.6.0.6</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
@@ -20,6 +20,10 @@
 
   <Platform.Preferences>
     <Preference name="api" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI" default="http://localhost/api"/>
+    <Preference name="orientation" type="list" description="Orientation of the tree" label="Orientation" default="top">
+      <Option name="Top to bottom" value="top"/>
+      <Option name="Left to right" value="left"/>
+    </Preference>
   </Platform.Preferences>
 
   <Platform.Wiring>

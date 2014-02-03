@@ -1,13 +1,14 @@
 var api = null;
 var layout = { };
 /** @const */
-var treeCfg = {
+treeCfg = {
     colors: {
         path: '#E6677A',
         leaf: '#E9E9E9',
         nonLeaf: '#F2919D',
         edge: '#aaaaaa'
     },
+    orientation: 'top',
     sizes: {
         nodeWidth: 108,
         levelDistance: 54
@@ -40,7 +41,7 @@ function createWorldStateTree(containerName, simulation) {
             var st = new $jit.ST({
                 //id of viz container element
                 injectInto: containerName,
-                orientation: 'top',
+                orientation: treeCfg.orientation,
                 levelsToShow: 5,
                 //set animation transition type
                 transition: $jit.Trans.Quart.easeInOut,

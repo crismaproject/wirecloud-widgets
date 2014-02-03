@@ -8,6 +8,7 @@ if (typeof MashupPlatform === 'undefined') {
 } else {
     var applyPreferences = function () {
         api = new WorldStateRepository(MashupPlatform.prefs.get('api'));
+        treeCfg.orientation = MashupPlatform.prefs.get('orientation');
     };
 
     MashupPlatform.prefs.registerCallback(applyPreferences);
