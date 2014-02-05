@@ -9,7 +9,7 @@
 /**
  * @param {string} apiUri the OOI-WSR's API URI
  * @author Manuel Warum (AIT)
- * @version 0.6
+ * @version 0.6.1
  * @constructor
  */
 function WorldStateRepository(apiUri) {
@@ -34,9 +34,19 @@ WorldStateRepository.prototype.createUrl = function(path, entityId) {
     return this.proxify(uri);
 };
 
-WorldStateRepository.prototype.proxify = typeof MashupPlatform === 'undefined' ?
-    function(url) { return url; } :
-    function(url) { return MashupPlatform.http.buildProxyURL(url); };
+/**
+ * Creates an URL pointing to the specified URL which is routed through Wirecloud's internal proxy iff
+ * the MashupPlatform API is detected. Otherwise, the specified URL itself is returned without any changes.
+ * The proxy address can be used to access data from external sources that would otherwise be inaccessible due to
+ * the same-origin policy of browsers. Note that this method does not check if the specified URL is actually on a
+ * foreign origin; it will simply assume it is and defer further processing to the buildProxyURL method of the
+ * MashupPlatform API.
+ * @param {string} url the URL you want to access
+ * @returns {string} an URL pointing to the specified address
+ */
+WorldStateRepository.prototype.proxify = function(url) {
+    return typeof (MashupPlatform) === 'undefined' ? url : MashupPlatform.http.buildProxyURL(url);
+};
 
 /**
  * Fetches all entities from a resource collection.
