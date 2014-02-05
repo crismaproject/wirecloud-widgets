@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WSR API Overview</title>
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        .tooltip-inner code { background-color: #3f3f3f; color: #dfdfdf; padding: 1pt }
+        .hl1 { color: #67a472 }
+        .hl2 { color: #5781da }
+        .mono { font-family: 'Consolas', monospace }
+    </style>
+    <script src="https://code.jquery.com/jquery-2.0.3.min.js" type="text/javascript"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="wsrapi.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        (function(){
+            var inspectThis = WorldStateRepository.prototype;
+            var properties = [];
+            for (var key in inspectThis)
+                if (typeof inspectThis[key] === 'function')
+                    properties.push(key);
+
+            $(function() {
+                var tooltipsFor = [ 'delete', 'get', 'insert', 'list', 'update' ];
+                var $ul = $('ul#wsrApiMethods');
+                properties.sort().forEach(function(i, v) {
+                    var generatedEntry = $('<code></code>').text(i);
+                    $ul.append($('<li></li>').append(generatedEntry));
+
+                    var tooltip = null;
+                    for (var j = 0; j < tooltipsFor.length && !tooltip; j++)
+                        if (i.indexOf(tooltipsFor[j]) == 0)
+                            tooltip = $('#help-for-' + tooltipsFor[j]).html();
+
+                    if (tooltip)
+                        $(generatedEntry).tooltip({
+                            title: tooltip,
+                            html: true
+                        });
+                });
+            });
+        })();
+    </script>
+</head>
+<body>
+<div class="container">
+    <fieldset>
+        <legend>Usage</legend>
+        <p>
+            Create a new instance of the object pointing at the API URL
+            (e.g. <code>var api = new WorldStateRepository('http://127.0.0.1:3000/api');</code>).
+        </p>
+
+        <p>
+            You can then use any of the supported methods (see below); note that a lot of these are inherently
+            asynchronous, returning a <a href="http://api.jquery.com/Types/#Promise">jQuery Promise</a> instance
+            instead where you can register callbacks and handle callback data.
+        </p>
+    </fieldset>
+
+    <fieldset>
+        <legend>Supported methods</legend>
+        <p>
+            This list is generated automatically through programmatic inspection. There may or may not be
+            documentation for <em>each</em> of these methods, but as a rule of thumb&hellip;
+        </p>
+        <ul>
+            <li id="help-for-delete">
+                <strong>delete</strong> methods delete a single record (using HTTP's DELETE verb).
+            </li>
+            <li id="help-for-get">
+                <strong>get</strong> methods fetch a single record.
+                If you are looking to fetch <em>all</em> records, use <code>list&#9251;</code> instead.
+            </li>
+            <li id="help-for-insert">
+                <strong>insert</strong> methods insert a new, single record.
+            </li>
+            <li id="help-for-list">
+                <strong>list</strong> methods return an array of objects. They are the equivalent of
+                <code>SELECT *</code>. If you are looking to fetch <em>one specific</em> record, use <code>get&#9251;</code> instead.
+            </li>
+            <li id="help-for-update">
+                <strong>update</strong> methods return an array of objects. This library does <em>not</em> handle the
+                HTTP PATCH verb yet, so to perform an update, you would issue <code>get&#9251;</code>, apply changes,
+                then write back the <em>whole</em> instance with this method.
+            </li>
+        </ul>
+        <p>
+            These methods follow a simple verb+resource nomenclature &mdash; this means that if you want to
+            <span class="hl1">insert</span> a new <span class="hl2">entity</span> record, you would use the
+            <span class="hl1 mono">insert</span><span class="hl2 mono">Entity</span> method.
+            Any methods <em>not</em> listed above are either internal helper methods and/or have documentation in their
+            JavaScript source code as they are likely not automatically generated but implemented by hand.
+        </p>
+        <ul class="list-unstyled" id="wsrApiMethods"></ul>
+    </fieldset>
+</div>
+</body>
+</html>
