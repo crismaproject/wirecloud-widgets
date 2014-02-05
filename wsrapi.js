@@ -45,7 +45,7 @@ WorldStateRepository.prototype.createUrl = function(path, entityId) {
  * @returns {string} an URL pointing to the specified address
  */
 WorldStateRepository.prototype.proxify = function(url) {
-    return MashupPlatform === 'undefined' ? url : MashupPlatform.http.buildProxyURL(url);
+    return typeof (MashupPlatform) === 'undefined' ? url : MashupPlatform.http.buildProxyURL(url);
 };
 
 /**
