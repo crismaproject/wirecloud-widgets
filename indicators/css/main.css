@@ -1,13 +1,25 @@
-#chart_container {
+html, body, #chart {
     width: 100%;
     height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-#chart_container div.jqplot-point-label.jqplot-series-1,
-#chart_container div.jqplot-point-label.jqplot-series-2 {
-    color: white;
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+.bar {
+    fill: steelblue;
+}
+.x.axis path {
+    display: none;
 }
 
-#chart_container div.jqplot-point-label.jqplot-series-0 {
-    color: black;
+.graph {
+    border: 1px solid #dfdfdf;
+    padding: 3px;
+    border-radius: 4px;
 }

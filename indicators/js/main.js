@@ -1,176 +1,140 @@
 window.indicator_uri = 'http://localhost/api';
 
-/**
- * Creates a new series object using the specified container.
- *
- * @param {string} title the diagram's title.
- * @param {string} container the id of the DOM element that will contain the indicators in question.
- * @constructor
- */
-function Series(title, container) {
-    /**
-     * id of the DOM element that will contain the indicators. Note that all subordinate nodes will be overwritten when
-     * the redraw method is invoked. This value is normally set by the constructor.
-     * @private
-     * @type {string}
-     */
-    this.container = container;
+var data = [
+    { ws: 14, g: 44, y: 17, r: 35, d: 12 },
+    { ws: 44, g: 39, y: 34, r: 37, d: 6 },
+    { ws: 93, g: 41, y: 15, r: 34, d: 19 }
+];
+var n = 0;
 
-    /**
-     * An array of indicators labels, one for every data point. This value is normally set by setLabels(..)
-     * @private
-     * @type {Array}
-     */
-    this.labels = [ ];
-
-    /**
-     * An array of hex-encoded RGB values that denote the color of each indicators bar. Colors should be in the same
-     * color as the labels. This value is normally set by setLabels(..)
-     * @private
-     * @type {Array}
-     */
-    this.colors = [ ];
-
-    /**
-     * @private
-     * @type {Array}
-     */
-    this.data = [ ];
-
-    /**
-     * Sets the title of the indicators displayed on top of it. This is normally set by setLabel(..)
-     * @private
-     * @type {string}
-     */
-    this.title = title;
-
-    /**
-     * Sets whether the indicators uses stacked bars or not.
-     * @default true
-     * @type {boolean}
-     */
-    this.isStacked = true;
-
-    /**
-     * Sets whether a legend is displayed next to the indicators.
-     * @default true
-     * @type {boolean}
-     */
-    this.showLegend = true;
-
-    var resizeBeingHandled = false;
-    $(window).resize(this, function (event) {
-        if (resizeBeingHandled) return;
-        resizeBeingHandled = true;
-        window.setTimeout(function () {
-            resizeBeingHandled = false;
-            event.data.redraw();
-        }, 500);
-    });
+function getViewportDim(selector) {
+    return {
+        w: $(selector).innerWidth(),
+        h: $(selector).innerHeight()
+    };
 }
 
-/**
- * Redraws the diagram.
- */
-Series.prototype.redraw = function () {
-    $('#' + this.container).empty();
-    if (!this.data || this.data.length == 0)
-        return;
+function createChart(containerWidth, containerHeight) {
+    if (!$('#chkKeepOld').is(':checked'))
+        $('#chart').empty();
 
-    var seriesLabels = [ ];
-    for (var i = 0; i < this.labels.length; i++)
-        seriesLabels[i] = { label: this.labels[i] };
+    var margin = { top: 20, right: 20, bottom: 30, left: 40 },
+        barPad = 3,
+        width = containerWidth - margin.left - margin.right,
+        height = containerHeight - margin.top - margin.bottom;
 
-    document.plot = $.jqplot(this.container, this.data, {
-        title: this.title,
-        stackSeries: this.isStacked,
-        seriesDefaults: {
-            markerOptions: { style: 'circle' },
-            renderer: $.jqplot.BarRenderer,
-            rendererOptions: { barMargin: 24 },
-            pointLabels: { show: this.labels.length != 0, hideZeros: true }
-        },
-        series: seriesLabels,
-        seriesColors: this.colors,
-        axesDefaults: { tickOptions: { mark: 'cross' } },
-        axes: {
-            xaxis: {
-                tickOptions: {
-                    showLabel: false
-                },
-                min: 0
-            },
-            yaxis: { autoscale: true, min: 0 }
-        },
-        legend: { show: this.showLegend, location: 'e' }
+    var x0 = d3.scale.ordinal()
+        .rangeRoundBands([0, width],.125);
+    var x1 = d3.scale.ordinal();
+    var y = d3.scale.linear()
+        .range([height, 0]);
+    var color = d3.scale.ordinal()
+        .range(["#527c36", "#db9b3b", "#9f3c3c", "#595959"]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x0)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .tickFormat(d3.format(".2s"));
+
+    var svgClassId = "graph" + (n++);
+    var container = $('<div></div>').attr('class', 'graph ' + svgClassId);
+    $('#chart').append(container);
+
+    var svg = d3.select("." + svgClassId).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var closeBtn = $('<button></button>')
+        .attr('type', 'button')
+        .attr('class', 'hidden-print btn btn-danger btn-sm ' + svgClassId)
+        .text('Hide chart');
+    closeBtn.click(function() {
+        $('.' + svgClassId).remove();
     });
-};
+    $(container).append(closeBtn);
 
-/**
- * Labels each series using the specified labels and colors.
- * Changing this value will require to redraw the table.
- *
- * @param {Array} labels an array of strings containing labels.
- * @param {Array?} colors an array of colors in RGB hex format (including the initial #) for each of the labels.
- * Iff this is null, a default set of six colors will be assumed.
- */
-Series.prototype.setLabels = function (labels, colors) {
-    colors = colors || [ '#aa3333', '#33aa33', '#3333aa', '#33aaaa', '#aa33aa', '#aaaa33' ];
-    if (this.labels.length > this.colors.length)
-        console.warn('Please provide at least as many colors as there are labels.');
-    this.labels = labels;
-    this.colors = colors;
-};
+    var categoryNames = d3.keys(data[0]).filter(function(key) { return key !== "ws"; });
 
-/**
- * A two-dimensional array where each element in the outer array depicts a series on the X axis,
- * and each element in inner arrays corresponds to one bar in the series. Note that the length of inner
- * arrays must always be the same.
- *
- * When bars are stacked, each of the inner elements will be stacked on top of each other; otherwise
- * they will be shown side by side, in the order they occur in the array.
- * Changing this value will require to redraw the table.
- *
- * @param {Array} data a two-dimensional array containing series data.
- * @example
- * series.setData( [ [1, 2], [3, 4], [5, 6] ] )
- */
-Series.prototype.setData = function (data) {
-    this.data = data;
-};
-
-/**
- * Sets the title that's displayed on top of the diagram.
- * Changing this value will require to redraw the table.
- *
- * @param {string} title the title of the diagram (that will be displayed on top of the chart area).
- * @see redraw
- */
-Series.prototype.setTitle = function (title) {
-    this.title = title;
-};
-
-/**
- * Loads the specified world state from the WPS that manages chart series data. This data will then be rendered in the
- * specified UI container.
- * @param {Series} series
- * @param {int} worldStateId
- */
-function loadWorldState(series, worldStateId) {
-    // First, we ask the WPS for the URL to the indicator data:
-    $.get(window.indicator_uri + '/pywps.cgi?service=WPS&request=Execute&version=1.0.0&identifier=lifeIndicator&datainputs=WorldStateId=' + worldStateId, function (response) {
-        var uriForWorldstate = $('Output', response).find('LiteralData').text(); // should contain an URL
-        if (!uriForWorldstate)
-            console.log('Did not receive a proper URL pointing at the indicator data!');
-        else
-            $.get(uriForWorldstate, function (response) {
-                // Secondly, we load the indicator data and prepare the chart series for rendering
-                var indicatorData = $.extend({ green: 0, yellow: 0, red: 0, dead: 0 }, JSON.parse(response.entityPropertyValue));
-
-                series.setData([[indicatorData.green], [indicatorData.yellow], [indicatorData.red], [indicatorData.dead]]);
-                series.isStacked = false;
-                series.setLabels(['Healthy', 'Injured', 'Critical', 'Dead'], [ '#90EE90', '#F0C07D', '#DC143C', '#696969' ]);
-                series.redraw();
-            });
+    data.forEach(function(d) {
+        d.indicatorValues = categoryNames.map(function(name) { return {name: name, value: +d[name]}; });
     });
+
+    x0.domain(data.map(function(d) { return d.ws; }));
+    x1.domain(categoryNames).rangeRoundBands([0, x0.rangeBand()]);
+    y.domain([0, d3.max(data, function(d) { return d3.max(d.indicatorValues, function(d) { return d.value * 1.025; }); })]);
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+    var group = svg.selectAll(".group")
+        .data(data)
+        .enter().append("g")
+        .attr("class", "g")
+        .attr("transform", function(d) { return "translate(" + x0(d.ws) + ",0)"; });
+
+    group.selectAll("rect")
+        .data(function(d) { return d.indicatorValues; })
+        .enter().append("rect")
+        .attr("width", x1.rangeBand() - barPad*2)
+        .attr("x", function(d) { return x1(d.name) + barPad; })
+        .attr("y", function(d) { return y(d.value); })
+        .attr("height", function(d) { return height - y(d.value); })
+        .style("fill", function(d) { return color(d.name); });
+
+    group.selectAll("text")
+        .data(function(d) { return d.indicatorValues; })
+        .enter().append("text")
+        .attr("width", x1.rangeBand())
+        .attr("x", function(d) { return x1(d.name) + x1.rangeBand() / 2; })
+        .attr("y", function(d) { return y(d.value) - 5; })
+        .attr("height", 15)
+        .attr("text-anchor", "middle")
+        .text(function(d) { return d.value; });
+
+    var legend = svg.selectAll(".legend")
+        .data(categoryNames.slice())
+        .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+    legend.append("rect")
+        .attr("x", width - 18)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", color);
+
+    legend.append("text")
+        .attr("x", width - 24)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(function(d) { return d; });
 }
+
+$(function() {
+    var viewport = getViewportDim('#chart');
+    viewport.w = viewport.w * 0.90;
+    viewport.h = viewport.h * 0.95;
+    if (viewport.h/3*4 > viewport.w)
+        viewport.h = viewport.w/4*3;
+    console.log(viewport);
+
+    $('#loadCharts').click(function() {
+        $('#overlay').modal('hide');
+        createChart(viewport.w, viewport.h);
+    });
+
+    $('#overlay').modal('show');
+});
