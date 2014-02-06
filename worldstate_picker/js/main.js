@@ -10,8 +10,8 @@ treeCfg = {
     },
     orientation: 'top',
     sizes: {
-        nodeWidth: 108,
-        levelDistance: 54
+        nodeWidth: 64,
+        levelDistance: 52
     },
     data: [ 'simulationId', 'worldStateId', 'dateTime', 'description' ]
 };
@@ -42,7 +42,7 @@ function createWorldStateTree(containerName, simulation) {
                 //id of viz container element
                 injectInto: containerName,
                 orientation: treeCfg.orientation,
-                levelsToShow: 5,
+                levelsToShow: 10,
                 //set animation transition type
                 transition: $jit.Trans.Quart.easeInOut,
                 //set distance between node and its children
@@ -148,7 +148,7 @@ function toJit(worldStates, simulation) {
 
     return {
         id: 's' + simulationId,
-        name: 'Simulation ' + simulationId,
+        name: 'Sim. ' + simulationId,
         data: simulation,
         children: worldStates
             .filter(function (x) { return x.worldStateParentId === null; })
@@ -166,7 +166,7 @@ function toJitNode(worldStatesLookup, nodeId) {
     var node = worldStatesLookup[nodeId];
     return {
         id: 'w' + nodeId,
-        name: 'WorldState ' + nodeId,
+        name: 'Ws. ' + nodeId,
         data: node,
         children: node.children.map(function (childId) { return toJitNode(worldStatesLookup, childId); })
     };
