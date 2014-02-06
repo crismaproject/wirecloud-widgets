@@ -176,6 +176,10 @@ function toJitNode(worldStatesLookup, nodeId) {
  * This method creates a dictionary-version of an WorldState array where each key corresponds to the
  * WorldState's own identifier. In addition, it creates and populates a 'children' property for each WorldState
  * that contains identifiers to any other WorldState that declares it as its parent.
+ *
+ * Note that this method will raise silent warnings in your JavaScript console if any inconsistencies were found
+ * while processing the specified array of world states.
+ *
  * @param {Array} worldStates
  * @returns {Object}
  */
@@ -187,7 +191,10 @@ function linkWorldStates(worldStates) {
         var worldState = worldStates[i];
         if (!worldState.worldStateParentId) continue;
         var parent = worldStatesDict[worldState.worldStateParentId];
-        parent.children.push(worldState.worldStateId);
+        if (!parent)
+            console.warn('World state ' + worldState.worldStateParentId + ' was not found, but it is apparently a parent of world state ' + worldState.worldStateId);
+        else
+            parent.children.push(worldState.worldStateId);
     }
     return worldStatesDict;
 }
