@@ -2,7 +2,13 @@ window.indicator_uri = 'http://localhost/api';
 
 var n = 0;
 
+/**
+ * Returns the viewport's current dimensions.
+ * @param {jQuery?} selector the container to measure, defaults to the document's body
+ * @return {{w: number, h: number}} an object describing the height and width of the specified selector.
+ */
 function getViewportDim(selector) {
+    selector = selector || 'body';
     return {
         w: $(selector).innerWidth(),
         h: $(selector).innerHeight()
@@ -10,12 +16,16 @@ function getViewportDim(selector) {
 }
 
 /**
- * @param containerWidth the total width of the diagram
- * @param containerHeight the total height of the diagram
+ * Creates a new chart from the specified data.
+ * @param {number} containerWidth the total width of the diagram (in pixels)
+ * @param {number} containerHeight the total height of the diagram (in pixels)
  * @param {*} data
  * @param {string[]?} colors colors to use
  */
 function createChart(containerWidth, containerHeight, data, colors) {
+    if (containerWidth <= 60) throw 'Container for the chart is too small (width must be greater than 60px)';
+    else if (containerHeight <= 50) throw 'Container for the chart is too small (height must be greater than 50px)';
+
     var $chart = $('#chart');
     if (!$('#chkKeepOld').is(':checked'))
         $chart.empty();
@@ -128,10 +138,20 @@ function createChart(containerWidth, containerHeight, data, colors) {
     $('body,html').animate({scrollTop: container.offset().top});
 }
 
+/**
+ * Wraps a scalar indicator object.
+ * @param {*} data
+ * @return {*[]}
+ */
 function dataFromScalar(data) {
     return [{key: data.name, value: data.data}];
 }
 
+/**
+ * Wraps a histogram indicator object.
+ * @param {*} data
+ * @return {*[]}
+ */
 function dataFromHistogram(data) {
     var container = { key: data.name };
     for (var i = 0; i < data.data.length; i++)
@@ -139,6 +159,11 @@ function dataFromHistogram(data) {
     return [container];
 }
 
+/**
+ * Returns an array of colors to use for the given indicator object.
+ * @param {*} data
+ * @return {string[]}
+ */
 function colorsFromHistogram(data) {
     return data.data.map(function(x){return x.color});
 }
