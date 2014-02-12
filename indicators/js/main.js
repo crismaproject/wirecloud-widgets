@@ -61,13 +61,13 @@ function createChart(containerWidth, containerHeight, data, colors) {
     });
     $(container).append(closeBtn);
 
-    var categoryNames = d3.keys(data[0]).filter(function(key) { return key !== "ws"; });
+    var categoryNames = d3.keys(data[0]).filter(function(key) { return key !== 'key'; });
 
     data.forEach(function(d) {
         d.indicatorValues = categoryNames.map(function(name) { return {name: name, value: +d[name]}; });
     });
 
-    x0.domain(data.map(function(d) { return d.ws; }));
+    x0.domain(data.map(function(d) { return d.key; }));
     x1.domain(categoryNames).rangeRoundBands([0, x0.rangeBand()]);
     y.domain([0, d3.max(data, function(d) { return d3.max(d.indicatorValues, function(d) { return d.value * 1.025; }); })]);
 
@@ -84,7 +84,7 @@ function createChart(containerWidth, containerHeight, data, colors) {
         .data(data)
         .enter().append("g")
         .attr("class", "g")
-        .attr("transform", function(d) { return "translate(" + x0(d.ws) + ",0)"; });
+        .attr("transform", function(d) { return "translate(" + x0(d.key) + ",0)"; });
 
     group.selectAll("rect")
         .data(function(d) { return d.indicatorValues; })
@@ -123,6 +123,21 @@ function createChart(containerWidth, containerHeight, data, colors) {
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(function(d) { return d; });
+}
+
+function dataFromScalar(data) {
+    return [{key: data.name, value: data.data}];
+}
+
+function dataFromHistogram(data) {
+    var container = { key: data.name };
+    for (var i = 0; i < data.data.length; i++)
+        container[data.data[i].key] = data.data[i].value;
+    return [container];
+}
+
+function colorsFromHistogram(data) {
+    return data.data.map(function(x){return x.color});
 }
 
 $(function() {
