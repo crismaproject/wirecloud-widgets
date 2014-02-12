@@ -30,7 +30,11 @@ $(function () {
     $('#loadBtn').click(function () {
         if (!lastSelectedNode) return;
 
-        MashupPlatform.wiring.pushEvent('worldstate', JSON.stringify(lastSelectedNode));
+        if (typeof MashupPlatform !== 'undefined')
+            MashupPlatform.wiring.pushEvent('worldstate', JSON.stringify(lastSelectedNode));
+        else
+            console.log(lastSelectedNode);
+
         api.listEntities()
             .done(function (response) {
                 // BEGIN workaround: not all entities belong to the WorldState; ignoring all that don't have properties in the given worldstate
@@ -42,12 +46,18 @@ $(function () {
                         });
                 });
                 // END workaround
-                MashupPlatform.wiring.pushEvent('oois', JSON.stringify(oois));
+                if (typeof MashupPlatform !== 'undefined')
+                    MashupPlatform.wiring.pushEvent('oois', JSON.stringify(oois));
+                else
+                    console.log(oois);
             });
 
         api.listEntityTypes()
             .done(function (response) {
-                MashupPlatform.wiring.pushEvent('ooi-types', JSON.stringify(response));
+                if (typeof MashupPlatform !== 'undefined')
+                    MashupPlatform.wiring.pushEvent('ooi-types', JSON.stringify(response));
+                else
+                    console.log(response);
             });
     });
 });
