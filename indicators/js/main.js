@@ -151,9 +151,9 @@ $(function() {
     $('#loadCharts').click(function() {
         $('#overlay').modal('hide');
         createChart(viewport.w, viewport.h, [
-            { ws: 14, g: 44, y: 17, r: 35, d: 12 },
-            { ws: 44, g: 39, y: 34, r: 37, d: 6 },
-            { ws: 93, g: 41, y: 15, r: 34, d: 19 }
+            { key: 14, g: 44, y: 17, r: 35, d: 12 },
+            { key: 44, g: 39, y: 34, r: 37, d: 6 },
+            { key: 93, g: 41, y: 15, r: 34, d: 19 }
         ], ["#527c36", "#db9b3b", "#9f3c3c", "#595959"]);
     });
 
