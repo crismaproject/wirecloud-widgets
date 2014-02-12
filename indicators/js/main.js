@@ -1,10 +1,5 @@
 window.indicator_uri = 'http://localhost/api';
 
-var data = [
-    { ws: 14, g: 44, y: 17, r: 35, d: 12 },
-    { ws: 44, g: 39, y: 34, r: 37, d: 6 },
-    { ws: 93, g: 41, y: 15, r: 34, d: 19 }
-];
 var n = 0;
 
 function getViewportDim(selector) {
@@ -14,9 +9,16 @@ function getViewportDim(selector) {
     };
 }
 
-function createChart(containerWidth, containerHeight) {
+/**
+ * @param containerWidth the total width of the diagram
+ * @param containerHeight the total height of the diagram
+ * @param {*} data
+ * @param {string[]?} colors colors to use
+ */
+function createChart(containerWidth, containerHeight, data, colors) {
+    var $chart = $('#chart');
     if (!$('#chkKeepOld').is(':checked'))
-        $('#chart').empty();
+        $chart.empty();
 
     var margin = { top: 20, right: 20, bottom: 30, left: 40 },
         barPad = 3,
@@ -29,7 +31,7 @@ function createChart(containerWidth, containerHeight) {
     var y = d3.scale.linear()
         .range([height, 0]);
     var color = d3.scale.ordinal()
-        .range(["#527c36", "#db9b3b", "#9f3c3c", "#595959"]);
+        .range(colors || ['#999999']);
 
     var xAxis = d3.svg.axis()
         .scale(x0)
@@ -42,7 +44,7 @@ function createChart(containerWidth, containerHeight) {
 
     var svgClassId = "graph" + (n++);
     var container = $('<div></div>').attr('class', 'graph ' + svgClassId);
-    $('#chart').append(container);
+    $chart.append(container);
 
     var svg = d3.select("." + svgClassId).append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -133,7 +135,11 @@ $(function() {
 
     $('#loadCharts').click(function() {
         $('#overlay').modal('hide');
-        createChart(viewport.w, viewport.h);
+        createChart(viewport.w, viewport.h, [
+            { ws: 14, g: 44, y: 17, r: 35, d: 12 },
+            { ws: 44, g: 39, y: 34, r: 37, d: 6 },
+            { ws: 93, g: 41, y: 15, r: 34, d: 19 }
+        ], ["#527c36", "#db9b3b", "#9f3c3c", "#595959"]);
     });
 
     $('#overlay').modal('show');
