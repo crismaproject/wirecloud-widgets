@@ -22,4 +22,25 @@ html, body, #chart {
     border: 1px solid #dfdfdf;
     padding: 3px;
     border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.graph:last-child {
+    margin-bottom: 0;
+}
+
+#controls {
+    position: absolute;
+    right: 2pt;
+    top: 2pt;
+    left: auto;
+    bottom: auto;
+}
+
+* > .hover-only {
+    display: none;
+}
+
+*:hover > .hover-only {
+    display: inline-block;
 }

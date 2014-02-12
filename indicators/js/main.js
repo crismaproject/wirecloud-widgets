@@ -123,6 +123,9 @@ function createChart(containerWidth, containerHeight, data, colors) {
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(function(d) { return d; });
+
+    // at this point, the chart has been added to the DOM; if it is outside the viewport, attempt to scroll to its position
+    $('body,html').animate({scrollTop: container.offset().top});
 }
 
 function dataFromScalar(data) {
@@ -147,6 +150,16 @@ $(function() {
     if (viewport.h/3*4 > viewport.w)
         viewport.h = viewport.w/4*3;
     console.log(viewport);
+
+    // the following lines let the "settings" button float around in the top right corner of the widget,
+    // even if the viewport changes due to scrolling
+    var $floatingActions = $('#controls');
+    var offsetTop = parseFloat($floatingActions.css('top').replace(/[^-\d\.]/g, ''));
+    $(window).scroll(function () {
+        $floatingActions
+            .stop()
+            .animate({'marginTop': ($(window).scrollTop() + offsetTop) + 'px'});
+    });
 
     $('#loadCharts').click(function() {
         $('#overlay').modal('hide');
