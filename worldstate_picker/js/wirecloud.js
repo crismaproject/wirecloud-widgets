@@ -30,9 +30,10 @@ $(function () {
     $('#loadBtn').click(function () {
         if (!lastSelectedNode) return;
 
-        if (typeof MashupPlatform !== 'undefined')
+        if (typeof MashupPlatform !== 'undefined') {
+            MashupPlatform.wiring.pushEvent('worldstate_history', JSON.stringify(getHistoryOf(lastSelectedNode.worldStateId)));
             MashupPlatform.wiring.pushEvent('worldstate', JSON.stringify(lastSelectedNode));
-        else
+        } else
             console.log(lastSelectedNode);
 
         api.listEntities()

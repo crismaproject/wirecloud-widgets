@@ -36,6 +36,8 @@ function createWorldStateTree(containerName, simulation) {
         .done(function (worldStates) {
             var $container = $('#' + containerName);
             $container.empty();
+            worldStates = worldStates.filter(function (x) { return x.simulationId == simulation.simulationId; });
+            window.worldStateCache = worldStates.toDict('worldStateId');
 
             var jitData = toJit(worldStates, simulation);
             var st = new $jit.ST({
@@ -141,9 +143,7 @@ function createWorldStateTree(containerName, simulation) {
  */
 function toJit(worldStates, simulation) {
     var simulationId = simulation.simulationId;
-    worldStates = worldStates
-        .filter(function (x) { return x.simulationId == simulationId; })
-        .map(function (x) { return $.extend({children: []}, x); });
+    worldStates = worldStates.map(function (x) { return $.extend({children: []}, x); });
     var worldStatesLookup = linkWorldStates(worldStates);
 
     return {
@@ -197,6 +197,13 @@ function linkWorldStates(worldStates) {
             parent.children.push(worldState.worldStateId);
     }
     return worldStatesDict;
+}
+
+function getHistoryOf(worldStateId) {
+    var history = [ ];
+    for (var current = window.worldStateCache[worldStateId]; current != null; current = window.worldStateCache[current.worldStateParentId])
+        history = [ current ].concat(history);
+    return history;
 }
 
 /**
