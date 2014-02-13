@@ -8,10 +8,10 @@ treeCfg = {
         nonLeaf: '#F2919D',
         edge: '#aaaaaa'
     },
-    orientation: 'top',
+    orientation: 'left',
     sizes: {
-        nodeWidth: 64,
-        levelDistance: 52
+        nodeWidth: 60,
+        levelDistance: 14
     },
     data: [ 'simulationId', 'worldStateId', 'dateTime', 'description' ]
 };
@@ -49,6 +49,8 @@ function createWorldStateTree(containerName, simulation) {
                 transition: $jit.Trans.Quart.easeInOut,
                 //set distance between node and its children
                 levelDistance: treeCfg.sizes.levelDistance,
+                siblingOffset: 1,
+                subtreeOffset: 2,
                 //enable panning
                 Navigation: {
                     enable: true,
