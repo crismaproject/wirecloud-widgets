@@ -1,13 +1,25 @@
 /**
+ * @param {string} baseUri the WPS's base URI (including the full path, but without any query fragments)
+ * @author Manuel Warum (AIT)
+ * @version 0.6.0
  * @constructor
  */
 function WPS(baseUri) {
+    /** @private */
     this.baseUri = baseUri;
 
+    /** @private */
     this.processes = null;
+    /** @private */
     this.processDetails = { };
 }
 
+/**
+ * Returns a jQuery promise that contains all processes known to the WPS server.
+ * The response of this inquiry is cached, meaning that any call to this method after the first
+ * will result in no actual HTTP request; instead, the locally cached results of the first request are returned.
+ * @return {jQuery.Deferred}
+ */
 WPS.prototype.getProcesses = function() {
     var $this = this;
     var deferred = $.Deferred();
@@ -31,14 +43,21 @@ WPS.prototype.getProcesses = function() {
     return deferred.promise();
 };
 
-WPS.prototype.getProcessDetails = function(offeringId) {
+/**
+ * Returns a jQuery promise that contains all processes known to the WPS server.
+ * The response of this inquiry is cached, meaning that any call to this method (with the same processId) after the first
+ * will result in no actual HTTP request; instead, the locally cached results of the first request are returned.
+ * @param {string} processId the identifier of the process that you want more information about.
+ * @return {jQuery.Deferred}
+ */
+WPS.prototype.getProcessDetails = function(processId) {
     var $this = this;
     var deferred = $.Deferred();
 
-    if (this.processDetails.hasOwnProperty(offeringId))
-        deferred.resolveWith($this, [this.processDetails[offeringId]]);
+    if (this.processDetails.hasOwnProperty(processId))
+        deferred.resolveWith($this, [this.processDetails[processId]]);
     else
-        $.get(this.baseUri + '?service=WPS&request=DescribeProcess&version=1.0.0&identifier=' + offeringId)
+        $.get(this.baseUri + '?service=WPS&request=DescribeProcess&version=1.0.0&identifier=' + processId)
             .done(function (data) {
                 var inputs = $('Input', data).map(function(i, input) {
                     var $input = $(input);
@@ -59,7 +78,7 @@ WPS.prototype.getProcessDetails = function(offeringId) {
                 }).get();
 
                 var value = { in: inputs, out: outputs };
-                $this.processDetails[offeringId] = value;
+                $this.processDetails[processId] = value;
                 deferred.resolveWith($this, [value]);
             });
 
