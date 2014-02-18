@@ -207,6 +207,14 @@ $(function() {
         $($this.attr('data-help-text-in')).text(helpText || '');
     });
 
+    $('a[data-check-all]').click(function(){
+        $('input[type="checkbox"]', $(this).attr('data-check-all')).attr('checked', true);
+    });
+
+    $('a[data-check-none]').click(function(){
+        $('input[type="checkbox"]', $(this).attr('data-check-all')).attr('checked', false);
+    });
+
     if (!window.wps)
         throw 'WPS not properly set!';
     else if(!window.ooiwsr)
@@ -223,8 +231,10 @@ $(function() {
                     .append(simulations.map(function(simulation) {
                         return $('<option></option>')
                             .text('Simulation ' + simulation.simulationId + ': ' + simulation.description)
+                            .attr('data-help-text', simulation.description + ', starts on ' + simulation.startDateTime)
                             .val(simulation.simulationId);
-                    }));
+                    }))
+                    .change();
             });
 
         var loadIndicatorsPromise = window.wps.getProcesses()
@@ -236,7 +246,8 @@ $(function() {
                             .text(process.title)
                             .attr('data-help-text', process.description)
                             .val(process.id);
-                    }));
+                    }))
+                    .change();
             });
 
         $scenarios.change(function() {

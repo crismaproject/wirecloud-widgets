@@ -19,44 +19,41 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">What do you want to see?</h4>
+                <h4 class="modal-title"><span class="glyphicon glyphicon-tasks"></span> Select indicators</h4>
             </div>
             <div class="modal-body">
                 <form role="form" class="form-horizontal">
                     <div class="form-group">
                         <label for="inputScenario">Scenario:</label>
-                        <select id="inputScenario" class="form-control">
+                        <select id="inputScenario" data-help-text-in="#inputScenarioHelp" class="form-control">
                         </select>
+                        <p class="help-block alert alert-success" id="inputScenarioHelp"></p>
                     </div>
 
                     <div class="form-group">
                         <label for="inputIndicator">Indicator:</label>
                         <select id="inputIndicator" data-help-text-in="#inputIndicatorHelp" class="form-control">
                         </select>
-                        <p class="help-block" id="inputIndicatorHelp"></p>
+                        <p class="help-block alert alert-success" id="inputIndicatorHelp"></p>
                     </div>
 
                     <div class="form-group">
                         <label>World states:</label>
+                        <div class="dropdown">
+                            <button class="btn btn-xs btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li role="presentation" class="dropdown-header">Select&hellip;</li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-check-all="#worldStateList">all</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-check-none="#worldStateList">none</a></li>
+                            </ul>
+                        </div>
                         <div class="contrain-height" id="worldStateList">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" value="14">
-                                #14 &ndash; 2013 FEB 14 14:00Z
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" value="44">
-                                #44 &ndash; 2013 FEB 16 12:10Z
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" value="93">
-                                #93 &ndash; 2013 MAR 09 09:42Z
-                            </label>
-                        </div>
+                            <div class="alert alert-info">
+                                <span class="glyphicon glyphicon-info-sign"></span>
+                                Select a simulation above to be able to pick a world state.
+                            </div>
                         </div>
                     </div>
                 </form>
