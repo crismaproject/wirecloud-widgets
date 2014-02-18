@@ -168,13 +168,19 @@ function colorsFromHistogram(data) {
     return data.data.map(function(x){return x.color});
 }
 
-$(function() {
+window.wps = null;
+window.ooiwsr = null;
+
+function getInitialChartSize() {
     var viewport = getViewportDim('#chart');
     viewport.w = viewport.w * 0.90;
     viewport.h = viewport.h * 0.95;
-    if (viewport.h/3*4 > viewport.w)
-        viewport.h = viewport.w/4*3;
-    console.log(viewport);
+    if (viewport.h / 3 * 4 > viewport.w)
+        viewport.h = viewport.w / 4 * 3;
+    return viewport;
+}
+$(function() {
+    var viewport = getInitialChartSize();
 
     // the following lines let the "settings" button float around in the top right corner of the widget,
     // even if the viewport changes due to scrolling
@@ -195,5 +201,67 @@ $(function() {
         ], ["#527c36", "#db9b3b", "#9f3c3c", "#595959"]);
     });
 
-    $('#overlay').modal('show');
+    $('select[data-help-text-in]').change(function() {
+        var $this = $(this);
+        var helpText = $('option:selected', $this).attr('data-help-text');
+        $($this.attr('data-help-text-in')).text(helpText || '');
+    });
+
+    if (!window.wps)
+        throw 'WPS not properly set!';
+    else if(!window.ooiwsr)
+        throw 'OOI-WSR not properly set!';
+    else {
+        var $scenarios = $('#inputScenario');
+        var $indicators = $('#inputIndicator');
+        var $worldStates = $('#worldStateList');
+
+        var loadSimulationPromise = window.ooiwsr.listSimulations()
+            .done(function (simulations) {
+                $scenarios
+                    .empty()
+                    .append(simulations.map(function(simulation) {
+                        return $('<option></option>')
+                            .text('Simulation ' + simulation.simulationId + ': ' + simulation.description)
+                            .val(simulation.simulationId);
+                    }));
+            });
+
+        var loadIndicatorsPromise = window.wps.getProcesses()
+            .done(function (processes) {
+                $indicators
+                    .empty()
+                    .append(processes.map(function(process) {
+                        return $('<option></option>')
+                            .text(process.title)
+                            .attr('data-help-text', process.description)
+                            .val(process.id);
+                    }));
+            });
+
+        $scenarios.change(function() {
+            var $scenario = $('option:selected', this);
+            var simulationId = $scenario.val();
+            window.ooiwsr.listWorldStates()
+                .done(function(worldStates) {
+                    $worldStates
+                        .empty()
+                        .append(worldStates
+                            .filter(function(x) {return x.simulationId == simulationId;})
+                            .map(function(x) {
+                                return $('<div class="checkbox"></div>')
+                                    .append($('<label></label>')
+                                        .text('#' + x.worldStateId + ': ' + x.description + ' (' + x.dateTime + ')')
+                                        .prepend(
+                                            $('<input type="checkbox">').val(x.worldStateId)
+                                        )
+                                    )
+                            })
+                        );
+                });
+        });
+
+        $.when(loadSimulationPromise, loadIndicatorsPromise)
+            .done(function(){ $('#overlay').modal('show'); });
+    }
 });

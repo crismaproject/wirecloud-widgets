@@ -44,3 +44,8 @@ html, body, #chart {
 *:hover > .hover-only {
     display: inline-block;
 }
+
+.contrain-height {
+    max-height: 400px;
+    overflow-y: auto;
+}
