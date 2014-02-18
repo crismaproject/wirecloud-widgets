@@ -1,10 +1,12 @@
 /**
  * @param {string} baseUri the WPS's base URI (including the full path, but without any query fragments)
+ * @param {boolean?} loadEagerly if true, the WPS's capabilities and process detail will be loaded immediately (but due
+ * to their asynchronous nature, this may not be immediately apparent)
  * @author Manuel Warum (AIT)
  * @version 0.6.0
  * @constructor
  */
-function WPS(baseUri) {
+function WPS(baseUri, loadEagerly) {
     /** @private */
     this.baseUri = baseUri;
 
@@ -12,6 +14,16 @@ function WPS(baseUri) {
     this.processes = null;
     /** @private */
     this.processDetails = { };
+
+    if (loadEagerly) {
+        var $this = this;
+        this.getProcesses()
+            .done(function (processes) {
+                console.log('Capabilities discovered.');
+                var processDiscovery = processes.map(function(x) { console.log('Process discovered: ' + x.id); $this.getProcessDetails(x.id); });
+                $.when(processDiscovery).done(function (x) { console.log('Eager process discovery complete.'); });
+            });
+    }
 }
 
 /**
@@ -74,13 +86,47 @@ WPS.prototype.getProcessDetails = function(processId) {
                     var id = $('Identifier', $output).text();
                     var title = $('Title', $output).text();
 
-                    return { id: id, title: title, min: min, max: max };
+                    return { id: id, title: title };
                 }).get();
 
                 var value = { in: inputs, out: outputs };
                 $this.processDetails[processId] = value;
                 deferred.resolveWith($this, [value]);
             });
+
+    return deferred.promise();
+};
+
+/**
+ * Executes a process via WPS.
+ * @param {string} processId the process identifier as returned by the WPS capabilities request.
+ * @param {*} args all arguments required to execute this request as an object where property names are treated as
+ * argument names, and property values as argument values.
+ * @return {jQuery.Deferred} a deferred promise; if the request succeeds, the callback function's first argument is
+ * compromised of an object that maps output identifiers to values.
+ */
+WPS.prototype.executeProcess = function (processId, args) {
+    var $this = this;
+    var deferred = $.Deferred();
+
+    var argStr = '';
+    for (var key in args) {
+        if (argStr.length > 0) argStr += ';';
+        argStr += encodeURIComponent(key) + '=' + encodeURIComponent(args[key]);
+    }
+    argStr = encodeURIComponent(argStr);
+    $.get(this.baseUri + '?service=WPS&request=Execute&version=1.0.0&identifier=' + processId + '&datainputs=' + argStr).done(function (response) {
+        if ($('ProcessFailed', response).length)
+            deferred.rejectWith($this);
+        else {
+            var returnValue = { };
+            $('Output', response).each(function (index, output) {
+                var $output = $(output);
+                returnValue[$('Identifier', $output).text()] = $('LiteralData', $output).text();
+            });
+            deferred.resolveWith($this, [returnValue]);
+        }
+    });
 
     return deferred.promise();
 };
