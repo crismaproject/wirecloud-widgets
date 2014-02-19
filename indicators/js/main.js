@@ -1,4 +1,5 @@
-window.indicator_uri = 'http://localhost/api';
+window.wps = null;
+window.ooiwsr = null;
 
 var n = 0;
 
@@ -179,9 +180,6 @@ function colorsFromHistogram(data) {
     return data.data.map(function(x){return x.color});
 }
 
-window.wps = null;
-window.ooiwsr = null;
-
 /**
  * @private
  * @return {{w: number, h: number, l: number, t: number}}
@@ -298,12 +296,15 @@ $(function() {
                     var wsid = parseInt($(x).val());
                     return wps.executeProcess(indicator, { WorldStateId: wsid })
                         .done(function(x) {
-                            console.log(x);
-                            var indicatorData = JSON.parse(x.value);
-                            var colors = colorsFromHistogram(indicatorData);
-                            var data = dataFromHistogram(indicatorData);
-                            var label = 'World state ' + wsid + ': ' + x.description;
-                            createChart(viewport.w, viewport.h, data, colors, label);
+                            var indicatorDataUrl = x.indicator;
+                            $.getJSON(indicatorDataUrl)
+                                .done(function(indicatorData) {
+                                    indicatorData = JSON.parse(indicatorData.entityPropertyValue);
+                                    var colors = colorsFromHistogram(indicatorData);
+                                    var data = dataFromHistogram(indicatorData);
+                                    var label = 'World state ' + wsid + ': ' + x.description;
+                                    createChart(viewport.w, viewport.h, data, colors, label);
+                                });
                         });
                 });
 
