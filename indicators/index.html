@@ -14,7 +14,30 @@
 </head>
 <body>
 
-<div id="overlay" class="modal fade hidden-print" role="dialog">
+<aside id="controls" role="navigation">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#overlay">
+        <span class="glyphicon glyphicon-plus"></span> Add chart
+    </button>
+</aside>
+
+<div id="loadingIndicator" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-cog"></span> Loading &hellip;</h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress progress-striped active">
+                    <div class="progress-bar" role="progressbar" style="width: 100%">
+                        <span class="sr-only">In progress&hellip;</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="overlay" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -49,7 +72,7 @@
                                 <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-check-none="#worldStateList">none</a></li>
                             </ul>
                         </div>
-                        <div class="contrain-height" id="worldStateList">
+                        <div class="constrain-height" id="worldStateList">
                             <div class="alert alert-info">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 Select a simulation above to be able to pick a world state.
@@ -61,7 +84,7 @@
             <div class="modal-footer">
                 <div>
                     <label>
-                        <input type="checkbox" id="chkKeepOld"> Keep old charts
+                        <input type="checkbox" id="chkKeepOld" checked="checked"> Keep old charts
                     </label>
                 </div>
                 <div>
@@ -71,13 +94,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<div id="controls" class="pull-right hidden-print">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#overlay">
-        <span class="glyphicon glyphicon-cog"></span>
-        <span class="hover-only">Settings</span>
-    </button>
 </div>
 
 <div id="chart"></div>

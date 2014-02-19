@@ -5,11 +5,14 @@ var n = 0;
 /**
  * Returns the viewport's current dimensions.
  * @param {jQuery?} selector the container to measure, defaults to the document's body
- * @return {{w: number, h: number}} an object describing the height and width of the specified selector.
+ * @return {{w: number, h: number, l: number, t: number}} an object describing the height and width of the specified selector.
  */
 function getViewportDim(selector) {
     selector = selector || 'body';
+    var offset = $(selector).position();
     return {
+        l: offset.left,
+        t: offset.top,
         w: $(selector).innerWidth(),
         h: $(selector).innerHeight()
     };
@@ -21,14 +24,11 @@ function getViewportDim(selector) {
  * @param {number} containerHeight the total height of the diagram (in pixels)
  * @param {*} data
  * @param {string[]?} colors colors to use
+ * @param {string?} label
  */
-function createChart(containerWidth, containerHeight, data, colors) {
+function createChart(containerWidth, containerHeight, data, colors, label) {
     if (containerWidth <= 60) throw 'Container for the chart is too small (width must be greater than 60px)';
     else if (containerHeight <= 50) throw 'Container for the chart is too small (height must be greater than 50px)';
-
-    var $chart = $('#chart');
-    if (!$('#chkKeepOld').is(':checked'))
-        $chart.empty();
 
     var margin = { top: 20, right: 20, bottom: 30, left: 40 },
         barPad = 3,
@@ -54,7 +54,7 @@ function createChart(containerWidth, containerHeight, data, colors) {
 
     var svgClassId = "graph" + (n++);
     var container = $('<div></div>').attr('class', 'graph ' + svgClassId);
-    $chart.append(container);
+    $('#chart').append(container);
 
     var svg = d3.select("." + svgClassId).append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -62,14 +62,25 @@ function createChart(containerWidth, containerHeight, data, colors) {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    var $containerBelowChart = $('<aside></aside>');
+
     var closeBtn = $('<button></button>')
         .attr('type', 'button')
-        .attr('class', 'hidden-print btn btn-danger btn-sm ' + svgClassId)
-        .text('Hide chart');
+        .attr('class', 'hidden-print btn btn-danger btn-xs')
+        .append($('<span class="glyphicon glyphicon-remove"></span>'));
     closeBtn.click(function() {
-        $('.' + svgClassId).remove();
+        $self = $('.' + svgClassId);
+        $self.slideUp({complete: function() {
+            $self.remove();
+            if (!$('.graph').length) $('#overlay').modal('show');
+        }});
     });
-    $(container).append(closeBtn);
+
+    $containerBelowChart.append(closeBtn);
+    if (label)
+        $containerBelowChart.append($('<span class="graphLabel"></span>').text(label));
+
+    $(container).append($containerBelowChart);
 
     var categoryNames = d3.keys(data[0]).filter(function(key) { return key !== 'key'; });
 
@@ -171,17 +182,19 @@ function colorsFromHistogram(data) {
 window.wps = null;
 window.ooiwsr = null;
 
+/**
+ * @private
+ * @return {{w: number, h: number, l: number, t: number}}
+ */
 function getInitialChartSize() {
     var viewport = getViewportDim('#chart');
-    viewport.w = viewport.w * 0.90;
-    viewport.h = viewport.h * 0.95;
-    if (viewport.h / 3 * 4 > viewport.w)
+    viewport.w = viewport.w * 0.95 - viewport.l;
+    viewport.h = Math.min(viewport.h * 0.95 - viewport.t, 500);
+    if (viewport.h / 16 * 9 > viewport.w)
         viewport.h = viewport.w / 4 * 3;
     return viewport;
 }
 $(function() {
-    var viewport = getInitialChartSize();
-
     // the following lines let the "settings" button float around in the top right corner of the widget,
     // even if the viewport changes due to scrolling
     var $floatingActions = $('#controls');
@@ -190,15 +203,6 @@ $(function() {
         $floatingActions
             .stop()
             .animate({'marginTop': ($(window).scrollTop() + offsetTop) + 'px'});
-    });
-
-    $('#loadCharts').click(function() {
-        $('#overlay').modal('hide');
-        createChart(viewport.w, viewport.h, [
-            { key: 14, g: 44, y: 17, r: 35, d: 12 },
-            { key: 44, g: 39, y: 34, r: 37, d: 6 },
-            { key: 93, g: 41, y: 15, r: 34, d: 19 }
-        ], ["#527c36", "#db9b3b", "#9f3c3c", "#595959"]);
     });
 
     $('select[data-help-text-in]').change(function() {
@@ -220,6 +224,7 @@ $(function() {
     else if(!window.ooiwsr)
         throw 'OOI-WSR not properly set!';
     else {
+        $('#loadingIndicator').modal('show');
         var $scenarios = $('#inputScenario');
         var $indicators = $('#inputIndicator');
         var $worldStates = $('#worldStateList');
@@ -273,6 +278,36 @@ $(function() {
         });
 
         $.when(loadSimulationPromise, loadIndicatorsPromise)
-            .done(function(){ $('#overlay').modal('show'); });
+            .done(function(){
+                $('#loadingIndicator').modal('hide');
+                $('#overlay').modal('show');
+            });
+
+        $('#loadCharts').click(function() {
+            $('#overlay').modal('hide');
+            if (!$('#chkKeepOld').is(':checked'))
+                $('#chart').empty();
+
+            var viewport = getInitialChartSize();
+            var indicator = $('option:checked', $indicators).val();
+
+            $('#loadingIndicator').modal('show');
+
+            var promises = $('input[type="checkbox"]:checked', $worldStates)
+                .map(function (i, x) {
+                    var wsid = parseInt($(x).val());
+                    return wps.executeProcess(indicator, { WorldStateId: wsid })
+                        .done(function(x) {
+                            console.log(x);
+                            var indicatorData = JSON.parse(x.value);
+                            var colors = colorsFromHistogram(indicatorData);
+                            var data = dataFromHistogram(indicatorData);
+                            var label = 'World state ' + wsid + ': ' + x.description;
+                            createChart(viewport.w, viewport.h, data, colors, label);
+                        });
+                });
+
+            $.when(promises.get()).done(function() { $('#loadingIndicator').modal('hide'); });
+        });
     }
 });

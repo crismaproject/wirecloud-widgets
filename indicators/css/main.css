@@ -30,22 +30,18 @@ html, body, #chart {
 }
 
 #controls {
-    position: absolute;
-    right: 2pt;
-    top: 2pt;
-    left: auto;
-    bottom: auto;
+    margin-bottom: 6px;
 }
 
-* > .hover-only {
-    display: none;
-}
-
-*:hover > .hover-only {
-    display: inline-block;
-}
-
-.contrain-height {
-    max-height: 400px;
+.constrain-height {
+    max-height: 240px;
     overflow-y: auto;
+}
+
+.graphLabel {
+    font-weight: 700;
+}
+
+@media print {
+    .modal, #controls { display: none }
 }
