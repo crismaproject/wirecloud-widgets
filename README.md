@@ -59,7 +59,7 @@ push request.
 
 ## Branches
 
-* **master** — recommended latest version
+* **master** — recommended latest version (currently pointing at v0.6)
 * **v0.5** — currently somewhat stable version; receives maintenance updates where applicable.
 * **v0.6** — this is some sort of staging area for the *next* version and most commits are likely to not work
 completely.
