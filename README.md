@@ -36,6 +36,10 @@ production environment.
 * (w) **./debug_listener/** — a simple debugging widget that shows incoming events.
 * (w) **./debug_pusher/** — a simple debugging widget that pushes arbitrary data to endpoints.
 
+### Misc.
+
+* (w) **./empty/** — contains an absolutely empty widget that can be used as a starting template.
+
 ### Documentations
 
 **Documentation** for endpoints can be found in each of the widgets' respective subdirectory, in a file aptly
