@@ -26,7 +26,6 @@ function WorldStateRepository(apiUri) {
  * @param {string} path the path (usually the resource's name) to fetch
  * @param {number?} entityId the unique identifier of the resource to fetch
  * @returns {string} a fully qualified URL pointing to the specified resource
- * @private
  */
 WorldStateRepository.prototype.createUrl = function(path, entityId) {
     var uri = this.apiUri + '/' + path;
@@ -53,7 +52,6 @@ WorldStateRepository.prototype.proxify = function(url) {
  * @param {string} path the resource's name
  * @param {*?} data any data that should be sent to the server
  * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
- * @private
  */
 WorldStateRepository.prototype.fetch = function(path, data) {
     return $.get(this.createUrl(path), data);
@@ -65,7 +63,6 @@ WorldStateRepository.prototype.fetch = function(path, data) {
  * @param {number} entityId the resource's unique identifier
  * @param {*?} data any data that should be sent to the server
  * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
- * @private
  */
 WorldStateRepository.prototype.fetchById = function(path, entityId, data) {
     return $.get(this.createUrl(path, entityId), data);
@@ -76,7 +73,6 @@ WorldStateRepository.prototype.fetchById = function(path, entityId, data) {
  * @param {string} path the resource's name
  * @param {object} instance the instance to insert
  * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
- * @private
  */
 WorldStateRepository.prototype.singleInsert = function(path, instance) {
     return $.post(this.createUrl(path), instance);
@@ -88,7 +84,6 @@ WorldStateRepository.prototype.singleInsert = function(path, instance) {
  * @param {number} entityId the resource's unique identifier
  * @param {object} instance the instance to replace
  * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
- * @private
  */
 WorldStateRepository.prototype.singleReplace = function(path, entityId, instance) {
     return $.ajax({
@@ -103,7 +98,6 @@ WorldStateRepository.prototype.singleReplace = function(path, entityId, instance
  * @param {string} path the resource's name
  * @param {number} entityId the resource's unique identifier
  * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
- * @private
  */
 WorldStateRepository.prototype.singleDelete = function(path, entityId) {
     return $.ajax({
@@ -117,7 +111,6 @@ WorldStateRepository.prototype.singleDelete = function(path, entityId) {
  * @param {string} path the resource's name
  * @param {object[]} data an array of resource instances that will be inserted on the server
  * @returns {jQuery.Deferred} a jQuery deferred object instance for this request
- * @private
  */
 WorldStateRepository.prototype.massInsert = function(path, data) {
     return $.ajax({
