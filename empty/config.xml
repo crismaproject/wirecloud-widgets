@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Template xmlns="http://morfeo-project.org/2007/Template">
+  <Catalog.ResourceDescription>
+    <Vendor>My Company</Vendor>
+    <Name>widget_identifier</Name>
+    <DisplayName>My Widget</DisplayName>
+    <Version>1.0</Version>
+    <Author>My Name</Author>
+    <Mail>My.Email@example.com</Mail>
+    <Description>
+      This is an almost bare widget. It contains the bare minimum foundation a widget
+      would require for it to work with the Mashup Platform Wirecloud.
+    </Description>
+    <ImageURI>img/catalogue.png</ImageURI>
+    <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
+    <WikiURI>https://mashup.lab.fi-ware.org/</WikiURI>
+  </Catalog.ResourceDescription>
+
+  <Platform.Preferences>
+    <!--
+      <Preference name="api_uri" type="text" description="URL of an external service used by this widget" label="API URI" default="http://something/"/>
+    -->
+  </Platform.Preferences>
+
+  <Platform.Wiring>
+    <!--
+      <InputEndpoint name="data_in" type="text" label="Data" friendcode="data"/>
+      <OutputEndpoint name="data_out" type="text" label="Data" friendcode="data"/>
+    -->
+  </Platform.Wiring>
+
+  <Platform.Link>
+    <XHTML href="index.html"/>
+  </Platform.Link>
+
+  <Platform.Rendering width="6" height="12"/>
+</Template>
