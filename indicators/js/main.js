@@ -3,6 +3,12 @@ window.ooiwsr = null;
 
 var n = 0;
 
+/**
+ * Returns the first element of an array that matches the given predicate function.
+ * @param {function} predicate a function that tests an element of the array and returns true, if it is of interest,
+ * false otherwise.
+ * @return {*} the first element in the array that matches the given predicate function.
+ */
 Array.prototype.firstWhere = function (predicate) {
     var selection = this.filter(predicate);
     return selection.length ? selection[0] : null;
@@ -10,7 +16,7 @@ Array.prototype.firstWhere = function (predicate) {
 
 /**
  * Returns the viewport's current dimensions.
- * @param {jQuery?} selector the container to measure, defaults to the document's body
+ * @param {*?} selector the container to measure, defaults to the document's body
  * @return {{w: number, h: number, l: number, t: number}} an object describing the height and width of the specified selector.
  */
 function getViewportDim(selector) {
@@ -198,6 +204,7 @@ function getInitialChartSize() {
     return viewport;
 }
 
+/** @private */
 function getIndicatorFromWPS(indicator, worldStateId) {
     if (!window.wps) throw 'WPS not configured!';
     return window.wps.executeProcess(indicator, { WorldStateId: worldStateId })
@@ -206,15 +213,13 @@ function getIndicatorFromWPS(indicator, worldStateId) {
             $.getJSON(indicatorDataUrl)
                 .done(function(indicatorData) {
                     indicatorData = JSON.parse(indicatorData.entityPropertyValue);
-                    var colors = colorsFromHistogram(indicatorData);
-                    var data = dataFromHistogram(indicatorData);
-                    var label = 'World state ' + worldStateId + ': ' + x.description;
-                    createChart(viewport.w, viewport.h, data, colors, label);
+                    callback(indicatorData);
                 });
         });
 }
 
-function getIndicatorFromWSR(indicator, worldStateId) {
+/** @private */
+function getIndicatorFromWSR(indicator, worldStateId, callback) {
     if (!window.ooiwsr) throw 'OOI-WSR not configured!';
     return window.ooiwsr.fetch('Entity?wsid=' + worldStateId)
         .done(function(x) {
@@ -223,12 +228,7 @@ function getIndicatorFromWSR(indicator, worldStateId) {
                 var indicatorData = x.entityInstancesProperties
                     .map(function(x) { return JSON.parse(x.entityPropertyValue); })
                     .firstWhere(function(x) { return x.id == indicator; });
-                if (indicatorData) {
-                    var colors = colorsFromHistogram(indicatorData);
-                    var data = dataFromHistogram(indicatorData);
-                    var label = 'World state ' + worldStateId + ': ' + indicatorData.description;
-                    createChart(viewport.w, viewport.h, data, colors, label);
-                }
+                if (indicatorData) callback(indicatorData);
             }
         });
 }
@@ -335,7 +335,12 @@ $(function() {
             var promises = $('input[type="checkbox"]:checked', $worldStates)
                 .map(function (i, x) {
                     var wsid = parseInt($(x).val());
-                    return getIndicatorFromWSR(indicator, wsid);
+                    return getIndicatorFromWSR(indicator, wsid, function(indicatorData) {
+                        var colors = colorsFromHistogram(indicatorData);
+                        var data = dataFromHistogram(indicatorData);
+                        var label = 'World state ' + worldStateId + ': ' + indicatorData.description;
+                        createChart(viewport.w, viewport.h, data, colors, label);
+                    });
                 });
 
             $.when(promises.get()).done(function() { $('#loadingIndicator').modal('hide'); });
