@@ -3,6 +3,11 @@ window.ooiwsr = null;
 
 var n = 0;
 
+Array.prototype.firstWhere = function (predicate) {
+    var selection = this.filter(predicate);
+    return selection.length ? selection[0] : null;
+};
+
 /**
  * Returns the viewport's current dimensions.
  * @param {jQuery?} selector the container to measure, defaults to the document's body
@@ -192,6 +197,42 @@ function getInitialChartSize() {
         viewport.h = viewport.w / 4 * 3;
     return viewport;
 }
+
+function getIndicatorFromWPS(indicator, worldStateId) {
+    if (!window.wps) throw 'WPS not configured!';
+    return window.wps.executeProcess(indicator, { WorldStateId: worldStateId })
+        .done(function(x) {
+            var indicatorDataUrl = x.indicator;
+            $.getJSON(indicatorDataUrl)
+                .done(function(indicatorData) {
+                    indicatorData = JSON.parse(indicatorData.entityPropertyValue);
+                    var colors = colorsFromHistogram(indicatorData);
+                    var data = dataFromHistogram(indicatorData);
+                    var label = 'World state ' + worldStateId + ': ' + x.description;
+                    createChart(viewport.w, viewport.h, data, colors, label);
+                });
+        });
+}
+
+function getIndicatorFromWSR(indicator, worldStateId) {
+    if (!window.ooiwsr) throw 'OOI-WSR not configured!';
+    return window.ooiwsr.fetch('Entity?wsid=' + worldStateId)
+        .done(function(x) {
+            x = x.firstWhere(function(x) { return x.entityTypeId == 12 });
+            if (x) {
+                var indicatorData = x.entityInstancesProperties
+                    .map(function(x) { return JSON.parse(x.entityPropertyValue); })
+                    .firstWhere(function(x) { return x.id == indicator; });
+                if (indicatorData) {
+                    var colors = colorsFromHistogram(indicatorData);
+                    var data = dataFromHistogram(indicatorData);
+                    var label = 'World state ' + worldStateId + ': ' + indicatorData.description;
+                    createChart(viewport.w, viewport.h, data, colors, label);
+                }
+            }
+        });
+}
+
 $(function() {
     // the following lines let the "settings" button float around in the top right corner of the widget,
     // even if the viewport changes due to scrolling
@@ -286,7 +327,7 @@ $(function() {
             if (!$('#chkKeepOld').is(':checked'))
                 $('#chart').empty();
 
-            var viewport = getInitialChartSize();
+            window.viewport = getInitialChartSize();
             var indicator = $('option:checked', $indicators).val();
 
             $('#loadingIndicator').modal('show');
@@ -294,18 +335,7 @@ $(function() {
             var promises = $('input[type="checkbox"]:checked', $worldStates)
                 .map(function (i, x) {
                     var wsid = parseInt($(x).val());
-                    return wps.executeProcess(indicator, { WorldStateId: wsid })
-                        .done(function(x) {
-                            var indicatorDataUrl = x.indicator;
-                            $.getJSON(indicatorDataUrl)
-                                .done(function(indicatorData) {
-                                    indicatorData = JSON.parse(indicatorData.entityPropertyValue);
-                                    var colors = colorsFromHistogram(indicatorData);
-                                    var data = dataFromHistogram(indicatorData);
-                                    var label = 'World state ' + wsid + ': ' + x.description;
-                                    createChart(viewport.w, viewport.h, data, colors, label);
-                                });
-                        });
+                    return getIndicatorFromWSR(indicator, wsid);
                 });
 
             $.when(promises.get()).done(function() { $('#loadingIndicator').modal('hide'); });
