@@ -1,6 +1,6 @@
 window.wps = null;
 window.ooiwsr = null;
-window.primarySrc = null;
+window.primarySrc = 'ooiwsr';
 
 var log = function(msg) {
     if (typeof MashupPlatform === 'undefined')
@@ -277,7 +277,7 @@ $(function() {
         var $worldStates = $('#worldStateList');
 
         log('Loading simulations from OOI-WSR');
-        var loadSimulationPromise = window.ooiwsr.listSimulations()// TODO: caching? (keep data locally and use that until request is complete?)
+        var loadSimulationPromise = sessionStorage.produce('known.simulations', function() { return window.ooiwsr.listSimulations(); })
             .done(function (simulations) {
                 $scenarios
                     .empty()
@@ -291,7 +291,7 @@ $(function() {
             });
 
         log('Loading available indicators from WPS');
-        var loadIndicatorsPromise = window.wps.getProcesses()// TODO: caching? (keep data locally and use that until request is complete?)
+        var loadIndicatorsPromise = sessionStorage.produce('known.indicators', function() { return window.wps.getProcesses(); })
             .done(function (processes) {
                 $indicators
                     .empty()
@@ -308,7 +308,7 @@ $(function() {
             var $scenario = $('option:selected', this);
             var simulationId = $scenario.val();
             log('Loading world states for simulation ' + simulationId);
-            window.ooiwsr.listWorldStates()// TODO: caching
+            sessionStorage.produce('known.worldStates', function() { return window.ooiwsr.listWorldStates(); })
                 .done(function(worldStates) {
                     $worldStates
                         .empty()
