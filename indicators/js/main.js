@@ -2,6 +2,12 @@ window.wps = null;
 window.ooiwsr = null;
 window.primarySrc = null;
 
+var log = function(msg) {
+    if (typeof MashupPlatform === 'undefined')
+        console.log(msg);
+    else
+        MashupPlatform.widget.log(msg);
+};
 var n = 0;
 
 /**
@@ -207,11 +213,11 @@ function getInitialChartSize() {
 
 /** @private */
 function getIndicatorFromWPS(indicator, worldStateId, callback) {
-    console.log('Fetching indicator ' + indicator + ' for World State #' + worldStateId + ' from WPS');
+    log('Fetching indicator ' + indicator + ' for World State #' + worldStateId + ' from WPS');
     return window.wps.executeProcess(indicator, { WorldStateId: worldStateId })
         .done(function(x) {
             var indicatorDataUrl = x.indicator;
-            console.log('WPS reports indicator ' + indicator + ' for World State #' + worldStateId + ' can be found at: ' + indicatorDataUrl);
+            log('WPS reports indicator ' + indicator + ' for World State #' + worldStateId + ' can be found at: ' + indicatorDataUrl);
             $.getJSON(indicatorDataUrl)
                 .done(function(indicatorData) {
                     indicatorData = JSON.parse(indicatorData.entityPropertyValue);
@@ -222,7 +228,7 @@ function getIndicatorFromWPS(indicator, worldStateId, callback) {
 
 /** @private */
 function getIndicatorFromWSR(indicator, worldStateId, callback) {
-    console.log('Fetching indicator ' + indicator + ' for World State #' + worldStateId + ' from OOI-WSR');
+    log('Fetching indicator ' + indicator + ' for World State #' + worldStateId + ' from OOI-WSR');
     return window.ooiwsr.fetch('Entity?wsid=' + worldStateId)
         .done(function(x) {
             x = x.firstWhere(function(x) { return x.entityTypeId == 12 });
@@ -270,7 +276,8 @@ $(function() {
         var $indicators = $('#inputIndicator');
         var $worldStates = $('#worldStateList');
 
-        var loadSimulationPromise = window.ooiwsr.listSimulations()
+        log('Loading simulations from OOI-WSR');
+        var loadSimulationPromise = window.ooiwsr.listSimulations()// TODO: caching? (keep data locally and use that until request is complete?)
             .done(function (simulations) {
                 $scenarios
                     .empty()
@@ -283,7 +290,8 @@ $(function() {
                     .change();
             });
 
-        var loadIndicatorsPromise = window.wps.getProcesses()
+        log('Loading available indicators from WPS');
+        var loadIndicatorsPromise = window.wps.getProcesses()// TODO: caching? (keep data locally and use that until request is complete?)
             .done(function (processes) {
                 $indicators
                     .empty()
@@ -299,7 +307,8 @@ $(function() {
         $scenarios.change(function() {
             var $scenario = $('option:selected', this);
             var simulationId = $scenario.val();
-            window.ooiwsr.listWorldStates()
+            log('Loading world states for simulation ' + simulationId);
+            window.ooiwsr.listWorldStates()// TODO: caching
                 .done(function(worldStates) {
                     $worldStates
                         .empty()
@@ -346,6 +355,9 @@ $(function() {
                         createChart(viewport.w, viewport.h, data, colors, label);
                     };
 
+                    // try to retrieve the indicator data from the preferred data source (WPS or OOI-WSR); if that
+                    // fails for some reason (ie. promise is rejected), try the other data source.
+                    // TODO: create an overarching jQuery Promise here and return that for more precise handling
                     return handler[0](indicator, wsid, callback)
                         .fail(function() { handler[1](indicator, wsid, callback); });
                 });
