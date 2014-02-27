@@ -139,7 +139,7 @@ function createWorldStateTree(containerName, simulation) {
 }
 
 /**
- * @param {Array} worldStates an array of (possibly unassociated) WorldStates.
+ * @param {Array} worldStates an array of (possibly unassociated) World States.
  * @param {Object} simulation the simulation for which to generate the tree.
  * @returns {{id: string, name: string, data: *, children: Array}}
  */

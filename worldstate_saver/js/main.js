@@ -5,7 +5,7 @@ var knownOOIs = [ ];
 var commandQueue = [ ];
 
 /**
- * A prototype ("default") instance of a worldstate that is used to fill in missing properties for generated ones.
+ * A prototype ("default") instance of a world state that is used to fill in missing properties for generated ones.
  * @const
  * @type {{simulationId: number, worldStateParentId: null, description: string, dateTime: string}}
  */

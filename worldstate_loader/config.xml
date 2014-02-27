@@ -10,8 +10,8 @@
 
   <wire:Operator rdf:about="http://wirecloud.com/test">
     <dcterms:title>worldstate_loader</dcterms:title>
-    <wire:displayName>WorldState loader</wire:displayName>
-    <dcterms:description>This operator loads world states from the OOI worldstate repository (OOI-WSR).</dcterms:description>
+    <wire:displayName>World State loader</wire:displayName>
+    <dcterms:description>This operator loads world states from the OOI world state repository (OOI-WSR).</dcterms:description>
     <dcterms:creator rdf:resource="http://creatoruri/"/>
     <usdl-core:versionInfo>0.6.0.0</usdl-core:versionInfo>
     <wire:hasImageUri rdf:resource="img/catalogue.png"/>

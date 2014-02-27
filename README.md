@@ -25,8 +25,8 @@ an **o**perator or a **w**idget.
 * (w) **./ooi_gis_map/** — a map widget using OpenLayers and OpenStreetMap to display a map with WFS data
 * (w) **./ooi_table/** — OOI table (with synchronized OOI selection mechanic).
 * (w) **./simulation_picker/** — displays and picks available simulations from the OOI-WSR.
-* (o) **./worldstate_loader/** — Operator that loads a worldstate from an OOI-WSR instance.
-* (w) **./worldstate_saver/** — Widget that saves a worldstate to an OOI-WSR instance.
+* (o) **./worldstate_loader/** — Operator that loads a world state from an OOI-WSR instance.
+* (w) **./worldstate_saver/** — Widget that saves a world state to an OOI-WSR instance.
 
 ### Development-only widgets and operators
 
