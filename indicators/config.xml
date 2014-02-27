@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>indicator_charts</Name>
     <DisplayName>Indicators</DisplayName>
-    <Version>0.6.1.1</Version>
+    <Version>0.6.1.2</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Displays bar charts</Description>
@@ -18,8 +18,12 @@
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="wps-uri" type="text" description="URL of the Indicators WPS" label="WPS URI"/>
+    <Preference name="wps-uri" type="text" description="URL of the Indicators WPS" label="WPS URI" default="http://localhost/pywps.cgi"/>
     <Preference name="ooiwsr-uri" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI" default="http://localhost/api"/>
+    <Preference name="primary-src" type="list" description="Where should indicator data be requested from" label="Primary source" default="ooiwsr">
+      <Option name="WPS first" value="wps"/>
+      <Option name="OOI-WSR first" value="ooiwsr"/>
+    </Preference>
   </Platform.Preferences>
 
   <Platform.Link>

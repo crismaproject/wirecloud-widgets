@@ -8,6 +8,7 @@ if (typeof MashupPlatform === 'undefined') {
     var applyPreferences = function () {
         window.wps = new WPS(MashupPlatform.http.buildProxyURL(MashupPlatform.prefs.get('wps-uri')));
         window.ooiwsr = new WorldStateRepository(MashupPlatform.prefs.get('ooiwsr-uri'));
+        window.primarySrc = MashupPlatform.prefs.get('primary-src');
     };
 
     MashupPlatform.prefs.registerCallback(applyPreferences);
