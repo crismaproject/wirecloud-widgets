@@ -88,7 +88,7 @@ function createChart(containerWidth, containerHeight, data, colors, label) {
         .attr('class', 'hidden-print btn btn-danger btn-xs')
         .append($('<span class="glyphicon glyphicon-remove"></span>'));
     closeBtn.click(function() {
-        $self = $('.' + svgClassId);
+        var $self = $('.' + svgClassId);
         $self.slideUp({complete: function() {
             $self.remove();
             if (!$('.graph').length) $('#overlay').modal('show');

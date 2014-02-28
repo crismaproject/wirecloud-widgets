@@ -82,7 +82,7 @@
         <dcterms:description>Enforces the specified worldstate. The 'simulation id' input endpoint will be ignored. Use 0, if you want to disable this behaviour.</dcterms:description>
         <rdfs:label>Worldstate</rdfs:label>
         <wire:type>text</wire:type>
-        <wire:default></wire:default>
+        <wire:default/>
       </wire:PlatformPreference>
     </wire:hasPlatformPreference>
   </wire:Operator>

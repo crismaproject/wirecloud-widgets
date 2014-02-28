@@ -7,23 +7,17 @@
 }
 
 #btn-load {
-    background-image: url('../img/load.png');
-    background-position: 6pt center;
-    background-repeat: no-repeat;
+    background: url('../img/load.png') no-repeat 6pt center;
     padding-left: 19pt;
 }
 
 #btn-refresh {
-    background-image: url('../img/refresh.png');
-    background-position: 6pt center;
-    background-repeat: no-repeat;
+    background: url('../img/refresh.png') no-repeat 6pt center;
     padding-left: 19pt;
 }
 
 .loadedIcon {
     display: inline-block;
     width: 17px; height: 17px;
-    background-image: url('../img/selectedIcon.png');
-    background-position: left bottom;
-    background-repeat: no-repeat;
+    background: url('../img/selectedIcon.png') no-repeat left bottom;
 }

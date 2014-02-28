@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-                xmlns:usdl-core="http://www.linked-usdl.org/ns/usdl-core#"
                 xmlns:foaf="http://xmlns.com/foaf/0.1/"
                 xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
                 xmlns:dcterms="http://purl.org/dc/terms/"
                 xmlns:wire="http://wirecloud.conwet.fi.upm.es/ns/widget#"
-                xmlns:vCard="http://www.w3.org/2006/vcard/ns#"
                 xmlns:gr="http://purl.org/goodrelations/v1#">
   <xsl:output method="html" version="1.0" encoding="UTF-8" indent="yes"/>
   <xsl:template match="rdf:RDF">
