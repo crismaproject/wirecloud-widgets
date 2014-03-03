@@ -1,5 +1,6 @@
 /**
  * This little file partially emulates Wirecloud's public API to some degree.
+ *
  * Things that work:
  * <ul>
  *     <li><code>MashupPlatform.http.buildProxyURL</code>: returns the specified URL without any change</li>
@@ -16,6 +17,11 @@
  * Any other public methods are defined but have no effect and no return value. If you intend to use this for
  * local development of widgets, you can check if <code>MashupPlatform.dummy</code> is defined and truthy; this
  * file sets it to <code>true</code>.
+ *
+ * Note that <em>undocumented</em> (ie. non-public) methods of Wirecloud's API are not mocked; for instance,
+ * `MashupPlatform.wiring.getReachableEndpoints` is not defined by this mockup (but exists in Wirecloud's "live"
+ * API and is, for instance, used by CRISMA's `debug_pusher` widget to determine if/what gadgets are connected to
+ * it.
  *
  * Whenever preferences are set, they are persisted in the HTML5 sessionStorage, if it is available.
  *
@@ -41,6 +47,10 @@
             }
         }
 
+        /**
+         * @private
+         * @param {Storage} storage
+         */
         function loadPreferencesFromStorage(storage) {
             var preferenceData = storage.getItem('preferences');
             if (preferenceData) {
@@ -49,6 +59,10 @@
             }
         }
 
+        /**
+        * @private
+        * @param {Storage} storage
+        */
         function savePreferencesToStorage(storage) {
             if (preferences !== { }) {
                 console.log('Saving preferences to storage.');
@@ -153,8 +167,8 @@
                             prefCallbacks[i]({key: value});
                     },
                 /**
-                 * Registers a callback for listening to preference changes.
-                 * @param {function} callback is the callback function that will be called when the preferences of the widget changes.
+                 * Registers a callback to listen for preference changes.
+                 * @param {function} callback is the callback function that will be called when the preferences of the widget change.
                  */
                 registerCallback:
                     function (callback) {
@@ -169,9 +183,9 @@
                  */
                 id: 'widget001',
                 /**
-                 * Writes a message into the wirecloud's log console.
+                 * Writes a message into Wirecloud's log console.
                  * @param {string} msg is the text of the message to log.
-                 * @param {*} level is an optional parameter with the level to uses for logging the message. (By default: info).
+                 * @param {*} level is an optional parameter indicating the message's level of severity.
                  */
                 log:
                     function (msg, level) {

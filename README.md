@@ -131,6 +131,10 @@ Note: if your widgets absolutely *require* some preferences to be set to work, y
     HTML's sessionStorage, you can read [this specification](http://www.w3.org/TR/webstorage/) and the current
     [implementation/support status](http://caniuse.com/#search=sessionstorage).
 
+Note that undocumented (ie. non-public) methods of Wirecloud's API are not mocked; for instance,
+`MashupPlatform.wiring.getReachableEndpoints(…)` is not defined by this mockup (but exists in Wirecloud's "live"
+API and is, for instance, used by the `debug_pusher` widget to determine if/what gadgets are connected to it.
+
 ## Contact
 
 Most widgets are currently maintained by Manuel Warum from the Austrian Institute of Technology (AIT). If you need
