@@ -39,6 +39,7 @@ $(function () {
         api.listEntities()
             .done(function (response) {
                 // BEGIN workaround: not all entities belong to the World State; ignoring all that don't have properties in the given worldstate
+                // FIXME: not working properly! too much is being filtered
                 var oois = response.filter(function(x) {
                     return x.hasOwnProperty('entityInstancesProperties') &&
                         x.entityInstancesProperties.length &&
