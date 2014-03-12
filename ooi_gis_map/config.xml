@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>ooi_gis_map</Name>
     <DisplayName>OOI GIS Map</DisplayName>
-    <Version>0.6.1.0</Version>
+    <Version>0.6.1.1</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
@@ -20,7 +20,9 @@
     <WikiURI>http://127.0.0.1/index.htm</WikiURI>
   </Catalog.ResourceDescription>
 
-  <Platform.StateProperties/>
+    <Platform.Preferences>
+        <Preference name="bbox" type="text" description="Bounding box" label="Bounding Box"/>
+    </Platform.Preferences>
 
   <Platform.Wiring>
     <InputEndpoint name="oois_in" type="text" label="OOIs" description="Objects of interest" friendcode="oois"/>

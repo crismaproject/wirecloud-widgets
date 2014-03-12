@@ -73,8 +73,20 @@ function OpenLayersFacade(container) {
         geometryLayer.addFeatures(vector);
     };
 
-    this.setBBox = function (left, top, right, bottom) {
-        // TODO
+    /**
+     * Restricts the map view to the specified bounding box. If no arguments are provided, the
+     * bounding box is reset.
+     * @param {float?} left
+     * @param {float?} bottom
+     * @param {float?} right
+     * @param {float?} top
+     */
+    this.setBBox = function (left, bottom, right, top) {
+        map.setOptions({
+            restrictedExtent: arguments.length >= 4 ?
+                new OpenLayers.Bounds(left, bottom, right, top).transform(EPSG_4326_PROJECTION, mapProjection()) :
+                null
+        });
     };
 
     /**

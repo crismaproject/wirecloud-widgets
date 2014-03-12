@@ -3,6 +3,9 @@
 var entitiesLookupTable = {};
 var selected = [];
 
+/** @const */
+var bboxExpression = /^(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+)$/;
+
 /*
  * Iff the Wirecloud environment is available, register endpoints.
  */
@@ -20,6 +23,21 @@ if (typeof MashupPlatform === 'undefined') {
 } else if (typeof map === 'undefined') {
     console.warn('"map" variable is not defined.');
 } else {
+    var applyPreferences = function () {
+        var bboxMatch = bboxExpression.exec(MashupPlatform.prefs.get('bbox'));
+        if (bboxMatch) {
+            map.setBBox(
+                parseFloat(bboxMatch[1]),
+                parseFloat(bboxMatch[2]),
+                parseFloat(bboxMatch[3]),
+                parseFloat(bboxMatch[4])
+            );
+        }
+    };
+
+    MashupPlatform.prefs.registerCallback(applyPreferences);
+    applyPreferences();
+
     MashupPlatform.wiring.registerCallback('oois_in', function (data) {
         entitiesLookupTable = { };
         var entities = JSON.parse(data);
@@ -38,7 +56,15 @@ if (typeof MashupPlatform === 'undefined') {
     });
 
     MashupPlatform.wiring.registerCallback('bbox', function (data) {
-        // TODO: set BBox from data
+        var bboxMatch = bboxExpression.exec(data);
+        if (bboxMatch) {
+            map.setBBox(
+                parseFloat(bboxMatch[1]),
+                parseFloat(bboxMatch[2]),
+                parseFloat(bboxMatch[3]),
+                parseFloat(bboxMatch[4])
+            );
+        }
     });
 
     $(function () {
