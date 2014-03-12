@@ -31,23 +31,14 @@ $(function () {
         if (!lastSelectedNode) return;
 
         if (typeof MashupPlatform !== 'undefined') {
-            MashupPlatform.wiring.pushEvent('worldstate_history', JSON.stringify(getHistoryOf(lastSelectedNode.worldStateId)));
+            // MashupPlatform.wiring.pushEvent('worldstate_history', JSON.stringify(getHistoryOf(lastSelectedNode.worldStateId)));
             MashupPlatform.wiring.pushEvent('worldstate', JSON.stringify(lastSelectedNode));
         } else
             console.log(lastSelectedNode);
 
-        api.listEntities()
-            .done(function (response) {
-                // BEGIN workaround: not all entities belong to the World State; ignoring all that don't have properties in the given worldstate
-                // FIXME: not working properly! too much is being filtered
-                var oois = response.filter(function(x) {
-                    return x.hasOwnProperty('entityInstancesProperties') &&
-                        x.entityInstancesProperties.length &&
-                        x.entityInstancesProperties.every(function (y) {
-                            return y.worldStateId == lastSelectedNode.worldStateId;
-                        });
-                });
-                // END workaround
+        //api.listEntities()
+        api.fetch('/Entity?wsid=' + lastSelectedNode.worldStateId)
+            .done(function (oois) {
                 if (typeof MashupPlatform !== 'undefined')
                     MashupPlatform.wiring.pushEvent('oois', JSON.stringify(oois));
                 else
