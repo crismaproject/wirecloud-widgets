@@ -33,6 +33,7 @@ var applyPreferences = function () {
  * @private
  */
 var pushNotification = function (data) { console.log(data); };
+var log = function (message) { console.log(message); };
 
 if (typeof MashupPlatform !== 'undefined') { // only apply wirings iff the MashupPlatform is available. Otherwise it's likely a local test.
     MashupPlatform.prefs.registerCallback(applyPreferences);
@@ -53,7 +54,11 @@ if (typeof MashupPlatform !== 'undefined') { // only apply wirings iff the Mashu
 
     pushNotification = function () {
         MashupPlatform.wiring.pushEvent('created_worldstate', JSON.stringify(this));
-    }
+    };
+
+    log = function (message) {
+        MashupPlatform.widget.log(message);
+    };
 }
 
 $(function () {
@@ -68,8 +73,15 @@ $(function () {
         sanityCheck();
         $('#statusContainer').show(150);
         saveWorldState().then(
-            function() { $('#notificationContainer').animText('Done!'); pushNotification(this); }, // on success
-            function() { $('#errorContainer').animText('Failed to update OOI-WSR!'); }, // on failure
+            function() {
+                $('#notificationContainer').animText('Done!');
+                pushNotification(this);
+                log('New world state has been saved successfully.');
+            }, // on success
+            function() {
+                $('#errorContainer').animText('Failed to update OOI-WSR!');
+                log('New world state could not be saved.');
+            }, // on failure
             function(status) { // on progress
                 var text = status.progress ? status.message + ' (' + status.progress + ')' : status.message;
                 $('#statusContainer').text(text);
@@ -294,13 +306,12 @@ function saveWorldState() {
                     deferredResult.reject();
                 else {
                     var progressUri = $('Data', response).text().trim();
-                    console.log('Getting processing status updates from: ' + progressUri);
+                    log('Getting processing status updates from: ' + progressUri);
                     var attempts = 0;
                     var timeoutId = setInterval(function () {
                         attempts++;
                         $.get(progressUri)
                             .then(function (response) {
-                                console.log(response);
                                 deferredResult.notifyWith(this, [response]);
                                 if (response.progress == '100%') {
                                     deferredResult.resolve({
