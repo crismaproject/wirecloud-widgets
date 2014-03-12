@@ -130,7 +130,7 @@
                  */
                 pushEvent:
                     function (outputName, data) {
-                        if (callbacks.contains(outputName))
+                        if (callbacks.hasOwnProperty(outputName))
                             callbacks[outputName](data);
                     },
                 /**
