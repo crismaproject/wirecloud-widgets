@@ -5,7 +5,7 @@ treeCfg = {
     colors: {
         path: '#E6677A',
         leaf: '#E9E9E9',
-        nonLeaf: '#F2919D',
+        intermediateNode: '#F2919D',
         edge: '#aaaaaa'
     },
     orientation: 'left',
@@ -57,8 +57,6 @@ function createWorldStateTree(containerName, simulation) {
                     panning: true
                 },
                 //set node and edge styles
-                //set overridable=true for styling individual
-                //nodes or edges
                 Node: {
                     height: 20,
                     width: treeCfg.sizes.nodeWidth,
@@ -93,7 +91,7 @@ function createWorldStateTree(containerName, simulation) {
                             node.eachSubnode(function () {
                                 count++;
                             });
-                            if (count) node.data.$color = treeCfg.colors.nonLeaf;
+                            if (count) node.data.$color = treeCfg.colors.intermediateNode;
                         }
                     }
                 },

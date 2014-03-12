@@ -28,29 +28,23 @@ $(function () {
     });
 
     $('#loadBtn').click(function () {
+        if (typeof MashupPlatform !== 'undefined') {
+            console.warn('MashupPlatform is not present!');
+            return;
+        }
         if (!lastSelectedNode) return;
 
-        if (typeof MashupPlatform !== 'undefined') {
-            // MashupPlatform.wiring.pushEvent('worldstate_history', JSON.stringify(getHistoryOf(lastSelectedNode.worldStateId)));
-            MashupPlatform.wiring.pushEvent('worldstate', JSON.stringify(lastSelectedNode));
-        } else
-            console.log(lastSelectedNode);
+        MashupPlatform.wiring.pushEvent('worldstate_history', JSON.stringify(getHistoryOf(lastSelectedNode.worldStateId)));
+        MashupPlatform.wiring.pushEvent('worldstate', JSON.stringify(lastSelectedNode));
 
-        //api.listEntities()
         api.fetch('/Entity?wsid=' + lastSelectedNode.worldStateId)
             .done(function (oois) {
-                if (typeof MashupPlatform !== 'undefined')
-                    MashupPlatform.wiring.pushEvent('oois', JSON.stringify(oois));
-                else
-                    console.log(oois);
+                MashupPlatform.wiring.pushEvent('oois', JSON.stringify(oois));
             });
 
         api.listEntityTypes()
             .done(function (response) {
-                if (typeof MashupPlatform !== 'undefined')
-                    MashupPlatform.wiring.pushEvent('ooi-types', JSON.stringify(response));
-                else
-                    console.log(response);
+                MashupPlatform.wiring.pushEvent('ooi-types', JSON.stringify(response));
             });
     });
 });
