@@ -185,7 +185,7 @@
                 /**
                  * Writes a message into Wirecloud's log console.
                  * @param {string} msg is the text of the message to log.
-                 * @param {*} level is an optional parameter indicating the message's level of severity.
+                 * @param {*?} level is an optional parameter indicating the message's level of severity.
                  */
                 log:
                     function (msg, level) {
