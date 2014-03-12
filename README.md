@@ -27,7 +27,6 @@ an **o**perator or a **w**idget.
       [OpenStreetMap](http://www.openstreetmap.org/) to display a map with WFS data
 * (w) **./ooi_table/** — OOI table (with synchronized OOI selection mechanic).
 * (w) **./simulation_picker/** — displays and picks available simulations from the OOI-WSR.
-* (o) **./worldstate_loader/** — Operator that loads a world state from an OOI-WSR instance (deprecated).
 * (w) **./worldstate_picker/** — Widget that allows the user to pick a world state from the OOI-WSR.
 * (w) **./worldstate_saver/** — Widget that saves a world state to an OOI-WSR instance.
 
