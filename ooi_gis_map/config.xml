@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>ooi_gis_map</Name>
     <DisplayName>OOI GIS Map</DisplayName>
-    <Version>0.6.0.1</Version>
+    <Version>0.6.1.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
@@ -25,6 +25,7 @@
   <Platform.Wiring>
     <InputEndpoint name="oois_in" type="text" label="OOIs" description="Objects of interest" friendcode="oois"/>
     <InputEndpoint name="oois_selected_in" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
+    <InputEndpoint name="bbox" type="text" label="Bounding Box" friendcode="bbox"/>
 
     <OutputEndpoint name="oois_selected_out" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
     <OutputEndpoint name="center_point" type="text" label="Center" description="Sends a signal whenever the shown center changes" friendcode="geo-lonlat"/>

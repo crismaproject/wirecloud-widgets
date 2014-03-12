@@ -37,6 +37,10 @@ if (typeof MashupPlatform === 'undefined') {
         selected = JSON.parse(data);
     });
 
+    MashupPlatform.wiring.registerCallback('bbox', function (data) {
+        // TODO: set BBox from data
+    });
+
     $(function () {
         $('#map')
             .bind('mapFocusChanged', function (event) {

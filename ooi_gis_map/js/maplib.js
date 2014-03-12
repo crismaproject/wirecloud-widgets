@@ -73,6 +73,10 @@ function OpenLayersFacade(container) {
         geometryLayer.addFeatures(vector);
     };
 
+    this.setBBox = function (left, top, right, bottom) {
+        // TODO
+    };
+
     /**
      * Creates a new OOI on the map, depicted as an icon.
      * @param {object} ooi the OOI to display.
