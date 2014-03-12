@@ -20,13 +20,15 @@ an **o**perator or a **w**idget.
 
 * (w) **./chart/** — a simple widget that uses [jQuery](http://jquery.com/) and [d3](http://d3js.org/) to render bar
       charts.
-* (w) **./merger/** — a simple operator that merges two JSON arrays into one (useful for combining data sources).
+* (w) **./indicators/** — this widget displays indicators from the OOI-WSR.
+* (o) **./merger/** — a simple operator that merges two JSON arrays into one (useful for combining data sources).
 * (w) **./ooi_command/** — widget to issue commands to OOIs.
 * (w) **./ooi_gis_map/** — a map widget using [OpenLayers](http://www.openlayers.org/) and
       [OpenStreetMap](http://www.openstreetmap.org/) to display a map with WFS data
 * (w) **./ooi_table/** — OOI table (with synchronized OOI selection mechanic).
 * (w) **./simulation_picker/** — displays and picks available simulations from the OOI-WSR.
-* (o) **./worldstate_loader/** — Operator that loads a world state from an OOI-WSR instance.
+* (o) **./worldstate_loader/** — Operator that loads a world state from an OOI-WSR instance (deprecated).
+* (w) **./worldstate_picker/** — Widget that allows the user to pick a world state from the OOI-WSR.
 * (w) **./worldstate_saver/** — Widget that saves a world state to an OOI-WSR instance.
 
 ### Development-only widgets and operators
@@ -34,6 +36,8 @@ an **o**perator or a **w**idget.
 The following gadgets are only used for development and debugging purposes and serve no practical use in a
 production environment.
 
+* (w) **./debug_hide_ui/** — a simple debugging widget that hides most of the UI elements not belonging to the
+      actual mashup application.
 * (w) **./debug_listener/** — a simple debugging widget that shows incoming events.
 * (w) **./debug_pusher/** — a simple debugging widget that pushes arbitrary data to endpoints.
 
