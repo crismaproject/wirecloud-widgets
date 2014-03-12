@@ -16,14 +16,14 @@ var emptyWorldState = {
     "dateTime": null
 };
 
-var apiUri = null;
+var api = null;
 var wpsUri = null;
 var applyPreferences = function () {
     function proxify(uri) {
         return MashupPlatform.http.buildProxyURL(uri);
     }
 
-    apiUri = proxify(MashupPlatform.prefs.get('api'));
+    api = new WorldStateRepository(MashupPlatform.prefs.get('api'));
     wpsUri = proxify(MashupPlatform.prefs.get('wps'));
 };
 
@@ -98,7 +98,7 @@ $(function () {
  * @private
  */
 function sanityCheck() {
-    if (!apiUri) throw 'No OOI-WSR REST API URI defined.';
+    if (!api) throw 'No OOI-WSR REST API URI defined.';
     if (!wpsUri) throw 'No WPS API URI defined.';
     if (!activeWorldState) throw 'No active WorldState.';
 }
@@ -215,8 +215,8 @@ function saveWorldState() {
         });
 
         console.log(worldStateObj);
-
-        return $.post(apiUri + '/WorldState', worldStateObj);
+        return api.insertWorldState(worldStateObj);
+        //return $.post(api + '/WorldState', worldStateObj);
     }
 
     /**
@@ -232,7 +232,7 @@ function saveWorldState() {
             .filter(isNewOOI)
             .map(function (x) {
                 var deferred = $.Deferred();
-                $.post(apiUri + '/Entity', {
+                api.insertEntity({
                     entityName: x.entityName || 'New OOI',
                     entityTypeId: x.entityTypeId || 14,
                     entityDescription: x.entityDescription || ''
@@ -265,7 +265,7 @@ function saveWorldState() {
                 });
             }).flatten();
 
-        return postPayload(apiUri + '/EntityProperties', updates);
+        return api.insertEntityProperties(updates);
     }
 
     /**
@@ -291,7 +291,7 @@ function saveWorldState() {
                 };
             }).flatten();
 
-        return postPayload(apiUri + '/EntityGeometries', updates);
+        return api.insertEntityGeometries(updates);
     }
 
     /**
