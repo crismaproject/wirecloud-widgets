@@ -141,7 +141,7 @@
                  */
                 registerCallback:
                     function (inputName, callback) {
-                        callbacks[outputName] = callback;
+                        callbacks[inputName] = callback;
                     }
             },
             /** Preferences */
