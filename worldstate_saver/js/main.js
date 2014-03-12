@@ -202,12 +202,19 @@ function saveWorldState() {
      * @nosideeffects
      * @returns {jQuery.Promise}
      */
-    function createWorldState() {
+    function createWorldState(commands) {
+        var stringifiedCommands = commands
+            .filter(function(x) { return x.command.hasOwnProperty('log'); })
+            .map(function(x) { return x.command.log; });
+
         var worldStateObj = $.extend({}, emptyWorldState, {
             simulationId: activeWorldState.simulationId,
             worldStateParentId: activeWorldState.worldStateId,
-            dateTime: activeWorldState.dateTime
+            dateTime: activeWorldState.dateTime,
+            description: stringifiedCommands.join('; ')
         });
+
+        console.log(worldStateObj);
 
         return $.post(apiUri + '/WorldState', worldStateObj);
     }
@@ -349,7 +356,7 @@ function saveWorldState() {
         } ];
     };
 
-    createWorldState()
+    createWorldState(commandQueue)
         .then(function (worldState) {
             result.notifyWith(this, notification('WorldState sent to OOI-WSR', worldState));
             $.whenAll(createNewOOIs(oois)).then(function () {
