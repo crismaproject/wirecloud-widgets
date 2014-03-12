@@ -3,9 +3,9 @@
 <Template xmlns="http://morfeo-project.org/2007/Template">
   <Catalog.ResourceDescription>
     <Vendor>AIT</Vendor>
-    <Name>hide_ui</Name>
-    <DisplayName>Hide UI</DisplayName>
-    <Version>1.0.0.2</Version>
+    <Name>debug_hide_ui</Name>
+    <DisplayName>Hide UI (Debug)</DisplayName>
+    <Version>1.0.1</Version>
     <Author>Manuel Warum</Author>
     <Mail>manuel.warum.fl@ait.ac.at</Mail>
     <Description>
