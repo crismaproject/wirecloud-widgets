@@ -171,16 +171,24 @@ function executeCommand(command, data) {
     var group = objectsOfInterest[command.entityTypeId];
     var affected = [ ];
 
+    var inject = function(root, key) {
+        if (root.hasOwnProperty(key))
+            root[key] = root[key].replace(/#\{((data|command)(\.[a-zA-Z0-9_]+|\[[0-9]+\])*)\}/g, function (x,y) {
+                // TODO: evaluate potential security concerns. eval is usually bad. but it gets the job done.
+                return eval(y);
+            });
+        return root;
+    };
+
     if (group)
         for (var i = 0; i < group.length; i++)
             affected.push(group[i].entityId);
 
     if (command.hasOwnProperty('setProperties'))
         for (var key in command.setProperties)
-            command.setProperties[key] = command.setProperties[key].replace(/#\{((data|command)(\.[a-zA-Z0-9_]+|\[[0-9]+\])*)\}/g, function (x,y) {
-                // TODO: evaluate potential security concerns. eval is usually bad. but it gets the job done.
-                return eval(y);
-            });
+            inject(command.setProperties, key);
+    if (command.hasOwnProperty('log'))
+        inject(command, 'log');
 
     var body = $('body');
 
