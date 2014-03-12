@@ -1,4 +1,4 @@
-var api = new WorldStateRepository();
+var api = new WorldStateRepository('http://crisma-ooi.ait.ac.at/api');
 
 var onSimulationSelected = function () {
     var simulation = $('select#simulationId option:selected');

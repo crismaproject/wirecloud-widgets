@@ -19,9 +19,16 @@ $(function () {
             // ALWAYS load the most recent simulation data from the server on load
             api.getSimulation(simulationId)
                 .done(function (simulation) {
-                    $('#simulationLoadedNotification').fadeIn();
-                    $('button#btn-load,button#btn-refresh,select#simulationId').attr('disabled', 'disabled');
+                    var $simulationLoadedNotification = $('#simulationLoadedNotification');
+                    $simulationLoadedNotification.slideDown();
+                    var $formInput = $('button#btn-load,button#btn-refresh,select#simulationId');
+                    $formInput.attr('disabled', 'disabled');
                     MashupPlatform.wiring.pushEvent('simulation', JSON.stringify(simulation));
+
+                    window.setTimeout(function() {
+                        $formInput.removeAttr('disabled');
+                        $simulationLoadedNotification.slideUp();
+                    }, 5000)
                 }, 'json');
         });
     }

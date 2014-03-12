@@ -6,16 +6,6 @@
     border: 1px solid #cccccc;
 }
 
-#btn-load {
-    background: url('../img/load.png') no-repeat 6pt center;
-    padding-left: 19pt;
-}
-
-#btn-refresh {
-    background: url('../img/refresh.png') no-repeat 6pt center;
-    padding-left: 19pt;
-}
-
 .loadedIcon {
     display: inline-block;
     width: 17px; height: 17px;
