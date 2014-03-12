@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Template xmlns="http://morfeo-project.org/2007/Template">
+  <Catalog.ResourceDescription>
+    <Vendor>AIT</Vendor>
+    <Name>hide_ui</Name>
+    <DisplayName>Hide UI</DisplayName>
+    <Version>1.0.0.2</Version>
+    <Author>Manuel Warum</Author>
+    <Mail>manuel.warum.fl@ait.ac.at</Mail>
+    <Description>
+      This widget is a test that hides most of Wirecloud's UI
+        (may require the user to resize the window).
+    </Description>
+    <ImageURI>img/catalogue.png</ImageURI>
+    <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
+    <WikiURI>https://mashup.lab.fi-ware.org/</WikiURI>
+  </Catalog.ResourceDescription>
+
+  <Platform.Link>
+    <XHTML href="index.html"/>
+  </Platform.Link>
+
+  <Platform.Rendering width="6" height="12"/>
+</Template>
