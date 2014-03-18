@@ -125,22 +125,6 @@ function saveWorldState() {
     function isEstablishedOOI (ooi) { return !isNewOOI(ooi); }
 
     /**
-     * Performs a POST Ajax request to the specified server, sending the specified data as a JSON-encoded string.
-     * @param {string} uri the remote server's address
-     * @param {*} data the object to encode as JSON and send to the server.
-     * @returns {jQuery.Promise}
-     */
-    function postPayload(uri, data) {
-        return $.ajax({
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            processData: false,
-            type: 'POST',
-            url: uri
-        });
-    }
-
-    /**
      * @param {object[]} oois all OOIs belonging to the current world state.
      * @param {object[]} commands an array of commands that are to be applied to the specified OOIs.
      * @returns {object[]} an array of OOIs with their data updated.
@@ -185,7 +169,6 @@ function saveWorldState() {
     function setProperty(oois, ooiIndex, key, value) {
         // Note: passing in the array and the according index is required here since arrays are the only type that
         // are passed by reference (and we want that)
-
         var index = -1;
         for (var i = 0; index == -1 && i < oois[ooiIndex].entityInstancesProperties.length; i++)
             if (oois[ooiIndex].entityInstancesProperties[i].entityTypePropertyId == key)
@@ -214,9 +197,7 @@ function saveWorldState() {
             description: stringifiedCommands.join('; ')
         });
 
-        console.log(worldStateObj);
         return api.insertWorldState(worldStateObj);
-        //return $.post(api + '/WorldState', worldStateObj);
     }
 
     /**
@@ -372,7 +353,7 @@ function saveWorldState() {
                             function () { result.reject(); },                // something failed
                             function (status) {
                                 result.notifyWith(this, notification('Processing on remote service', worldState, status.progress));
-                            } // progess report
+                            } // progress report
                         )
                     }, result.reject);
             }, result.reject);
@@ -388,6 +369,7 @@ jQuery.extend({
     whenAll: function(array) {
         var deferred = new $.Deferred();
         var remaining = array.length;
+        if (!remaining) deferred.resolve();
         for (var i = 0; i < array.length; i++)
             array[i].then(function () {
                 if (--remaining == 0) deferred.resolve();
