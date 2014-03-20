@@ -17,14 +17,10 @@ var emptyWorldState = {
 };
 
 var api = null;
-var wpsUri = null;
+var wps = null;
 var applyPreferences = function () {
-    function proxify(uri) {
-        return MashupPlatform.http.buildProxyURL(uri);
-    }
-
     api = new WorldStateRepository(MashupPlatform.prefs.get('api'));
-    wpsUri = proxify(MashupPlatform.prefs.get('wps'));
+    wps = new WPS(MashupPlatform.http.buildProxyURL(MashupPlatform.prefs.get('wps')));
 };
 
 /**
@@ -99,7 +95,7 @@ $(function () {
  */
 function sanityCheck() {
     if (!api) throw 'No OOI-WSR REST API URI defined.';
-    if (!wpsUri) throw 'No WPS API URI defined.';
+    if (!wps) throw 'No WPS API URI defined.';
     if (!activeWorldState) throw 'No active WorldState.';
 }
 
@@ -284,11 +280,10 @@ function saveWorldState() {
      * @returns {jQuery.Promise}
      */
     function notifyWPS(worldStateId, options) {
-        options = $.extend({ duration: 10, stepDuration: 10 }, options);
-        var uri = wpsUri + '?service=WPS&request=Execute&version=1.0.0&identifier=AgentsResourceModel&datainputs=WorldStateId=' + worldStateId + ';duration=' + options.duration + ';stepduration=' + options.stepDuration;
+        options = $.extend({ duration: 10, stepDuration: 10, WorldStateId: worldStateId }, options);
         var deferredResult = $.Deferred();
 
-        $.get(uri)
+        wps.executeProcess('AgentsResourceModel', options)
             .then(function(response) {
                 if (!$('ProcessSucceeded', response).length)
                     deferredResult.reject();
