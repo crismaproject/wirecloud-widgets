@@ -79,7 +79,10 @@ angular.module('worldStatePickerApp', [])
                 progressCurrent++;
                 var options = { };
                 if (progressCurrent >= progressMax) {
-                    options.done = function() { $progressBarContainer.modal('hide'); };
+                    options.done = function() {
+                        $progressBarContainer.modal('hide');
+                        $('#loadedContainer').modal('show');
+                    };
                     $progressBar.addClass('progress-bar-success');
                 }
                 var progress = { width: (progressCurrent / progressMax) * 100 + '%' };
@@ -100,7 +103,6 @@ angular.module('worldStatePickerApp', [])
 
         $scope.refreshSimulations();
         $scope.refreshWorldStates();
-        $('#loadedContainer').modal('show');
     }]);
 
 function send(wiringName, data) {
