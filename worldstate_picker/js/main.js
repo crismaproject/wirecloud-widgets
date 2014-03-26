@@ -71,33 +71,7 @@ angular.module('worldStatePickerApp', [])
             return $scope.showAll || !worldState.hasOwnProperty('childworldstates') || !worldState.childworldstates.length;
         };
         $scope.timeDifference = function(a, b) {
-            if (a && b) {
-                a = new Date(a);
-                b = new Date(b);
-                var diff;
-                if (a > b)
-                    diff = Math.round((a - b)/1000);
-                else if (a < b)
-                    diff = Math.round((b - a)/1000);
-                else
-                    diff = 0;
-
-                var components = [ ];
-                var subTimeUnit = function(unit, inSeconds) {
-                    if (diff >= inSeconds) {
-                        var units = Math.floor(diff / inSeconds);
-                        diff -= units * inSeconds;
-                        components.push(unit.pluralize(units));
-                    }
-                };
-                subTimeUnit('week', 604800);
-                subTimeUnit('day', 86400);
-                subTimeUnit('hour', 3600);
-                subTimeUnit('minute', 60);
-                subTimeUnit('second', 1);
-
-                return components.join(', ');
-            } else return null;
+            return a && b ? new Date(a).difference(new Date(b)) : null;
         };
 
         $scope.refreshWorldStates = function() {
@@ -136,13 +110,18 @@ angular.module('worldStatePickerApp', [])
 
             $progressBarContainer.modal('show');
             $progressBar.removeClass('progress-bar-success');
-            send('simulation', $scope.selectedSimulation); advanceProgress();
-            send('worldState', $scope.selectedWorldState); advanceProgress();
             $scope.loaded = $scope.selectedWorldState;
+
+            send('simulation', $scope.selectedSimulation); advanceProgress();
+            ooiwsr.getWorldState($scope.selectedWorldState.id)
+                .done(function(worldState) { send('worldState', worldState); advanceProgress(); })
+                .fail(function() { loaded = null; });
             ooiwsr.listEntityTypes()
-                .done(function(ooiTypes) { send('ooi-types', ooiTypes); advanceProgress(); });
-            ooiwsr.fetch('/Entity?wsid=' + $scope.selectedWorldState.worldStateId)
-                .done(function(oois) { send('oois', oois); advanceProgress(); });
+                .done(function(ooiTypes) { send('ooi-types', ooiTypes); advanceProgress(); })
+                .fail(function() { loaded = null; });
+            ooiwsr.fetch('/Entity?wsid=' + $scope.selectedWorldState.id)
+                .done(function(oois) { send('oois', oois); advanceProgress(); })
+                .fail(function() { loaded = null; });
         };
 
         $scope.refreshSimulations();
@@ -166,4 +145,25 @@ function send(wiringName, data) {
 String.prototype.pluralize = function(n) {
     if (n == 1) return 'one ' + this;
     else return n + ' ' + this + 's';
+};
+
+Date.prototype.difference = function(other) {
+    if (!(other instanceof Date)) other = new Date(other);
+    var diff = Math.round(Math.abs(this - other)/1000);
+
+    var components = [ ];
+    var subTimeUnit = function(unit, inSeconds) {
+        if (diff >= inSeconds) {
+            var units = Math.floor(diff / inSeconds);
+            diff -= units * inSeconds;
+            components.push(unit.pluralize(units));
+        }
+    };
+    subTimeUnit('week', 604800);
+    subTimeUnit('day', 86400);
+    subTimeUnit('hour', 3600);
+    subTimeUnit('minute', 60);
+    subTimeUnit('second', 1);
+
+    return components.join(', ');
 };

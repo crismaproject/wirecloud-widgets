@@ -25,7 +25,6 @@
   <Platform.Wiring>
     <OutputEndpoint name="simulation" type="text" label="Simulation" description="The simulation selected by the user" friendcode="simulation"/>
     <OutputEndpoint name="worldstate" type="text" label="WorldState" description="The world state selected by the user" friendcode="worldstate"/>
-    <OutputEndpoint name="worldstate_history" type="text" label="WorldState History" description="The world state selected by the user as well as any previous world states" friendcode="worldstates"/>
     <OutputEndpoint name="oois" type="text" label="OOIs" description="Objects of Interest for the given Worldstate" friendcode="oois"/>
     <OutputEndpoint name="ooi-types" type="text" label="OOI types" description="Objects of Interest type definitions" friendcode="ooi-types"/>
   </Platform.Wiring>
