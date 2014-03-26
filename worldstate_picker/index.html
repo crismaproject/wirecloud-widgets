@@ -17,10 +17,10 @@
             <label for="simulationInput" class="control-label col-sm-2">Simulation</label>
             <div class="col-sm-10">
                 <div class="input-group">
-                    <select id="simulationInput" class="form-control" ng-disabled="busy"
+                    <select id="simulationInput" class="form-control"
                             ng-options="prettySimulation(s) for s in simulationList" ng-model="selectedSimulation"></select>
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="refreshSimulations()"ng-disabled="busy">
+                        <button type="button" class="btn btn-default" ng-click="refreshSimulations()">
                             <i class="glyphicon glyphicon-refresh"></i>
                         </button>
                     </span>
@@ -32,10 +32,10 @@
             <label for="worldStateInput" class="control-label col-sm-2">Simulation runs</label>
             <div class="col-sm-10">
                 <div class="input-group">
-                    <select id="worldStateInput" class="form-control" ng-disabled="busy"
-                            ng-options="prettyWorldState(w) for w in worldStateList | filter:{simulationId:selectedSimulation.simulationId,isLeaf:true}" ng-model="selectedWorldState"></select>
+                    <select id="worldStateInput" class="form-control"
+                            ng-options="prettyWorldState(w) for w in worldStateList | filter:showWorldState | orderBy:created" ng-model="selectedWorldState"></select>
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="refreshWorldStates()" ng-disabled="busy">
+                        <button type="button" class="btn btn-default" ng-click="refreshWorldStates()">
                             <i class="glyphicon glyphicon-refresh"></i>
                         </button>
                     </span>
@@ -43,13 +43,61 @@
             </div>
         </div>
 
-        <div class="col-sm-offset-2" ng-show="selectedWorldState">
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary" ng-disabled="busy" ng-hide="loaded" ng-click="loadWorldState()">
-                    <i class="glyphicon glyphicon-play-circle"></i>
-                    Load
-                </button>
+        <div class="form-group hide-sr" ng-show="selectedSimulation">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="showAll"> Show <em>all</em> simulation runs?
+                    </label>
+                </div>
+                <span class="help-block" ng-show="showAll">
+                    <em>Any and all</em> simulation runs will be shown. This can be <em>a lot</em>.
+                    Enjoy.
+                </span>
             </div>
+        </div>
+
+        <div class="row-fluid col-sm-offset-2 col-sm-10" ng-if="selectedWorldState && selectedSimulation">
+            <div class="panel panel-default">
+                <div class="panel-heading">{{selectedSimulation.description}}</div>
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="row-fluid">
+                            <div class="col-sm-4">Simulation started on:</div>
+                            <div class="col-sm-8"><time datetime="{{selectedSimulation.startDateTime}}">{{selectedSimulation.startDateTime | date:'EEEE, d. MMMM yyyy, H:mm' }}</time></div>
+                        </div>
+
+                        <div class="row-fluid">
+                            <div class="col-sm-4">Current time:</div>
+                            <div class="col-sm-8"><time>{{selectedWorldState.created | date:'EEEE, d. MMMM yyyy, H:mm' }}</time></div>
+                        </div>
+
+                        <div class="row-fluid">
+                            <div class="col-sm-offset-4 col-sm-8"><small class="text-muted">{{ timeDifference(selectedSimulation.startDateTime, selectedWorldState.created) }} after the simulation started</small></div>
+                        </div>
+
+                        <div class="row-fluid">
+                            <div class="col-sm-4">Current world state:</div>
+                            <div class="col-sm-8">{{selectedWorldState.description}}</div>
+                        </div>
+
+                        <div class="row-fluid">
+                            <div class="col-sm-offset-4 col-sm-4">
+                                <div class="btn-group" style="margin-top: 2em">
+                                    <button type="button" class="btn btn-primary" ng-hide="loaded" ng-click="loadWorldState()">
+                                        <i class="glyphicon glyphicon-play-circle"></i>
+                                        Load
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-offset-2" ng-show="selectedWorldState">
+
         </div>
     </form>
 </div>

@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>worldstate_picker</Name>
     <DisplayName>World State Picker</DisplayName>
-    <Version>0.6.1.0</Version>
+    <Version>0.6.1.1</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>
@@ -19,7 +19,7 @@
   </Catalog.ResourceDescription>
 
   <Platform.Preferences>
-    <Preference name="api" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI" default="http://localhost/api"/>
+    <Preference name="ooiwsr" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI" default="http://localhost/api"/>
   </Platform.Preferences>
 
   <Platform.Wiring>
