@@ -1,10 +1,10 @@
 angular.module('worldStatePickerApp', [])
-    .constant('icmmConfig', {
-        limitPerPage : 100
-    })
-
     .factory('ooiwsr', ['wirecloud', function(wirecloud) {
-        return new WorldStateRepository(wirecloud.getPreference('ooiwsr', 'REDACTED'));
+        var apiUri = wirecloud.getPreference('ooiwsr');
+        if (!api) {
+            console.warn('No OOI-WSR API URI configured!');
+            return null;
+        } else return new WorldStateRepository(apiUri);
     }])
     .factory('wirecloud', function() {
         return {
@@ -13,11 +13,11 @@ angular.module('worldStatePickerApp', [])
             }
         }
     })
-    .factory('icmm', ['$http', 'wirecloud', 'icmmConfig', function($http, wirecloud, icmmConfig) {
+    .factory('icmm', ['$http', 'wirecloud', function($http, wirecloud) {
         return {
             listWorldStates: function() {
                 var $promise = new $.Deferred();
-                var icmmUri = wirecloud.getPreference('icmm', 'REDACTED');
+                var icmmUri = wirecloud.getPreference('icmm');
                 if (icmmUri) {
                     var $root = this;
                     var getAndAdd = function(path, promise, array, iteration) {
@@ -37,8 +37,11 @@ angular.module('worldStatePickerApp', [])
                             });
                     };
 
-                    var path = '/CRISMA.worldstates?level=1&fields=id,name,description,created,childworldstates,actualaccessinfo&limit=' + icmmConfig.limitPerPage;
+                    var path = '/CRISMA.worldstates?level=1&fields=id,name,description,created,childworldstates,actualaccessinfo&limit=100';
                     getAndAdd(path, $promise, [], 0);
+                } else {
+                    console.warn('ICMM URI not configured!')
+                    $promise.rejectWith($root);
                 }
 
                 return $promise.promise();
