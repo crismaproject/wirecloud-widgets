@@ -16,11 +16,13 @@ var emptyWorldState = {
     "dateTime": null
 };
 
-var api = null;
+var ooiwsr = null;
 var wps = null;
+var icmm = null;
 var applyPreferences = function () {
-    api = new WorldStateRepository(MashupPlatform.prefs.get('api'));
+    ooiwsr = new WorldStateRepository(MashupPlatform.prefs.get('ooiwsr'));
     wps = new WPS(MashupPlatform.http.buildProxyURL(MashupPlatform.prefs.get('wps')));
+    icmm = MashupPlatform.http.buildProxyURL(MashupPlatform.prefs.get('icmm'));
 };
 
 /**
@@ -94,7 +96,7 @@ $(function () {
  * @private
  */
 function sanityCheck() {
-    if (!api) throw 'No OOI-WSR REST API URI defined.';
+    if (!ooiwsr) throw 'No OOI-WSR REST API URI defined.';
     if (!wps) throw 'No WPS API URI defined.';
     if (!activeWorldState) throw 'No active WorldState.';
 }
@@ -193,7 +195,7 @@ function saveWorldState() {
             description: stringifiedCommands.join('; ')
         });
 
-        return api.insertWorldState(worldStateObj);
+        return ooiwsr.insertWorldState(worldStateObj);
     }
 
     /**
@@ -209,7 +211,7 @@ function saveWorldState() {
             .filter(isNewOOI)
             .map(function (x) {
                 var deferred = $.Deferred();
-                api.insertEntity({
+                ooiwsr.insertEntity({
                     entityName: x.entityName || 'New OOI',
                     entityTypeId: x.entityTypeId || 14,
                     entityDescription: x.entityDescription || ''
@@ -242,7 +244,7 @@ function saveWorldState() {
                 });
             }).flatten();
 
-        return api.insertEntityProperties(updates);
+        return ooiwsr.insertEntityProperties(updates);
     }
 
     /**
@@ -268,7 +270,7 @@ function saveWorldState() {
                 };
             }).flatten();
 
-        return api.insertEntityGeometries(updates);
+        return ooiwsr.insertEntityGeometries(updates);
     }
 
     /**
@@ -313,6 +315,10 @@ function saveWorldState() {
         return deferredResult.promise();
     }
 
+    function notifyICMM(worldState) {
+        console.warn('notifyICMM has not been implemented yet.');
+    }
+
     var result = $.Deferred();
     var oois = knownOOIs;
 
@@ -342,6 +348,7 @@ function saveWorldState() {
                         createOOIGeometryUpdates(worldState.worldStateId, oois.filter(isEstablishedOOI)))
                     .then(function () {
                         result.notifyWith(this, notification('Entity properties updated', worldState));
+                        notifyICMM(worldState);
                         notifyWPS(worldState.worldStateId)
                             .then(
                             function () { result.resolveWith(worldState); }, // all ok

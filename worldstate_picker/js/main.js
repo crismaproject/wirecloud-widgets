@@ -40,7 +40,7 @@ angular.module('worldStatePickerApp', [])
                     var path = '/CRISMA.worldstates?level=1&fields=id,name,description,created,childworldstates,actualaccessinfo&limit=100';
                     getAndAdd(path, $promise, [], 0);
                 } else {
-                    console.warn('ICMM URI not configured!')
+                    console.warn('ICMM URI not configured!');
                     $promise.rejectWith($root);
                 }
 
