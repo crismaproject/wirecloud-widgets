@@ -216,10 +216,10 @@ function saveWorldState() {
                     entityTypeId: x.entityTypeId || 14,
                     entityDescription: x.entityDescription || ''
                 }).then(function (entity) {
-                        x._replacedByEntityId = entity.entityId;
-                        oois.push(entity);
-                        deferred.resolve();
-                    }, deferred.reject);
+                    x._replacedByEntityId = entity.entityId;
+                    oois.push(entity);
+                    deferred.resolve();
+                }, deferred.reject);
                 return deferred.promise();
             });
     }
@@ -315,10 +315,6 @@ function saveWorldState() {
         return deferredResult.promise();
     }
 
-    function notifyICMM(worldState) {
-        console.warn('notifyICMM has not been implemented yet.');
-    }
-
     var result = $.Deferred();
     var oois = knownOOIs;
 
@@ -345,7 +341,7 @@ function saveWorldState() {
                 result.notifyWith(this, notification('New entities created on OOI-WSR', worldState));
                 oois = applyCommands(oois, commandQueue);
                 $.when( createOOIPropertiesUpdates(worldState.worldStateId, oois.filter(isEstablishedOOI)),
-                        createOOIGeometryUpdates(worldState.worldStateId, oois.filter(isEstablishedOOI)))
+                    createOOIGeometryUpdates(worldState.worldStateId, oois.filter(isEstablishedOOI)))
                     .then(function () {
                         result.notifyWith(this, notification('Entity properties updated', worldState));
                         notifyICMM(worldState);
@@ -393,3 +389,77 @@ Array.prototype.flatten = function() {
         result = result.concat(this[i]);
     return result;
 };
+
+
+
+
+
+function notifyICMM(worldState) {
+    function getNextIdentifier(entity) {
+        var $promise = new $.Deferred();
+        $.get(icmm + '/CRISMA.' + entity + '?omitNullValues=true&limit=1000')
+            .done(function(data) {
+                var id = 1;
+                var ids = data['$collection']
+                    .forEach(function(x) {
+                        var ref = x['$ref'];
+                        var match = /\/(\d+)$/.exec(ref);
+                        if (match) {
+                            var thisId = parseInt(match[1]);
+                            if (thisId >= id) id = thisId + 1;
+                        }
+                    });
+                $promise.resolve(id);
+            })
+            .fail(function() { $promise.reject(); });
+        return $promise.promise();
+    }
+
+    $.when(getNextIdentifier('worldstates'), getNextIdentifier('transitions'), getNextIdentifier('dataitems'))
+        .done(function(wsId, tId, diId) {
+            var now = new Date().getMilliseconds();
+            var icmmWorldState = {
+                '$self': '/CRISMA/worldstates/' + wsId,
+                'id': wsId,
+                'name': 'WS ' + worldState.worldStateId,
+                'description': worldState.description,
+                'categories': [ { '$ref': '/CRISMA.categories/2' } ],
+                'creator': 'Wirecloud',
+                'created': now,
+                'origintransition': {
+                    '$self': '/CRISMA.transitions/' + tId,
+                    'id': tId,
+                    'name': 'Initial transition',
+                    'description': 'This worldstate was created manually by an expert user.',
+                    'simulationcontrolparameter': null,
+                    'transitionstatuscontenttype': 'application/json',
+                    'transitionstatus': '{"status":"finished"}',
+                    'performedsimulation': null,
+                    'performedmanipulation': {
+                        '$ref': '/CRISMA.manipulationdescriptors/1'
+                    }
+                },
+                'worldstatedata': [
+                    {
+                        '$self': '/CRISMA.dataitems/' + diId,
+                        'id': diId,
+                        'name': 'Test baseline',
+                        'description': 'Baseline to test ICMM integration',
+                        'lastmodified': now,
+                        'categories': [
+                            {
+                                '$ref': '/CRISMA.categories/5'
+                            }
+                        ],
+                        'datadescriptor': {
+                            '$ref': '/CRISMA.datadescriptors/1'
+                        },
+                        'actualaccessinfocontenttype': 'application/json',
+                        'actualaccessinfo': '{"id":"' + worldState.worldStateId + '", "resource":"worldstate"}'
+                    }
+                ]
+            };
+
+            console.log(icmmWorldState);
+        });
+}
