@@ -417,12 +417,12 @@ function notifyICMM(worldState) {
 
     $.when(getNextIdentifier('worldstates'), getNextIdentifier('transitions'), getNextIdentifier('dataitems'))
         .done(function(wsId, tId, diId) {
-            var now = new Date().getMilliseconds();
+            var now = Date.now();
             var icmmWorldState = {
                 '$self': '/CRISMA/worldstates/' + wsId,
                 'id': wsId,
                 'name': 'WS ' + worldState.worldStateId,
-                'description': worldState.description,
+                'description': worldState.description || 'Wirecloud-generated world state',
                 'categories': [ { '$ref': '/CRISMA.categories/2' } ],
                 'creator': 'Wirecloud',
                 'created': now,
@@ -430,7 +430,7 @@ function notifyICMM(worldState) {
                     '$self': '/CRISMA.transitions/' + tId,
                     'id': tId,
                     'name': 'Initial transition',
-                    'description': 'This worldstate was created manually by an expert user.',
+                    'description': 'This worldstate was created manually by a decision-maker.',
                     'simulationcontrolparameter': null,
                     'transitionstatuscontenttype': 'application/json',
                     'transitionstatus': '{"status":"finished"}',
@@ -457,9 +457,21 @@ function notifyICMM(worldState) {
                         'actualaccessinfocontenttype': 'application/json',
                         'actualaccessinfo': '{"id":"' + worldState.worldStateId + '", "resource":"worldstate"}'
                     }
-                ]
+                ],
+                'parentworldstate': {
+                    '$ref': '/CRISMA.worldstates/' + worldState.worldStateParentId// FIXME: ICMM has different IDs for World States than OOIWSR
+                },
+                'childworldstates': []
             };
 
-            console.log(icmmWorldState);
+            console.log(JSON.stringify(icmmWorldState));
+
+            $.get(icmm + '/CRISMA.worldstates/' + worldState.worldStateParentId)// FIXME: ICMM has different IDs for World States than OOIWSR
+                .done(function(icmmParentWorldState) {
+                    icmmParentWorldState.childworldstates.push({
+                        '$ref': '/CRISMA/worldstates/' + wsId
+                    });
+                    console.log(JSON.stringify(icmmParentWorldState));
+                });
         });
 }
