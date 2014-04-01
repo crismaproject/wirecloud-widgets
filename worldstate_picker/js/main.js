@@ -116,13 +116,16 @@ angular.module('worldStatePickerApp', [])
             $scope.loaded = $scope.selectedWorldState;
 
             send('simulation', $scope.selectedSimulation); advanceProgress();
-            ooiwsr.getWorldState($scope.selectedWorldState.id)
-                .done(function(worldState) { send('worldState', worldState); advanceProgress(); })
+            ooiwsr.getWorldState($scope.selectedWorldState.id)// FIXME: ICMM has different IDs for World States than OOIWSR
+                .done(function(worldState) {
+                    send('worldState', worldState);
+                    advanceProgress();
+                })
                 .fail(function() { loaded = null; });
             ooiwsr.listEntityTypes()
                 .done(function(ooiTypes) { send('ooi-types', ooiTypes); advanceProgress(); })
                 .fail(function() { loaded = null; });
-            ooiwsr.fetch('/Entity?wsid=' + $scope.selectedWorldState.id)
+            ooiwsr.fetch('/Entity?wsid=' + $scope.selectedWorldState.id)// FIXME: ICMM has different IDs for World States than OOIWSR
                 .done(function(oois) { send('oois', oois); advanceProgress(); })
                 .fail(function() { loaded = null; });
         };
