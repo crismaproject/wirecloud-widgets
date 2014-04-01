@@ -1,7 +1,7 @@
 angular.module('worldStatePickerApp', [])
     .factory('ooiwsr', ['wirecloud', function(wirecloud) {
         var apiUri = wirecloud.getPreference('ooiwsr');
-        if (!api) {
+        if (!apiUri) {
             console.warn('No OOI-WSR API URI configured!');
             return null;
         } else return new WorldStateRepository(apiUri);
