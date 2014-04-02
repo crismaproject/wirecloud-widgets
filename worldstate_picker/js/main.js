@@ -5,8 +5,7 @@ angular.module('worldStatePickerApp', [])
             console.warn('No OOI-WSR API URI configured!');
             return null;
         } else return new WorldStateRepository(apiUri);
-    }])
-    .factory('wirecloud', function() {
+    }]).factory('wirecloud', function() {
         return {
             getPreference: function(name, fallback) {
                 return typeof MashupPlatform !== 'undefined' ? MashupPlatform.prefs.get(name) : fallback;
@@ -37,7 +36,7 @@ angular.module('worldStatePickerApp', [])
                             });
                     };
 
-                    var path = '/CRISMA.worldstates?level=1&fields=id,name,description,created,childworldstates,actualaccessinfo&limit=100';
+                    var path = '/CRISMA.worldstates?level=2&fields=id,name,description,created,childworldstates,worldstatedata,actualaccessinfo&limit=100';
                     getAndAdd(path, $promise, [], 0);
                 } else {
                     console.warn('ICMM URI not configured!');
@@ -80,6 +79,9 @@ angular.module('worldStatePickerApp', [])
         $scope.refreshWorldStates = function() {
             icmm.listWorldStates()
                 .done(function(ws){
+                    for(var i = 0; i < ws.length; i++)
+                        if(ws[i].description.charAt(0) == '<')
+                            ws[i].description = $(ws[i].description).text();
                     $scope.worldStateList = ws;
                 });
         };
@@ -116,8 +118,13 @@ angular.module('worldStatePickerApp', [])
             $scope.loaded = $scope.selectedWorldState;
 
             send('simulation', $scope.selectedSimulation); advanceProgress();
-            ooiwsr.getWorldState($scope.selectedWorldState.id)// FIXME: ICMM has different IDs for World States than OOIWSR
+
+            var icmmWorldStateId = $scope.selectedWorldState.id;
+            var ooiwsrWorldStateAccess = JSON.parse($scope.selectedWorldState.worldstatedata[0].actualaccessinfo.replace(/'/g, '"'));
+            var ooiwsrWorldStateId = ooiwsrWorldStateAccess.id;
+            ooiwsr.getWorldState(ooiwsrWorldStateId)
                 .done(function(worldState) {
+                    worldState['$icmmWorldStateId'] = icmmWorldStateId;
                     send('worldState', worldState);
                     advanceProgress();
                 })
@@ -125,7 +132,7 @@ angular.module('worldStatePickerApp', [])
             ooiwsr.listEntityTypes()
                 .done(function(ooiTypes) { send('ooi-types', ooiTypes); advanceProgress(); })
                 .fail(function() { loaded = null; });
-            ooiwsr.fetch('/Entity?wsid=' + $scope.selectedWorldState.id)// FIXME: ICMM has different IDs for World States than OOIWSR
+            ooiwsr.fetch('/Entity?wsid=' + ooiwsrWorldStateId)
                 .done(function(oois) { send('oois', oois); advanceProgress(); })
                 .fail(function() { loaded = null; });
         };
