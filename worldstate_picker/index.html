@@ -83,7 +83,11 @@
 
                         <div class="row-fluid">
                             <div class="col-sm-offset-4 col-sm-4">
-                                <div class="btn-group" style="margin-top: 2em">
+                                <div style="margin-top: 2em">
+                                    <button type="button" class="btn btn-warning" ng-show="loaded" ng-click="reset()">
+                                        <i class="glyphicon glyphicon-chevron-left"></i>
+                                        Back
+                                    </button>
                                     <button type="button" class="btn btn-primary" ng-hide="loaded" ng-click="loadWorldState()">
                                         <i class="glyphicon glyphicon-play-circle"></i>
                                         Load

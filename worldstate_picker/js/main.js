@@ -76,6 +76,14 @@ angular.module('worldStatePickerApp', [])
             return a && b ? new Date(a).difference(new Date(b)) : null;
         };
 
+        $scope.reset = function() {
+            $scope.loaded = null;
+            //$scope.selectedWorldState = null;
+            //$scope.selectedSimulation = null;
+            $scope.refreshSimulations();
+            $scope.refreshWorldStates();
+        };
+
         $scope.refreshWorldStates = function() {
             icmm.listWorldStates()
                 .done(function(ws){
