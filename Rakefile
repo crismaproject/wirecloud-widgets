@@ -46,27 +46,31 @@ task :doc do
   Dir.glob('**').each do |subdirectory|
     config_file = File.join(subdirectory, 'config.xml')
     if File.exists? config_file
-      config = Nokogiri::XML(File.read(config_file))
-      if config.root.namespace.href == 'http://morfeo-project.org/2007/Template'
-        stylesheet = Nokogiri::XSLT(File.read(XSLT_XML_FILE))
-        human_readable = stylesheet.transform config
-        human_readable_file = File.join(subdirectory, DOC_FILE)
-        File.write(human_readable_file, human_readable)
+      begin
+        config = Nokogiri::XML(File.read(config_file))
+        if config.root.namespace.href == 'http://morfeo-project.org/2007/Template'
+          stylesheet = Nokogiri::XSLT(File.read(XSLT_XML_FILE))
+          human_readable = stylesheet.transform config
+          human_readable_file = File.join(subdirectory, DOC_FILE)
+          File.write(human_readable_file, human_readable)
 
-        puts "Writing documentation for #{subdirectory} (XML) in #{human_readable_file}"
+          puts "Writing documentation for #{subdirectory} (XML) in #{human_readable_file}"
 
-        all_human_readable_files[subdirectory] = human_readable_file
-      elsif config.root.namespace.href == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-        stylesheet = Nokogiri::XSLT(File.read(XSLT_RDF_FILE))
-        human_readable = stylesheet.transform config
-        human_readable_file = File.join(subdirectory, DOC_FILE)
-        File.write(human_readable_file, human_readable)
+          all_human_readable_files[subdirectory] = human_readable_file
+        elsif config.root.namespace.href == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+          stylesheet = Nokogiri::XSLT(File.read(XSLT_RDF_FILE))
+          human_readable = stylesheet.transform config
+          human_readable_file = File.join(subdirectory, DOC_FILE)
+          File.write(human_readable_file, human_readable)
 
-        puts "Writing documentation for #{subdirectory} (RDF) in #{human_readable_file}"
+          puts "Writing documentation for #{subdirectory} (RDF) in #{human_readable_file}"
 
-        all_human_readable_files[subdirectory] = human_readable_file
-      else
-        puts "Warning: I don't know how to handle the XML namespace #{config.root.namespace.href} yet! I'll skip #{config_file} for now."
+          all_human_readable_files[subdirectory] = human_readable_file
+        else
+          puts "Warning: I don't know how to handle the XML namespace #{config.root.namespace.href} yet! I'll skip #{config_file} for now."
+        end
+      rescue => e
+        puts "Could not process #{config_file}; skipping. Reason: #{e.message}"
       end
     end
   end
