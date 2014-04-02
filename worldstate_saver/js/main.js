@@ -459,14 +459,14 @@ function notifyICMM(worldState) {
                     }
                 ],
                 'parentworldstate': {
-                    '$ref': '/CRISMA.worldstates/' + worldState.worldStateParentId// FIXME: ICMM has different IDs for World States than OOIWSR
+                    '$ref': '/CRISMA.worldstates/' + worldState['$icmmWorldStateId']
                 },
                 'childworldstates': []
             };
 
             console.log(JSON.stringify(icmmWorldState));
 
-            $.get(icmm + '/CRISMA.worldstates/' + worldState.worldStateParentId)// FIXME: ICMM has different IDs for World States than OOIWSR
+            $.get(icmm + '/CRISMA.worldstates/' + worldState['$icmmWorldStateId'])
                 .done(function(icmmParentWorldState) {
                     icmmParentWorldState.childworldstates.push({
                         '$ref': '/CRISMA/worldstates/' + wsId
