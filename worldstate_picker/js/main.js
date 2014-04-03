@@ -1,28 +1,28 @@
 angular.module('worldStatePickerApp', [])
-    .factory('ooiwsr', ['wirecloud', function(wirecloud) {
+    .factory('ooiwsr', ['wirecloud', function (wirecloud) {
         var apiUri = wirecloud.getPreference('ooiwsr');
         if (!apiUri) {
             console.warn('No OOI-WSR API URI configured!');
             return null;
         } else return new WorldStateRepository(apiUri);
-    }]).factory('wirecloud', function() {
+    }]).factory('wirecloud', function () {
         return {
-            getPreference: function(name, fallback) {
+            getPreference: function (name, fallback) {
                 return typeof MashupPlatform !== 'undefined' ? MashupPlatform.prefs.get(name) : fallback;
             }
         }
     })
-    .factory('icmm', ['$http', 'wirecloud', function($http, wirecloud) {
+    .factory('icmm', ['$http', 'wirecloud', function ($http, wirecloud) {
         return {
-            listWorldStates: function() {
+            listWorldStates: function () {
                 var $promise = new $.Deferred();
                 var icmmUri = wirecloud.getPreference('icmm');
                 if (icmmUri) {
                     var $root = this;
-                    var getAndAdd = function(path, promise, array, iteration) {
+                    var getAndAdd = function (path, promise, array, iteration) {
                         $http
                             .get(icmmUri + path)
-                            .success(function(pageData){
+                            .success(function (pageData) {
                                 promise.notifyWith($root, [iteration, pageData]);
                                 array = array.concat(pageData.$collection);
 
@@ -31,7 +31,7 @@ angular.module('worldStatePickerApp', [])
                                 else
                                     promise.resolveWith($root, [array]);
                             })
-                            .error(function(data, status) {
+                            .error(function (data, status) {
                                 promise.rejectWith($root, [iteration, status]);
                             });
                     };
@@ -47,7 +47,7 @@ angular.module('worldStatePickerApp', [])
             }
         }
     }])
-    .controller('WorldStatePickerApp', ['$scope', 'icmm', 'ooiwsr', function($scope, icmm, ooiwsr) {
+    .controller('WorldStatePickerApp', ['$scope', 'icmm', 'ooiwsr', function ($scope, icmm, ooiwsr) {
         $scope.loaded = null;
         $scope.showAll = false;
 
@@ -57,10 +57,10 @@ angular.module('worldStatePickerApp', [])
         $scope.worldStateList = [];
         $scope.selectedWorldState = null;
 
-        $scope.prettySimulation = function(simulation) {
+        $scope.prettySimulation = function (simulation) {
             return simulation.description + ' (' + simulation.simulationId + ')';
         };
-        $scope.prettyWorldState = function(worldState) {
+        $scope.prettyWorldState = function (worldState) {
             var meta = [];
             if (worldState.created) meta.push(new Date(worldState.created).toLocaleString());
             if (worldState.description) meta.push(worldState.description);
@@ -69,48 +69,47 @@ angular.module('worldStatePickerApp', [])
                 worldState.name + ' (' + meta.join('; ') + ')' :
                 worldState.name;
         };
-        $scope.showWorldState = function(worldState) {
+        $scope.showWorldState = function (worldState) {
             return $scope.showAll || !worldState.hasOwnProperty('childworldstates') || !worldState.childworldstates.length;
         };
-        $scope.timeDifference = function(a, b) {
+        $scope.timeDifference = function (a, b) {
             return a && b ? new Date(a).difference(new Date(b)) : null;
         };
 
-        $scope.reset = function() {
+        $scope.reset = function () {
             $scope.loaded = null;
-            //$scope.selectedWorldState = null;
-            //$scope.selectedSimulation = null;
             $scope.refreshSimulations();
             $scope.refreshWorldStates();
+            // TODO: angular forgets previous selections for selectedWorldState and selectedSimulation after the model changes
         };
 
-        $scope.refreshWorldStates = function() {
+        $scope.refreshWorldStates = function () {
             icmm.listWorldStates()
-                .done(function(ws){
-                    for(var i = 0; i < ws.length; i++)
-                        if(ws[i].description.charAt(0) == '<')
+                .done(function (ws) {
+                    for (var i = 0; i < ws.length; i++)
+                        if (ws[i].description.charAt(0) == '<') // FIXME: evil HTML recognition hack
                             ws[i].description = $(ws[i].description).text();
                     $scope.worldStateList = ws;
                 });
         };
 
-        $scope.refreshSimulations = function() {
+        $scope.refreshSimulations = function () {
             ooiwsr.listSimulations()
-                .done(function(sims){
+                .done(function (sims) {
                     $scope.simulationList = sims;
                 });
         };
 
-        $scope.loadWorldState = function() {
+        $scope.loadWorldState = function () {
             var progressCurrent = 0, progressMax = 4;
             var $progressBar = $('#progressBar');
             var $progressBarContainer = $('#progressBarContainer');
 
-            var advanceProgress = function() {
+            var advanceProgress = function () {
                 progressCurrent++;
                 var options = { };
                 if (progressCurrent >= progressMax) {
-                    options.done = function() {
+                    options.done = function () {
                         $progressBarContainer.modal('hide');
                         $('#loadedContainer').modal('show');
                     };
@@ -125,24 +124,37 @@ angular.module('worldStatePickerApp', [])
             $progressBar.removeClass('progress-bar-success');
             $scope.loaded = $scope.selectedWorldState;
 
-            send('simulation', $scope.selectedSimulation); advanceProgress();
+            send('simulation', $scope.selectedSimulation);
+            advanceProgress();
 
             var icmmWorldStateId = $scope.selectedWorldState.id;
             var ooiwsrWorldStateAccess = JSON.parse($scope.selectedWorldState.worldstatedata[0].actualaccessinfo.replace(/'/g, '"'));
             var ooiwsrWorldStateId = ooiwsrWorldStateAccess.id;
             ooiwsr.getWorldState(ooiwsrWorldStateId)
-                .done(function(worldState) {
+                .done(function (worldState) {
                     worldState['$icmmWorldStateId'] = icmmWorldStateId;
                     send('worldState', worldState);
                     advanceProgress();
                 })
-                .fail(function() { loaded = null; });
+                .fail(function () {
+                    loaded = null;
+                });
             ooiwsr.listEntityTypes()
-                .done(function(ooiTypes) { send('ooi-types', ooiTypes); advanceProgress(); })
-                .fail(function() { loaded = null; });
+                .done(function (ooiTypes) {
+                    send('ooi-types', ooiTypes);
+                    advanceProgress();
+                })
+                .fail(function () {
+                    loaded = null;
+                });
             ooiwsr.fetch('/Entity?wsid=' + ooiwsrWorldStateId)
-                .done(function(oois) { send('oois', oois); advanceProgress(); })
-                .fail(function() { loaded = null; });
+                .done(function (oois) {
+                    send('oois', oois);
+                    advanceProgress();
+                })
+                .fail(function () {
+                    loaded = null;
+                });
         };
 
         $scope.refreshSimulations();
@@ -163,17 +175,17 @@ function send(wiringName, data) {
     }
 }
 
-String.prototype.pluralize = function(n) {
+String.prototype.pluralize = function (n) {
     if (n == 1) return 'one ' + this;
     else return n + ' ' + this + 's';
 };
 
-Date.prototype.difference = function(other) {
+Date.prototype.difference = function (other) {
     if (!(other instanceof Date)) other = new Date(other);
-    var diff = Math.round(Math.abs(this - other)/1000);
+    var diff = Math.round(Math.abs(this - other) / 1000);
 
     var components = [ ];
-    var subTimeUnit = function(unit, inSeconds) {
+    var subTimeUnit = function (unit, inSeconds) {
         if (diff >= inSeconds) {
             var units = Math.floor(diff / inSeconds);
             diff -= units * inSeconds;
