@@ -315,6 +315,96 @@ function saveWorldState() {
         return deferredResult.promise();
     }
 
+    function notifyICMM(worldState) {
+        function getNextIdentifier(entity) {
+            var $promise = new $.Deferred();
+            $.get(icmm + '/CRISMA.' + entity + '?omitNullValues=true&limit=1000')
+                .done(function(data) {
+                    var id = 1;
+                    var ids = data['$collection']
+                        .forEach(function(x) {
+                            var ref = x['$ref'];
+                            var match = /\/(\d+)$/.exec(ref);
+                            if (match) {
+                                var thisId = parseInt(match[1]);
+                                if (thisId >= id) id = thisId + 1;
+                            }
+                        });
+                    $promise.resolve(id);
+                    // TODO?
+                })
+                .fail(function() { $promise.reject(); });
+            return $promise.promise();
+        }
+
+        if (!worldState.hasOwnProperty('$icmmWorldStateId'))
+            throw 'Superordinate world state instance doesn\'t have an ICMM identifier attached to it.';
+
+        $.when(getNextIdentifier('worldstates'), getNextIdentifier('transitions'), getNextIdentifier('dataitems'))
+            .done(function(wsId, tId, diId) {
+                var now = Date.now();
+                var icmmWorldState = {
+                    '$self': '/CRISMA/worldstates/' + wsId,
+                    'id': wsId,
+                    'name': 'WS ' + worldState.worldStateId,
+                    'description': worldState.description || 'Wirecloud-generated world state',
+                    'categories': [ { '$ref': '/CRISMA.categories/2' } ],
+                    'creator': 'Wirecloud',
+                    'created': now,
+                    'origintransition': {
+                        '$self': '/CRISMA.transitions/' + tId,
+                        'id': tId,
+                        'name': 'Initial transition',
+                        'description': 'This worldstate was created manually by a decision-maker.',
+                        'simulationcontrolparameter': null,
+                        'transitionstatuscontenttype': 'application/json',
+                        'transitionstatus': '{"status":"finished"}',
+                        'performedsimulation': null,
+                        'performedmanipulation': {
+                            '$ref': '/CRISMA.manipulationdescriptors/1'
+                        }
+                    },
+                    'worldstatedata': [
+                        {
+                            '$self': '/CRISMA.dataitems/' + diId,
+                            'id': diId,
+                            'name': 'Test baseline',
+                            'description': 'Baseline to test ICMM integration',
+                            'lastmodified': now,
+                            'categories': [
+                                {
+                                    '$ref': '/CRISMA.categories/5'
+                                }
+                            ],
+                            'datadescriptor': {
+                                '$ref': '/CRISMA.datadescriptors/1'
+                            },
+                            'actualaccessinfocontenttype': 'application/json',
+                            'actualaccessinfo': '{"id":"' + worldState.worldStateId + '", "resource":"worldstate"}'
+                        }
+                    ],
+                    'parentworldstate': {
+                        '$ref': '/CRISMA.worldstates/' + worldState['$icmmWorldStateId']
+                    },
+                    'childworldstates': []
+                };
+
+                console.log(JSON.stringify(icmmWorldState));
+                // TODO: actually insert data into the ICMM
+
+                $.get(icmm + '/CRISMA.worldstates/' + worldState['$icmmWorldStateId'])
+                    .done(function(icmmParentWorldState) {
+                        icmmParentWorldState.childworldstates.push({
+                            '$ref': '/CRISMA/worldstates/' + wsId
+                        });
+                        console.log(JSON.stringify(icmmParentWorldState));
+                        // TODO: actually insert data into the ICMM
+                    });
+            });
+
+        // TODO: consider injecting ICMM instance identifier for worldstate
+    }
+
     var result = $.Deferred();
     var oois = knownOOIs;
 
@@ -389,89 +479,3 @@ Array.prototype.flatten = function() {
         result = result.concat(this[i]);
     return result;
 };
-
-
-
-
-
-function notifyICMM(worldState) {
-    function getNextIdentifier(entity) {
-        var $promise = new $.Deferred();
-        $.get(icmm + '/CRISMA.' + entity + '?omitNullValues=true&limit=1000')
-            .done(function(data) {
-                var id = 1;
-                var ids = data['$collection']
-                    .forEach(function(x) {
-                        var ref = x['$ref'];
-                        var match = /\/(\d+)$/.exec(ref);
-                        if (match) {
-                            var thisId = parseInt(match[1]);
-                            if (thisId >= id) id = thisId + 1;
-                        }
-                    });
-                $promise.resolve(id);
-            })
-            .fail(function() { $promise.reject(); });
-        return $promise.promise();
-    }
-
-    $.when(getNextIdentifier('worldstates'), getNextIdentifier('transitions'), getNextIdentifier('dataitems'))
-        .done(function(wsId, tId, diId) {
-            var now = Date.now();
-            var icmmWorldState = {
-                '$self': '/CRISMA/worldstates/' + wsId,
-                'id': wsId,
-                'name': 'WS ' + worldState.worldStateId,
-                'description': worldState.description || 'Wirecloud-generated world state',
-                'categories': [ { '$ref': '/CRISMA.categories/2' } ],
-                'creator': 'Wirecloud',
-                'created': now,
-                'origintransition': {
-                    '$self': '/CRISMA.transitions/' + tId,
-                    'id': tId,
-                    'name': 'Initial transition',
-                    'description': 'This worldstate was created manually by a decision-maker.',
-                    'simulationcontrolparameter': null,
-                    'transitionstatuscontenttype': 'application/json',
-                    'transitionstatus': '{"status":"finished"}',
-                    'performedsimulation': null,
-                    'performedmanipulation': {
-                        '$ref': '/CRISMA.manipulationdescriptors/1'
-                    }
-                },
-                'worldstatedata': [
-                    {
-                        '$self': '/CRISMA.dataitems/' + diId,
-                        'id': diId,
-                        'name': 'Test baseline',
-                        'description': 'Baseline to test ICMM integration',
-                        'lastmodified': now,
-                        'categories': [
-                            {
-                                '$ref': '/CRISMA.categories/5'
-                            }
-                        ],
-                        'datadescriptor': {
-                            '$ref': '/CRISMA.datadescriptors/1'
-                        },
-                        'actualaccessinfocontenttype': 'application/json',
-                        'actualaccessinfo': '{"id":"' + worldState.worldStateId + '", "resource":"worldstate"}'
-                    }
-                ],
-                'parentworldstate': {
-                    '$ref': '/CRISMA.worldstates/' + worldState['$icmmWorldStateId']
-                },
-                'childworldstates': []
-            };
-
-            console.log(JSON.stringify(icmmWorldState));
-
-            $.get(icmm + '/CRISMA.worldstates/' + worldState['$icmmWorldStateId'])
-                .done(function(icmmParentWorldState) {
-                    icmmParentWorldState.childworldstates.push({
-                        '$ref': '/CRISMA/worldstates/' + wsId
-                    });
-                    console.log(JSON.stringify(icmmParentWorldState));
-                });
-        });
-}

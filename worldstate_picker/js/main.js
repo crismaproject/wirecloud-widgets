@@ -9,6 +9,31 @@ angular.module('worldStatePickerApp', [])
         return {
             getPreference: function (name, fallback) {
                 return typeof MashupPlatform !== 'undefined' ? MashupPlatform.prefs.get(name) : fallback;
+            },
+
+            on: function(event, callback) {
+                if (typeof MashupPlatform !== 'undefined')
+                    MashupPlatform.wiring.registerCallback(event, callback);
+                else if (!this.hasOwnProperty('$warned' + event)) {
+                    this['$warned' + event] = true;
+                    var dummyFunctionName = 'wcTriggerEv_' + event;
+                    console.warn('Wirecloud not detected. Use injected method window.' + dummyFunctionName + ' (event_data) to trigger it manually.');
+                    window[dummyFunctionName] = callback;
+                }
+            },
+
+            send: function(wiringName, data) {
+                if (typeof MashupPlatform !== 'undefined') {
+                    if (typeof data !== 'string')
+                        data = JSON.stringify(data);
+                    MashupPlatform.wiring.pushEvent(wiringName, data);
+                } else {
+                    if (!this.hasOwnProperty('$warned')) {
+                        this['$warned'] = true;
+                        console.warn('Wirecloud is not available. Data sent to OutputEndpoints will be sent to the console instead.');
+                    }
+                    console.log([wiringName, data]);
+                }
             }
         }
     })
@@ -47,7 +72,7 @@ angular.module('worldStatePickerApp', [])
             }
         }
     }])
-    .controller('WorldStatePickerApp', ['$scope', 'icmm', 'ooiwsr', function ($scope, icmm, ooiwsr) {
+    .controller('WorldStatePickerApp', ['$scope', 'icmm', 'ooiwsr', 'wirecloud', function ($scope, icmm, ooiwsr, wirecloud) {
         $scope.loaded = null;
         $scope.showAll = false;
 
@@ -124,7 +149,7 @@ angular.module('worldStatePickerApp', [])
             $progressBar.removeClass('progress-bar-success');
             $scope.loaded = $scope.selectedWorldState;
 
-            send('simulation', $scope.selectedSimulation);
+            wirecloud.send('simulation', $scope.selectedSimulation);
             advanceProgress();
 
             var icmmWorldStateId = $scope.selectedWorldState.id;
@@ -133,7 +158,7 @@ angular.module('worldStatePickerApp', [])
             ooiwsr.getWorldState(ooiwsrWorldStateId)
                 .done(function (worldState) {
                     worldState['$icmmWorldStateId'] = icmmWorldStateId;
-                    send('worldState', worldState);
+                    wirecloud.send('worldState', worldState);
                     advanceProgress();
                 })
                 .fail(function () {
@@ -141,7 +166,7 @@ angular.module('worldStatePickerApp', [])
                 });
             ooiwsr.listEntityTypes()
                 .done(function (ooiTypes) {
-                    send('ooi-types', ooiTypes);
+                    wirecloud.send('ooi_types', ooiTypes);
                     advanceProgress();
                 })
                 .fail(function () {
@@ -149,7 +174,7 @@ angular.module('worldStatePickerApp', [])
                 });
             ooiwsr.fetch('/Entity?wsid=' + ooiwsrWorldStateId)
                 .done(function (oois) {
-                    send('oois', oois);
+                    wirecloud.send('oois', oois);
                     advanceProgress();
                 })
                 .fail(function () {
@@ -159,21 +184,11 @@ angular.module('worldStatePickerApp', [])
 
         $scope.refreshSimulations();
         $scope.refreshWorldStates();
-    }]);
 
-function send(wiringName, data) {
-    if (typeof MashupPlatform !== 'undefined') {
-        if (typeof data !== 'string')
-            data = JSON.stringify(data);
-        MashupPlatform.wiring.pushEvent(wiringName, data);
-    } else {
-        if (!this.hasOwnProperty('$warned')) {
-            this['$warned'] = true;
-            console.warn('Wirecloud is not available. Data sent to OutputEndpoints will be sent to the console instead.');
-        }
-        console.log([wiringName, data]);
-    }
-}
+        wirecloud.on('load_worldstate', function(newWorldState) {
+            console.log(newWorldState); // TODO
+        });
+    }]);
 
 String.prototype.pluralize = function (n) {
     if (n == 1) return 'one ' + this;

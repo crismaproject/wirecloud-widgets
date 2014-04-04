@@ -1,38 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Template xmlns="http://morfeo-project.org/2007/Template">
-  <Catalog.ResourceDescription>
-    <Vendor>AIT</Vendor>
-    <Name>worldstate_picker</Name>
-    <DisplayName>World State Picker</DisplayName>
-    <Version>0.6.1.3</Version>
-    <Author>Manuel Warum</Author>
-    <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
-    <Description>
-      Lets the user pick and load a world state from the OOI-WSR (Objects of Interest World State Repository).
-      This widget also loads all associated data, such as all OOIs associated with the selected world state and what
-      types of OOIs are known to the system.
-    </Description>
-    <ImageURI>img/catalogue.png</ImageURI>
-    <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
-    <WikiURI>http://127.0.0.1/index.htm</WikiURI>
-  </Catalog.ResourceDescription>
+    <Catalog.ResourceDescription>
+        <Vendor>AIT</Vendor>
+        <Name>worldstate_picker</Name>
+        <DisplayName>World State Picker</DisplayName>
+        <Version>0.6.1.3</Version>
+        <Author>Manuel Warum</Author>
+        <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
+        <Description>
+            Lets the user pick and load a world state from the OOI-WSR (Objects of Interest World State Repository).
+            This widget also loads all associated data, such as all OOIs associated with the selected world state and what
+            types of OOIs are known to the system.
+        </Description>
+        <ImageURI>img/catalogue.png</ImageURI>
+        <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
+        <WikiURI>http://127.0.0.1/index.htm</WikiURI>
+    </Catalog.ResourceDescription>
 
-  <Platform.Preferences>
-    <Preference name="ooiwsr" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI"/>
-    <Preference name="icmm" type="text" description="URI to the ICMM API" label="ICMM API URI"/>
-  </Platform.Preferences>
+    <Platform.Preferences>
+        <Preference name="ooiwsr" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI"/>
+        <Preference name="icmm" type="text" description="URI to the ICMM API" label="ICMM API URI"/>
+    </Platform.Preferences>
 
-  <Platform.Wiring>
-    <OutputEndpoint name="simulation" type="text" label="Simulation" description="The simulation selected by the user" friendcode="simulation"/>
-    <OutputEndpoint name="worldstate" type="text" label="WorldState" description="The world state selected by the user" friendcode="worldstate"/>
-    <OutputEndpoint name="oois" type="text" label="OOIs" description="Objects of Interest for the given Worldstate" friendcode="oois"/>
-    <OutputEndpoint name="ooi-types" type="text" label="OOI types" description="Objects of Interest type definitions" friendcode="ooi-types"/>
-  </Platform.Wiring>
+    <Platform.Wiring>
+        <InputEndpoint name="load_worldstate" type="text" label="WorldState" description="The world state you want to load automatically" friendcode="worldstate"/>
+        <OutputEndpoint name="simulation" type="text" label="Simulation" description="The simulation selected by the user" friendcode="simulation"/>
+        <OutputEndpoint name="worldstate" type="text" label="WorldState" description="The world state selected by the user" friendcode="worldstate"/>
+        <OutputEndpoint name="oois" type="text" label="OOIs" description="Objects of Interest for the given Worldstate" friendcode="oois"/>
+        <OutputEndpoint name="ooi_types" type="text" label="OOI types" description="Objects of Interest type definitions" friendcode="ooi-types"/>
+    </Platform.Wiring>
 
-  <Platform.Link>
-    <XHTML href="index.html"/>
-  </Platform.Link>
+    <Platform.Link>
+        <XHTML href="index.html"/>
+    </Platform.Link>
 
-  <Platform.Rendering width="6" height="12"/>
+    <Platform.Rendering width="6" height="12"/>
 </Template>
