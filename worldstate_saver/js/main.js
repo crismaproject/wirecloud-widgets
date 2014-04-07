@@ -337,7 +337,7 @@ function saveWorldState() {
             return $promise.promise();
         }
 
-        if (!worldState.hasOwnProperty('$icmmWorldStateId'))
+        if (!worldState.hasOwnProperty('$icmm'))
             throw 'Superordinate world state instance doesn\'t have an ICMM identifier attached to it.';
 
         $.when(getNextIdentifier('worldstates'), getNextIdentifier('transitions'), getNextIdentifier('dataitems'))
@@ -384,7 +384,7 @@ function saveWorldState() {
                         }
                     ],
                     'parentworldstate': {
-                        '$ref': '/CRISMA.worldstates/' + worldState['$icmmWorldStateId']
+                        '$ref': '/CRISMA.worldstates/' + worldState['$icmm'].id
                     },
                     'childworldstates': []
                 };
@@ -392,7 +392,7 @@ function saveWorldState() {
                 console.log(JSON.stringify(icmmWorldState));
                 // TODO: actually insert data into the ICMM
 
-                $.get(icmm + '/CRISMA.worldstates/' + worldState['$icmmWorldStateId'])
+                $.get(icmm + '/CRISMA.worldstates/' + worldState['$icmm'].id)
                     .done(function(icmmParentWorldState) {
                         icmmParentWorldState.childworldstates.push({
                             '$ref': '/CRISMA/worldstates/' + wsId

@@ -11,7 +11,7 @@ angular.module('worldStatePickerApp', [])
                 return typeof MashupPlatform !== 'undefined' ? MashupPlatform.prefs.get(name) : fallback;
             },
 
-            on: function(event, callback) {
+            on: function (event, callback) {
                 if (typeof MashupPlatform !== 'undefined')
                     MashupPlatform.wiring.registerCallback(event, callback);
                 else if (!this.hasOwnProperty('$warned' + event)) {
@@ -22,7 +22,7 @@ angular.module('worldStatePickerApp', [])
                 }
             },
 
-            send: function(wiringName, data) {
+            send: function (wiringName, data) {
                 if (typeof MashupPlatform !== 'undefined') {
                     if (typeof data !== 'string')
                         data = JSON.stringify(data);
@@ -61,7 +61,7 @@ angular.module('worldStatePickerApp', [])
                             });
                     };
 
-                    var path = '/CRISMA.worldstates?level=2&fields=id,name,description,created,childworldstates,worldstatedata,actualaccessinfo&limit=100';
+                    var path = '/CRISMA.worldstates?level=2&fields=id,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo&limit=100';
                     getAndAdd(path, $promise, [], 0);
                 } else {
                     console.warn('ICMM URI not configured!');
@@ -75,6 +75,8 @@ angular.module('worldStatePickerApp', [])
     .controller('WorldStatePickerApp', ['$scope', 'icmm', 'ooiwsr', 'wirecloud', function ($scope, icmm, ooiwsr, wirecloud) {
         $scope.loaded = null;
         $scope.showAll = false;
+
+        // WARNING: simulation data is not reliably set until the ICMM has properly integrated simulation data
 
         $scope.simulationList = [];
         $scope.selectedSimulation = null;
@@ -114,7 +116,14 @@ angular.module('worldStatePickerApp', [])
                     for (var i = 0; i < ws.length; i++)
                         if (ws[i].description.charAt(0) == '<') // FIXME: evil HTML recognition hack
                             ws[i].description = $(ws[i].description).text();
-                    $scope.worldStateList = ws;
+
+                    $scope.worldStateList = ws
+                        .filter(function (w) {
+                            return !w.hasOwnProperty('categories') ||
+                                !w.categories.any(function(x) {
+                                    return x.id === 1;
+                                });
+                        });
                 });
         };
 
@@ -125,6 +134,26 @@ angular.module('worldStatePickerApp', [])
                 });
         };
 
+        $scope.loadWorldStateAndPropagate = function (ooiwsrWorldStateId, progressCallback) {
+            ooiwsr.getWorldState(ooiwsrWorldStateId)
+                .done(function (worldState) {
+                    $scope.loaded = worldState;
+                    worldState['$icmm'] = $scope.selectedWorldState;
+                    wirecloud.send('worldState', worldState);
+                    if (progressCallback) progressCallback();
+                })
+                .fail(function () {
+                    $scope.loaded = null;
+                });
+            ooiwsr.fetch('/Entity?wsid=' + ooiwsrWorldStateId)
+                .done(function (oois) {
+                    wirecloud.send('oois', oois);
+                    if (progressCallback) progressCallback();
+                })
+                .fail(function () {
+                    $scope.loaded = null;
+                });
+        };
         $scope.loadWorldState = function () {
             var progressCurrent = 0, progressMax = 4;
             var $progressBar = $('#progressBar');
@@ -152,41 +181,25 @@ angular.module('worldStatePickerApp', [])
             wirecloud.send('simulation', $scope.selectedSimulation);
             advanceProgress();
 
-            var icmmWorldStateId = $scope.selectedWorldState.id;
             var ooiwsrWorldStateAccess = JSON.parse($scope.selectedWorldState.worldstatedata[0].actualaccessinfo.replace(/'/g, '"'));
             var ooiwsrWorldStateId = ooiwsrWorldStateAccess.id;
-            ooiwsr.getWorldState(ooiwsrWorldStateId)
-                .done(function (worldState) {
-                    worldState['$icmmWorldStateId'] = icmmWorldStateId;
-                    wirecloud.send('worldState', worldState);
-                    advanceProgress();
-                })
-                .fail(function () {
-                    loaded = null;
-                });
+            $scope.loadWorldStateAndPropagate(ooiwsrWorldStateId, advanceProgress);
             ooiwsr.listEntityTypes()
                 .done(function (ooiTypes) {
                     wirecloud.send('ooi_types', ooiTypes);
                     advanceProgress();
                 })
                 .fail(function () {
-                    loaded = null;
-                });
-            ooiwsr.fetch('/Entity?wsid=' + ooiwsrWorldStateId)
-                .done(function (oois) {
-                    wirecloud.send('oois', oois);
-                    advanceProgress();
-                })
-                .fail(function () {
-                    loaded = null;
+                    $scope.loaded = null;
                 });
         };
 
         $scope.refreshSimulations();
         $scope.refreshWorldStates();
 
-        wirecloud.on('load_worldstate', function(newWorldState) {
-            console.log(newWorldState); // TODO
+        wirecloud.on('load_worldstate', function (newWorldState) {
+            var id = newWorldState.hasOwnProperty('worldStateId') ? newWorldState['worldStateId'] : newWorldState;
+            $scope.loadWorldStateAndPropagate(id);
         });
     }]);
 
@@ -214,4 +227,10 @@ Date.prototype.difference = function (other) {
     subTimeUnit('second', 1);
 
     return components.join(', ');
+};
+
+Array.prototype.any = function (predicate) {
+    for (var i = 0; i < this.length; i++)
+        if (predicate(this[i])) return true;
+    return false;
 };
