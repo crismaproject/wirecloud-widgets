@@ -5,7 +5,8 @@ angular.module('worldStatePickerApp', [])
             console.warn('No OOI-WSR API URI configured!');
             return null;
         } else return new WorldStateRepository(apiUri);
-    }]).factory('wirecloud', function () {
+    }])
+    .factory('wirecloud', function () {
         return {
             getPreference: function (name, fallback) {
                 return typeof MashupPlatform !== 'undefined' ? MashupPlatform.prefs.get(name) : fallback;
@@ -111,19 +112,42 @@ angular.module('worldStatePickerApp', [])
         };
 
         $scope.refreshWorldStates = function () {
-            icmm.listWorldStates()
-                .done(function (ws) {
-                    for (var i = 0; i < ws.length; i++)
-                        if (ws[i].description.charAt(0) == '<') // FIXME: evil HTML recognition hack
-                            ws[i].description = $(ws[i].description).text();
+            $.when(icmm.listWorldStates(), ooiwsr.listWorldStates())
+                .done(function (icmmWorldStates, ooiwsrWorldStates) {
+                    /*
+                        NOTE: this code block is a very quirky work-around due to current limitations of the ICMM
+                              model. These limitations are currently being discussed, so this is very likely to change.
+                     */
 
-                    $scope.worldStateList = ws
-                        .filter(function (w) {
-                            return !w.hasOwnProperty('categories') ||
-                                !w.categories.any(function(x) {
-                                    return x.id === 1;
-                                });
+
+                    var ooiWsLookup = ooiwsrWorldStates[0].toDict('worldStateId');
+                    var ws = [];
+                    for (var i = 0; i < icmmWorldStates.length; i++) {
+                        var icmmWorldState = icmmWorldStates[i];
+                        var worldStateData = icmmWorldState.worldstatedata
+                            .filter(function (x) {
+                                if (!x.hasOwnProperty('actualaccessinfo')) return false;
+                                var ooiwsrWorldStateAccess = JSON.parse(x.actualaccessinfo.replace(/'/g, '"'));
+                                return ooiwsrWorldStateAccess.resource == 'WorldState';
+                            });
+                        if (!worldStateData.length) continue;
+                        else if(worldStateData.length > 1) console.warn('ICMM WS ' + icmmWorldState['$self'] + ' has ambigous OOI-WSR WorldState refs.');
+
+                        var ooiwsrId = JSON.parse(worldStateData[0].actualaccessinfo.replace(/'/g, '"')).id;
+                        if (!ooiWsLookup.hasOwnProperty(ooiwsrId)) continue;
+
+                        var ooiwsrWorldState = ooiWsLookup[ooiwsrId];
+                        ws.push({
+                            icmm: icmmWorldState,
+                            ooiwsr: ooiwsrWorldState
                         });
+                    }
+
+                    $scope.worldStateList = ws.map(function (x) {
+                        if (x.icmm.description.charAt(0) == '<') // FIXME: evil HTML recognition hack
+                            x.icmm.description = $(x.icmm.description).text();
+                        return $.extend(x.ooiwsr, { '$icmm': x.icmm });
+                    });
                 });
         };
 
@@ -233,4 +257,26 @@ Array.prototype.any = function (predicate) {
     for (var i = 0; i < this.length; i++)
         if (predicate(this[i])) return true;
     return false;
+};
+
+/**
+ * Groups the provided array of objects into an object where the object's properties are values extracted
+ * from the keyProperty property of array elements, and each keyed entry in the object is the first
+ * element of the original array sharing the same key.
+ *
+ * @param {string} keyProperty
+ * @returns {{}}
+ */
+Array.prototype.toDict = function(keyProperty) {
+    var groups = { };
+
+    for (var i = 0; i < this.length; i++) {
+        var obj = this[i];
+        if (!obj.hasOwnProperty(keyProperty)) continue;
+        var key = obj[keyProperty];
+        if (!(key in groups))
+            groups[key] = obj;
+    }
+
+    return groups;
 };
