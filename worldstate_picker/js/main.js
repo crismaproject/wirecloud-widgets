@@ -42,9 +42,9 @@ angular.module('worldStatePickerApp', [])
         return {
             listWorldStates: function () {
                 var $promise = new $.Deferred();
+                var $root = this;
                 var icmmUri = wirecloud.getPreference('icmm');
                 if (icmmUri) {
-                    var $root = this;
                     var getAndAdd = function (path, promise, array, iteration) {
                         $http
                             .get(icmmUri + path)
