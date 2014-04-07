@@ -98,27 +98,33 @@ angular.module('worldStatePickerApp', [])
                 worldState.name;
         };
         $scope.showWorldState = function (worldState) {
-            return $scope.showAll || !worldState.hasOwnProperty('childworldstates') || !worldState.childworldstates.length;
+            return $scope.showAll || !worldState.icmm.hasOwnProperty('childworldstates') || !worldState.icmm.childworldstates.length;
         };
         $scope.timeDifference = function (a, b) {
             return a && b ? new Date(a).difference(new Date(b)) : null;
         };
 
         $scope.reset = function () {
+            var originalSimulation = $scope.selectedSimulation;
+            var originalWorldState = $scope.selectedWorldState;
+
             $scope.loaded = null;
-            $scope.refreshSimulations();
-            $scope.refreshWorldStates();
-            // TODO: angular forgets previous selections for selectedWorldState and selectedSimulation after the model changes
+            $.when($scope.refreshSimulations(), $scope.refreshWorldStates())
+                .done(function () {
+                    if (originalSimulation != null)
+                        $scope.selectedSimulation = originalSimulation;
+                    if (originalWorldState != null)
+                        $scope.selectedWorldState = originalWorldState;
+                });
         };
 
         $scope.refreshWorldStates = function () {
-            $.when(icmm.listWorldStates(), ooiwsr.listWorldStates())
+            return $.when(icmm.listWorldStates(), ooiwsr.listWorldStates())
                 .done(function (icmmWorldStates, ooiwsrWorldStates) {
                     /*
                         NOTE: this code block is a very quirky work-around due to current limitations of the ICMM
                               model. These limitations are currently being discussed, so this is very likely to change.
                      */
-
 
                     var ooiWsLookup = ooiwsrWorldStates[0].toDict('worldStateId');
                     var ws = [];
@@ -143,41 +149,17 @@ angular.module('worldStatePickerApp', [])
                         });
                     }
 
-                    $scope.worldStateList = ws.map(function (x) {
-                        if (x.icmm.description.charAt(0) == '<') // FIXME: evil HTML recognition hack
-                            x.icmm.description = $(x.icmm.description).text();
-                        return $.extend(x.ooiwsr, { '$icmm': x.icmm });
-                    });
+                    $scope.worldStateList = ws;
                 });
         };
 
         $scope.refreshSimulations = function () {
-            ooiwsr.listSimulations()
+            return ooiwsr.listSimulations()
                 .done(function (sims) {
                     $scope.simulationList = sims;
                 });
         };
 
-        $scope.loadWorldStateAndPropagate = function (ooiwsrWorldStateId, progressCallback) {
-            ooiwsr.getWorldState(ooiwsrWorldStateId)
-                .done(function (worldState) {
-                    $scope.loaded = worldState;
-                    worldState['$icmm'] = $scope.selectedWorldState;
-                    wirecloud.send('worldState', worldState);
-                    if (progressCallback) progressCallback();
-                })
-                .fail(function () {
-                    $scope.loaded = null;
-                });
-            ooiwsr.fetch('/Entity?wsid=' + ooiwsrWorldStateId)
-                .done(function (oois) {
-                    wirecloud.send('oois', oois);
-                    if (progressCallback) progressCallback();
-                })
-                .fail(function () {
-                    $scope.loaded = null;
-                });
-        };
         $scope.loadWorldState = function () {
             var progressCurrent = 0, progressMax = 4;
             var $progressBar = $('#progressBar');
@@ -205,9 +187,18 @@ angular.module('worldStatePickerApp', [])
             wirecloud.send('simulation', $scope.selectedSimulation);
             advanceProgress();
 
-            var ooiwsrWorldStateAccess = JSON.parse($scope.selectedWorldState.worldstatedata[0].actualaccessinfo.replace(/'/g, '"'));
-            var ooiwsrWorldStateId = ooiwsrWorldStateAccess.id;
-            $scope.loadWorldStateAndPropagate(ooiwsrWorldStateId, advanceProgress);
+            wirecloud.send('worldstate', $scope.selectedWorldState.ooiwsr);
+            advanceProgress();
+
+            ooiwsr.fetch('/Entity?wsid=' + $scope.selectedWorldState.ooiwsr.worldStateId)
+                .done(function (oois) {
+                    wirecloud.send('oois', oois);
+                    advanceProgress();
+                })
+                .fail(function () {
+                    $scope.loaded = null;
+                });
+
             ooiwsr.listEntityTypes()
                 .done(function (ooiTypes) {
                     wirecloud.send('ooi_types', ooiTypes);
@@ -222,8 +213,16 @@ angular.module('worldStatePickerApp', [])
         $scope.refreshWorldStates();
 
         wirecloud.on('load_worldstate', function (newWorldState) {
-            var id = newWorldState.hasOwnProperty('worldStateId') ? newWorldState['worldStateId'] : newWorldState;
-            $scope.loadWorldStateAndPropagate(id);
+            if (!newWorldState.hasOwnProperty('ooiwsr') || !newWorldState.hasOwnProperty('icmm'))
+                throw 'Cannot load with incomplete worldstate data (yet).'; // TODO: newWorldState will likely be an OOIWSR instance. Needs looking up in the ICMM to find out the ICMM instance.
+            $scope.selectedWorldState = newWorldState;
+            ooiwsr.fetch('/Entity?wsid=' + newWorldState.ooiwsr.worldStateId)
+                .done(function (oois) {
+                    wirecloud.send('oois', oois);
+                })
+                .fail(function () {
+                    $scope.loaded = null;
+                });
         });
     }]);
 

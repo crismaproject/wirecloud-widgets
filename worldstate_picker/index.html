@@ -33,7 +33,7 @@
             <div class="col-sm-10">
                 <div class="input-group">
                     <select id="worldStateInput" class="form-control"
-                            ng-options="prettyWorldState(w) for w in worldStateList | filter:showWorldState | orderBy:created" ng-model="selectedWorldState"
+                            ng-options="prettyWorldState(w.icmm) for w in worldStateList | filter:showWorldState | orderBy:icmm.created" ng-model="selectedWorldState"
                             ng-required></select>
                     <span class="input-group-btn">
                         <button type="button" class="btn btn-default" ng-click="refreshWorldStates()">
@@ -70,16 +70,16 @@
 
                         <div class="row-fluid">
                             <div class="col-sm-4">Current time:</div>
-                            <div class="col-sm-8"><time>{{selectedWorldState.created | date:'EEEE, d. MMMM yyyy, H:mm' }}</time></div>
+                            <div class="col-sm-8"><time>{{selectedWorldState.icmm.created | date:'EEEE, d. MMMM yyyy, H:mm' }}</time></div>
                         </div>
 
                         <div class="row-fluid">
-                            <div class="col-sm-offset-4 col-sm-8"><small class="text-muted">{{ timeDifference(selectedSimulation.startDateTime, selectedWorldState.created) }} after the simulation started</small></div>
+                            <div class="col-sm-offset-4 col-sm-8"><small class="text-muted">{{ timeDifference(selectedSimulation.startDateTime, selectedWorldState.icmm.created) }} after the simulation started</small></div>
                         </div>
 
                         <div class="row-fluid">
                             <div class="col-sm-4">Current world state:</div>
-                            <div class="col-sm-8">{{selectedWorldState.description}}</div>
+                            <div class="col-sm-8">{{selectedWorldState.icmm.description}}</div>
                         </div>
 
                         <div class="row-fluid">
