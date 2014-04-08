@@ -1,4 +1,4 @@
-angular.module('worldStatePickerApp', [])
+angular.module('worldStatePickerApp', ['ngResource'])
     .factory('ooiwsr', ['wirecloud', function (wirecloud) {
         var apiUri = wirecloud.getPreference('ooiwsr');
         if (!apiUri) {
@@ -38,40 +38,46 @@ angular.module('worldStatePickerApp', [])
             }
         }
     })
-    .factory('icmm', ['$http', 'wirecloud', function ($http, wirecloud) {
-        return {
-            listWorldStates: function () {
-                var $promise = new $.Deferred();
-                var $root = this;
-                var icmmUri = wirecloud.getPreference('icmm');
-                if (icmmUri) {
-                    var getAndAdd = function (path, promise, array, iteration) {
-                        $http
-                            .get(icmmUri + path)
-                            .success(function (pageData) {
-                                promise.notifyWith($root, [iteration, pageData]);
-                                array = array.concat(pageData.$collection);
+    .factory('icmm', ['$http', '$resource', 'wirecloud', function ($http, $resource, wirecloud) {
+        var icmmUri = wirecloud.getPreference('icmm');
+        var icmmWsUri = icmmUri + '/CRISMA.worldstates?level=2&fields=id,ooiRepositorySimulationId,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo&filter=ooiRepositorySimulationId%3A:simulationId&limit=100';
+        return $resource(icmmWsUri, null, {
+            query: { method: 'GET', isArray: true, transformResponse: function (data) { return data['$collection']; } }
+        });
 
-                                if (pageData.$next)
-                                    getAndAdd(pageData.$next, promise, array, iteration + 1);
-                                else
-                                    promise.resolveWith($root, [array]);
-                            })
-                            .error(function (data, status) {
-                                promise.rejectWith($root, [iteration, status]);
-                            });
-                    };
-
-                    var path = '/CRISMA.worldstates?level=2&fields=id,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo&limit=100';
-                    getAndAdd(path, $promise, [], 0);
-                } else {
-                    console.warn('ICMM URI not configured!');
-                    $promise.rejectWith($root);
-                }
-
-                return $promise.promise();
-            }
-        }
+//        return {
+//            listWorldStates: function () {
+//                var $promise = new $.Deferred();
+//                var $root = this;
+//                var icmmUri = wirecloud.getPreference('icmm', 'http://crisma.cismet.de/pilotC/icmm_api');
+//                if (icmmUri) {
+//                    var getAndAdd = function (path, promise, array, iteration) {
+//                        $http
+//                            .get(icmmUri + path)
+//                            .success(function (pageData) {
+//                                promise.notifyWith($root, [iteration, pageData]);
+//                                array = array.concat(pageData.$collection);
+//
+//                                if (pageData.$next)
+//                                    getAndAdd(pageData.$next, promise, array, iteration + 1);
+//                                else
+//                                    promise.resolveWith($root, [array]);
+//                            })
+//                            .error(function (data, status) {
+//                                promise.rejectWith($root, [iteration, status]);
+//                            });
+//                    };
+//
+//                    var path = '/CRISMA.worldstates?level=2&fields=id,ooiRepositorySimulationId,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo&limit=100';
+//                    getAndAdd(path, $promise, [], 0);
+//                } else {
+//                    console.warn('ICMM URI not configured!');
+//                    $promise.rejectWith($root);
+//                }
+//
+//                return $promise.promise();
+//            }
+//        }
     }])
     .controller('WorldStatePickerApp', ['$scope', 'icmm', 'ooiwsr', 'wirecloud', function ($scope, icmm, ooiwsr, wirecloud) {
         $scope.loaded = null;
@@ -98,7 +104,9 @@ angular.module('worldStatePickerApp', [])
                 worldState.name;
         };
         $scope.showWorldState = function (worldState) {
-            return $scope.showAll || !worldState.icmm.hasOwnProperty('childworldstates') || !worldState.icmm.childworldstates.length;
+            return $scope.selectedSimulation &&
+                worldState.ooiRepositorySimulationId == $scope.selectedSimulation.simulationId &&
+                ($scope.showAll || !worldState.hasOwnProperty('childworldstates') || !worldState.childworldstates.length);
         };
         $scope.timeDifference = function (a, b) {
             return a && b ? new Date(a).difference(new Date(b)) : null;
@@ -118,39 +126,49 @@ angular.module('worldStatePickerApp', [])
                 });
         };
 
-        $scope.refreshWorldStates = function () {
-            return $.when(icmm.listWorldStates(), ooiwsr.listWorldStates())
-                .done(function (icmmWorldStates, ooiwsrWorldStates) {
-                    /*
-                        NOTE: this code block is a very quirky work-around due to current limitations of the ICMM
-                              model. These limitations are currently being discussed, so this is very likely to change.
-                     */
-
-                    var ooiWsLookup = ooiwsrWorldStates[0].toDict('worldStateId');
-                    var ws = [];
-                    for (var i = 0; i < icmmWorldStates.length; i++) {
-                        var icmmWorldState = icmmWorldStates[i];
-                        var worldStateData = icmmWorldState.worldstatedata
-                            .filter(function (x) {
-                                if (!x.hasOwnProperty('actualaccessinfo')) return false;
-                                var ooiwsrWorldStateAccess = JSON.parse(x.actualaccessinfo.replace(/'/g, '"'));
-                                return ooiwsrWorldStateAccess.resource == 'WorldState';
-                            });
-                        if (!worldStateData.length) continue;
-                        else if(worldStateData.length > 1) console.warn('ICMM WS ' + icmmWorldState['$self'] + ' has ambigous OOI-WSR WorldState refs.');
-
-                        var ooiwsrId = JSON.parse(worldStateData[0].actualaccessinfo.replace(/'/g, '"')).id;
-                        if (!ooiWsLookup.hasOwnProperty(ooiwsrId)) continue;
-
-                        var ooiwsrWorldState = ooiWsLookup[ooiwsrId];
-                        ws.push({
-                            icmm: icmmWorldState,
-                            ooiwsr: ooiwsrWorldState
-                        });
-                    }
-
-                    $scope.worldStateList = ws;
+        $scope.refreshWorldStates = function (simulationId) {
+            icmm.query({simulationId: simulationId})
+                .$promise.then(function (list) {
+                    $scope.worldStateList = list;
                 });
+
+//            icmm.listWorldStates()
+//                .done(function (worldStates) {
+//                    $scope.worldStateList = worldStates;
+//                });
+
+            /*            return $.when(icmm.listWorldStates(), ooiwsr.listWorldStates())
+             .done(function (icmmWorldStates, ooiwsrWorldStates) {
+             *//*
+             NOTE: this code block is a very quirky work-around due to current limitations of the ICMM
+             model. These limitations are currently being discussed, so this is very likely to change.
+             *//*
+
+             var ooiWsLookup = ooiwsrWorldStates[0].toDict('worldStateId');
+             var ws = [];
+             for (var i = 0; i < icmmWorldStates.length; i++) {
+             var icmmWorldState = icmmWorldStates[i];
+             var worldStateData = icmmWorldState.worldstatedata
+             .filter(function (x) {
+             if (!x.hasOwnProperty('actualaccessinfo')) return false;
+             var ooiwsrWorldStateAccess = JSON.parse(x.actualaccessinfo.replace(/'/g, '"'));
+             return ooiwsrWorldStateAccess.resource == 'WorldState';
+             });
+             if (!worldStateData.length) continue;
+             else if(worldStateData.length > 1) console.warn('ICMM WS ' + icmmWorldState['$self'] + ' has ambigous OOI-WSR WorldState refs.');
+
+             var ooiwsrId = JSON.parse(worldStateData[0].actualaccessinfo.replace(/'/g, '"')).id;
+             if (!ooiWsLookup.hasOwnProperty(ooiwsrId)) continue;
+
+             var ooiwsrWorldState = ooiWsLookup[ooiwsrId];
+             ws.push({
+             icmm: icmmWorldState,
+             ooiwsr: ooiwsrWorldState
+             });
+             }
+
+             $scope.worldStateList = ws;
+             });*/
         };
 
         $scope.refreshSimulations = function () {
