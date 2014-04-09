@@ -104,36 +104,14 @@ relies on jQuery for AJAX operations and deferred functionalities; it is necessa
 A full list of operations is provided in `wsrapi-documentation.htm`. This file automatically inspects `wsrapi.js` and
 lists all instance methods discovered through reflection of the class.
 
+There are no plans to create an angular module out of this yet, but it should be a simple matter of registering
+an instance of the class.
+
 **Important:**
 If a widget or operator uses the WSR-API, it should exist as *your_widget_name/js/wsrapi.js*. This has the benefit that
 whenever *wsrapi.js* in the root directory changes, a rake task will automatically update all
 *your_widget_name/js/wsrapi.js* file instances it can find by replacing it with the one in the root directory. Note that
 if you have done *any* changes to your gadget's file, it *will* be overwritten without hestitation by rake.
-
-## Wirecloud API mockup
-
-This repository includes a very simplified, stripped-down mockup for Wirecloud's public API in `wirecloud_dummy.js`.
-It can be used to test some widgets if the mockup's reduced functionality is sufficient. Please refer to the
-JavaScript file to see what works and what doesn't.
-
-Note: if your widgets absolutely *require* some preferences to be set to work, you have two options:
-
-1. if it doesn't matter when they are set, test if you are currently using the "live" Wirecloud API or just the mockup.
-    The mockup has a property `MashupPlatform.dummy` that is `true`; you can then set preferences to your heart's
-    content using `MashupPlatform.prefs.set(key, value)`.
-2. if your preferences need to be loaded ASAP for some reason and option (1) is just a little bit too late, you
-    can (as a last resort measure!) try to set your preferences in HTML's `sessionStorage` like so:
-
-    `sessionStorage.setItem('preferences', JSON.stringify({ pref1: 'value1', pref2: 'value2' }))`
-
-    The mockup uses HTML's sessionStorage to store preferences when the DOM unloads and restores them once the mockup is
-    loaded again. Note that your browser might not have a sessionStorage (but it's very likely). To learn more about
-    HTML's sessionStorage, you can read [this specification](http://www.w3.org/TR/webstorage/) and the current
-    [implementation/support status](http://caniuse.com/#search=sessionstorage).
-
-Note that undocumented (ie. non-public) methods of Wirecloud's API are not mocked; for instance,
-`MashupPlatform.wiring.getReachableEndpoints(…)` is not defined by this mockup (but exists in Wirecloud's "live"
-API and is, for instance, used by the `debug_pusher` widget to determine if/what gadgets are connected to it.
 
 ## Contact
 
