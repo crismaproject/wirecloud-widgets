@@ -39,14 +39,12 @@ angular.module('worldStatePickerApp', ['ngResource'])
     })
     .factory('icmm', ['$http', '$resource', 'wirecloud', function ($http, $resource, wirecloud) {
         var icmmUri = wirecloud.getPreference('icmm');
-        var icmmWsUri = icmmUri + '/CRISMA.worldstates?level=2&fields=id,ooiRepositorySimulationId,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo&filter=ooiRepositorySimulationId%3A:simulationId&limit=100';
+        var icmmWsUri = icmmUri + '/CRISMA.worldstates?level=2&fields=id,ooiRepositorySimulationId,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo&filter=ooiRepositorySimulationId%3A:simulationId&limit=500';
         return $resource(icmmWsUri, { simulationId: '@id' }, {
             query: {
                 method: 'GET', isArray: true, transformResponse: function (data) {
-                    var col, res;
-
-                    col = JSON.parse(data).$collection;
-                    res = [];
+                    var col = JSON.parse(data).$collection;
+                    var res = [];
 
                     for (var i = 0; i < col.length; ++i)
                         res.push(col[i]);
@@ -182,6 +180,18 @@ angular.module('worldStatePickerApp', ['ngResource'])
 
         $scope.refreshSimulations();
         $scope.refreshWorldStates();
+
+        wirecloud.on('load_simulation', function (simulation) {
+            var setSimulation = function (simulationData) {
+                $scope.simulationList = [ simulationData ];
+                $scope.selectedSimulation = simulationData;
+                $scope.refreshWorldStates(simulationData.simulationId);
+            };
+            if (typeof simulation === 'number')
+                ooiwsr.getSimulation(simulation).done(setSimulation);
+            else
+                setSimulation(simulation);
+        });
 
         wirecloud.on('load_worldstate', function (newWorldState) {
             if (!newWorldState.hasOwnProperty('$icmm'))
