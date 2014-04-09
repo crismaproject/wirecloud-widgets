@@ -39,10 +39,18 @@ angular.module('worldStatePickerApp', ['ngResource'])
     })
     .factory('icmm', ['$http', '$resource', 'wirecloud', function ($http, $resource, wirecloud) {
         var icmmUri = wirecloud.getPreference('icmm');
-        var icmmWsUri = icmmUri + '/CRISMA.worldstates?level=2&fields=id,ooiRepositorySimulationId,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo&filter=ooiRepositorySimulationId%3A:simulationId&limit=500';
+        var icmmWsUri = icmmUri + '/CRISMA.worldstates?filter=ooiRepositorySimulationId%3A:simulationId';
         return $resource(icmmWsUri, { simulationId: '@id' }, {
             query: {
-                method: 'GET', isArray: true, transformResponse: function (data) {
+                method: 'GET',
+                isArray: true,
+                params: {
+                    level: 2,
+                    fields: 'id,ooiRepositorySimulationId,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo',
+                    deduplicate: true,
+                    limit: 500
+                },
+                transformResponse: function (data) {
                     var col = JSON.parse(data).$collection;
                     var res = [];
 
