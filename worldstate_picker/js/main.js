@@ -2,8 +2,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
     .factory('ooiwsr', ['wirecloud', function (wirecloud) {
         var apiUri = wirecloud.getPreference('ooiwsr');
         if (!apiUri) {
-            console.warn('No OOI-WSR API URI configured!');
-            return null;
+            throw 'No OOI-WSR API URI configured!';
         } else return new WorldStateRepository(apiUri);
     }])
     .factory('wirecloud', function () {
@@ -18,7 +17,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
                 else if (!this.hasOwnProperty('$warned' + event)) {
                     this['$warned' + event] = true;
                     var dummyFunctionName = 'wcTriggerEv_' + event;
-                    console.warn('Wirecloud not detected. Use injected method window.' + dummyFunctionName + ' (event_data) to trigger it manually.');
+                    console.warn('Wirecloud not detected. Use injected method window.' + dummyFunctionName + ' (event_data) to trigger this event manually manually.');
                     window[dummyFunctionName] = callback;
                 }
             },
@@ -159,7 +158,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
                     advanceProgress();
                 })
                 .fail(function () {
-                    loaded = null;
+                    $scope.loaded = null;
                 });
 
             ooiwsr.fetch('/Entity?wsid=' + ooiwsrWorldStateId)
@@ -185,10 +184,10 @@ angular.module('worldStatePickerApp', ['ngResource'])
         $scope.refreshWorldStates();
 
         wirecloud.on('load_worldstate', function (newWorldState) {
-            if (!newWorldState.hasOwnProperty('ooiwsr') || !newWorldState.hasOwnProperty('icmm'))
+            if (!newWorldState.hasOwnProperty('$icmm'))
                 throw 'Cannot load with incomplete worldstate data (yet).'; // TODO: newWorldState will likely be an OOIWSR instance. Needs looking up in the ICMM to find out the ICMM instance.
             $scope.selectedWorldState = newWorldState;
-            ooiwsr.fetch('/Entity?wsid=' + newWorldState.ooiwsr.worldStateId)
+            ooiwsr.fetch('/Entity?wsid=' + newWorldState.worldStateId)
                 .done(function (oois) {
                     wirecloud.send('oois', oois);
                 })
