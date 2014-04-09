@@ -79,9 +79,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
                 worldState.name;
         };
         $scope.showWorldState = function (worldState) {
-            return $scope.selectedSimulation &&
-                worldState.ooiRepositorySimulationId == $scope.selectedSimulation.simulationId &&
-                ($scope.showAll || !worldState.hasOwnProperty('childworldstates') || !worldState.childworldstates.length);
+            return $scope.showAll || !worldState.hasOwnProperty('childworldstates') || !worldState.childworldstates.length;
         };
         $scope.timeDifference = function (a, b) {
             return a && b ? new Date(a).difference(new Date(b)) : null;
