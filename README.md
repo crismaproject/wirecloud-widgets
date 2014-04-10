@@ -24,6 +24,7 @@ an **o**perator or a **w**idget.
 * (w) **./ooi_gis_map/** — a map widget using [OpenLayers](http://www.openlayers.org/) and
       [OpenStreetMap](http://www.openstreetmap.org/) to display a map with WFS data
 * (w) **./ooi_table/** — OOI table (with synchronized OOI selection mechanic).
+* (o) **./url_params/** — a component that extracts URL query parameters.
 * (w) **./worldstate_picker/** — Widget that allows the user to pick a world state from the ICMM/OOI-WSR.
 * (w) **./worldstate_saver/** — Widget that saves a world state to an OOI-WSR instance.
 
