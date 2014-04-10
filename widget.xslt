@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:c="http://morfeo-project.org/2007/Template">
+                xmlns:c="http://wirecloud.conwet.fi.upm.es/ns/template#">
   <xsl:output method="html" version="1.0" encoding="UTF-8" indent="yes"/>
   <xsl:template match="c:Template">
     <html lang="en">

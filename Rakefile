@@ -48,7 +48,7 @@ task :doc do
     if File.exists? config_file
       begin
         config = Nokogiri::XML(File.read(config_file))
-        if config.root.namespace.href == 'http://morfeo-project.org/2007/Template'
+        if config.root.namespace.href == 'http://wirecloud.conwet.fi.upm.es/ns/template#'
           stylesheet = Nokogiri::XSLT(File.read(XSLT_XML_FILE))
           human_readable = stylesheet.transform config
           human_readable_file = File.join(subdirectory, DOC_FILE)
