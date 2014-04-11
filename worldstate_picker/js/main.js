@@ -107,14 +107,17 @@ angular.module('worldStatePickerApp', ['ngResource'])
                 });
         };
 
-        $scope.refreshWorldStates = function (simulationId) {
+        $scope.refreshWorldStates = function (simulationId, autoload) {
             icmm.query({simulationId: simulationId})
                 .$promise.then(function (list) {
                     $scope.worldStateList = list;
                     if (list.length) {
-                        $scope.selectedWorldState = $scope.worldStateList[0];
+                        $scope.selectedWorldState = $scope.worldStateList[list.length - 1];
                         if (list.length > 1)
                             $('#worldStateInput').focus();
+
+                        if (autoload)
+                            $scope.loadWorldState();
                     }
                 });
         };
@@ -191,7 +194,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
             var setSimulation = function (simulationData) {
                 $scope.simulationList = [ simulationData ];
                 $scope.selectedSimulation = simulationData;
-                $scope.refreshWorldStates(simulationData.simulationId);
+                $scope.refreshWorldStates(simulationData.simulationId, true);
             };
             if (typeof simulation === 'number')
                 ooiwsr.getSimulation(simulation).done(setSimulation);
