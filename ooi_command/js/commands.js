@@ -16,6 +16,16 @@ var availableCommands = {
             targetType: 'point',
             log: 'Treating patients near lat. #{data.lat}, long. #{data.lon}'
         }
+
+        ,'$isAvailable': function (ambulance) {
+            var properties = ambulance.entityInstancesProperties;
+            for (var i = 0; i < properties.length; i++) {
+                var property = properties[i];
+                if (property.entityTypePropertyId == 312) // 31 = Target arrival time
+                    return property.entityPropertyValue !== 0 && property.entityPropertyValue !== '0';
+            }
+            return true;
+        }
     },
     14: {
         'goto': {

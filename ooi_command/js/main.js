@@ -86,6 +86,7 @@ function rebuildUI() {
                 .addClass('list-unstyled');
             for (var i = 0; i < group.length; i++) {
                 var ooi = group[i];
+                if (!isAvailable(ooi)) continue;
                 var ooiName = ooi.hasOwnProperty('entityName') && ooi.entityName ? ooi.entityName : '(OOI ' + ooi.entityId + ')';
                 listing.append($('<li></li>')
                     .attr('data-id', ooi.entityId)
@@ -95,6 +96,7 @@ function rebuildUI() {
 
         var commands = $('<div></div>').addClass('btn-group');
         for (var commandKey in availableCommands[groupKey]) {
+            if (commandKey.charAt(0) == '$') continue;
             var commandBtn = $('<button></button>')
                 .addClass('btn-command ' + uiStyle.btnClass)
                 .attr('data-command', commandKey)
@@ -157,12 +159,25 @@ function setHelp(scope, text) {
 }
 
 /**
+ * Performs a check if the specified OOI is currently available (as defined by the $isAvailable function in
+ * the command file.)
+ * @param ooi the OOI to inspect.
+ * @private
+ * @returns {boolean}
+ */
+function isAvailable(ooi) {
+    return !availableCommands[ooi.entityTypeId].hasOwnProperty('$isAvailable') ||
+        availableCommands[ooi.entityTypeId].$isAvailable(ooi);
+}
+
+/**
  * Returns true iff the specified OOI has an entityTypeId that has any commands attached to it.
  * @param {object} ooi the Object of Interest to test.
  * @returns {boolean} returns true iff the OOI has any commands.
  */
 function isCommandable(ooi) {
-    return ooi.entityTypeId in availableCommands;
+    return ooi.entityTypeId in availableCommands &&
+        isAvailable(ooi);
 }
 
 /** @private */
