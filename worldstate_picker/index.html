@@ -22,7 +22,7 @@
                             ng-change="refreshWorldStates(selectedSimulation.simulationId)"
                             ng-options="prettySimulation(s) for s in simulationList" ng-model="selectedSimulation"></select>
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="refreshSimulations()">
+                        <button type="button" class="btn btn-default" ng-click="refreshSimulations()" ng-disabled="isRefreshingSimulations">
                             <i class="glyphicon glyphicon-refresh"></i>
                         </button>
                     </span>
@@ -38,7 +38,7 @@
                             ng-options="prettyWorldState(w) for w in worldStateList | filter:showWorldState | orderBy:created" ng-model="selectedWorldState"
                             ng-required></select>
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="refreshWorldStates(selectedSimulation.simulationId)">
+                        <button type="button" class="btn btn-default" ng-click="refreshWorldStates(selectedSimulation.simulationId)" ng-disabled="isRefreshingWorldstates">
                             <i class="glyphicon glyphicon-refresh"></i>
                         </button>
                     </span>

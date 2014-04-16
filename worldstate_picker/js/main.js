@@ -65,6 +65,8 @@ angular.module('worldStatePickerApp', ['ngResource'])
     .controller('WorldStatePickerApp', ['$scope', 'icmm', 'ooiwsr', 'wirecloud', function ($scope, icmm, ooiwsr, wirecloud) {
         $scope.loaded = null;
         $scope.showAll = false;
+        $scope.isRefreshingSimulations = false;
+        $scope.isRefreshingWorldstates = false;
 
         // NOTE: simulation data is not reliably set until the ICMM has properly integrated simulation data
 
@@ -108,6 +110,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
         };
 
         $scope.refreshWorldStates = function (simulationId, autoload) {
+            $scope.isRefreshingWorldstates = true;
             icmm.query({simulationId: simulationId})
                 .$promise.then(function (list) {
                     $scope.worldStateList = list;
@@ -118,14 +121,18 @@ angular.module('worldStatePickerApp', ['ngResource'])
 
                         if (autoload)
                             $scope.loadWorldState();
+
+                        $scope.isRefreshingWorldstates = false;
                     }
                 });
         };
 
         $scope.refreshSimulations = function () {
+            $scope.isRefreshingSimulations = true;
             return ooiwsr.listSimulations()
                 .done(function (sims) {
                     $scope.simulationList = sims;
+                    $scope.isRefreshingSimulations = false;
                 });
         };
 
@@ -161,7 +168,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
             ooiwsr.getWorldState(ooiwsrWorldStateId)
                 .done(function (worldState) {
                     worldState['$icmm'] = $scope.selectedWorldState;
-                    wirecloud.send('worldState', worldState);
+                    wirecloud.send('worldstate', worldState);
                     advanceProgress();
                 })
                 .fail(function () {
@@ -188,7 +195,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
         };
 
         $scope.refreshSimulations();
-        $scope.refreshWorldStates();
+        //$scope.refreshWorldStates();
 
         wirecloud.on('load_simulation', function (simulation) {
             var setSimulation = function (simulationData) {
@@ -198,11 +205,13 @@ angular.module('worldStatePickerApp', ['ngResource'])
             };
             if (typeof simulation === 'number')
                 ooiwsr.getSimulation(simulation).done(setSimulation);
-            else
+            else if(simulation.hasOwnProperty('simulationId'))
                 setSimulation(simulation);
+            else
+                throw 'Not sure what to do with the specified object received over the load_simulation endpoint.';
         });
 
-        wirecloud.on('load_worldstate', function (newWorldState) {
+/*        wirecloud.on('load_worldstate', function (newWorldState) {
             if (!newWorldState.hasOwnProperty('$icmm'))
                 throw 'Cannot load with incomplete worldstate data (yet).'; // TODO: newWorldState will likely be an OOIWSR instance. Needs looking up in the ICMM to find out the ICMM instance.
             $scope.selectedWorldState = newWorldState;
@@ -213,7 +222,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
                 .fail(function () {
                     $scope.loaded = null;
                 });
-        });
+        });*/
     }]);
 
 String.prototype.pluralize = function (n) {

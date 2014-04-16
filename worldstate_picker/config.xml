@@ -5,7 +5,7 @@
         <Vendor>AIT</Vendor>
         <Name>worldstate_picker</Name>
         <DisplayName>World State Picker</DisplayName>
-        <Version>0.6.2.1</Version>
+        <Version>0.6.2.2</Version>
         <Author>Manuel Warum</Author>
         <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
         <Description>
@@ -25,7 +25,7 @@
 
     <Platform.Wiring>
         <InputEndpoint name="load_simulation" type="text" label="Simulation" description="The world state you want to load automatically" friendcode="simulation"/>
-        <InputEndpoint name="load_worldstate" type="text" label="World State" description="The world state you want to load automatically" friendcode="worldstate"/>
+        <!--<InputEndpoint name="load_worldstate" type="text" label="World State" description="The world state you want to load automatically" friendcode="worldstate"/>-->
         <OutputEndpoint name="simulation" type="text" label="Simulation" description="The simulation selected by the user" friendcode="simulation"/>
         <OutputEndpoint name="worldstate" type="text" label="World State" description="The world state selected by the user" friendcode="worldstate"/>
         <OutputEndpoint name="oois" type="text" label="OOIs" description="Objects of Interest for the given World State" friendcode="oois"/>
