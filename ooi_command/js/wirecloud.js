@@ -1,39 +1,35 @@
-/*global entityTypes,objectsOfInterest,pendingCommand,MashupPlatform*/
+angular.module('ooiCommand.wirecloud', [])
+    .factory('wirecloud', function () {
+        return {
+            getPreference: function (name, fallback) {
+                return typeof MashupPlatform !== 'undefined' ? MashupPlatform.prefs.get(name) : fallback;
+            },
 
-/*
- * Iff the Wirecloud environment is available, register endpoints.
- */
-if (typeof MashupPlatform === 'undefined') {
-    console.warn('Wirecloud environment not detected.');
+            on: function (event, callback) {
+                if (typeof MashupPlatform !== 'undefined')
+                    MashupPlatform.wiring.registerCallback(event, callback);
+                else if (!this.hasOwnProperty('$warned' + event)) {
+                    this['$warned' + event] = true;
+                    var dummyFunctionName = 'wcTriggerEv_' + event;
+                    console.warn('Wirecloud not detected. Use injected method window.' + dummyFunctionName + ' (event_data) to trigger this event manually manually.');
+                    window[dummyFunctionName] = function(arg) {
+                        callback(typeof arg === 'string' ? arg : JSON.stringify(arg));
+                    };
+                }
+            },
 
-    $(function () {
-        var logFunction = function (event, data) {
-            console.log(data);
-        };
-        $('body')
-            .on('command', logFunction)
-            .on('areaCreated', logFunction);
+            send: function (wiringName, data) {
+                if (typeof MashupPlatform !== 'undefined') {
+                    if (typeof data !== 'string')
+                        data = JSON.stringify(data);
+                    MashupPlatform.wiring.pushEvent(wiringName, data);
+                } else {
+                    if (!this.hasOwnProperty('$warned')) {
+                        this['$warned'] = true;
+                        console.warn('Wirecloud is not available. Data sent to OutputEndpoints will be sent to the console instead.');
+                    }
+                    console.log([wiringName, data]);
+                }
+            }
+        }
     });
-} else {
-    MashupPlatform.wiring.registerCallback('oois_in', function (data) {
-        setObjectsOfInterest(JSON.parse(data));
-    });
-
-    MashupPlatform.wiring.registerCallback('ooi-types_in', function (data) {
-        setObjectsOfInterestTypes(JSON.parse(data));
-    });
-
-    MashupPlatform.wiring.registerCallback('point_in', function (data) {
-        executePendingWith(JSON.parse(data), { failSilently: true });
-    });
-
-    $(function () {
-        $('body')
-            .on('command', function (event, data) {
-                MashupPlatform.wiring.pushEvent('command', JSON.stringify(data));
-            })
-            .on('areaCreated', function (event, data) {
-                MashupPlatform.wiring.pushEvent('areas_created_out', JSON.stringify([data]));
-            });
-    });
-}

@@ -1,16 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="ooiCommand">
 <head>
-    <title>Object of Interest viewer</title>
+    <title>Object of Interest commands</title>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/main.css" type="text/css" rel="stylesheet"/>
     <script src="//code.jquery.com/jquery-2.1.0.min.js" type="text/javascript"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js" type="text/javascript"></script>
     <script src="js/extensions.js" type="text/javascript"></script>
     <script src="js/commands.js" type="text/javascript"></script>
     <script src="js/main.js" type="text/javascript"></script>
     <script src="js/wirecloud.js" type="text/javascript"></script>
 </head>
-<body id="container">
+<body>
+
+<div class="containger-fluid" ng-controller="OoiCommandCtrl">
+    <div class="row-fluid">
+        <div class="col-md-6">
+            <h4>Available commands:</h4>
+            <div class="btn-group">
+                <button ng-repeat="cmd in availableCommands | filter:showCommand" ng-disabled="pendingCommand"
+                        ng-click="activateCommand(cmd)" ng-mouseover="showHelpFor(cmd)"
+                        type="button" class="btn btn-default btn-sm btn-cmd {{cmd.css}}"
+                        title="{{cmd.help}}">{{cmd.displayName}}</button>
+            </div>
+
+            <div ng-show="mouseOverCommand">
+                <strong>{{mouseOverCommand.displayName}}:</strong>
+                {{mouseOverCommand.help}}
+            </div>
+
+            <hr ng-show="pendingCommand.targetType" />
+
+            <div ng-show="pendingCommand.targetType" ng-switch on="pendingCommand.targetType">
+                <p>
+                    <span ng-switch-when="point">Please select a point on the map to proceed.</span>
+                <span ng-switch-when="ooi">
+                    Please select an OOI on the map to proceed.
+                    <span ng-if="pendingCommand.targetRestrictedTo">
+                        The OOI must be of type {{prettyOOIType(pendingCommand.targetRestrictedTo)}}.
+                    </span>
+                </span>
+                </p>
+                <p>
+                    <button type="button" class="btn btn-danger btn-sm" ng-click="cancelCommand()">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Cancel command
+                    </button>
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 restrict-height">
+            <h4>Selected:</h4>
+            <ul class="list-unstyled">
+                <li ng-repeat="ooi in oois">{{ prettyOOI(ooi) }} ({{ prettyOOIType(ooi.entityTypeId) }})</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row-fluid" ng-show="commands.length">
+        <div class="col-sm-12">
+            <h4>Issued commands:</h4>
+            <ul>
+                <li ng-repeat="command in commands">
+                    {{command.command.log}} (<span ng-repeat="affected in command.affected"><span ng-if="$index>0">, </span>{{affected.entityName}}</span>)
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

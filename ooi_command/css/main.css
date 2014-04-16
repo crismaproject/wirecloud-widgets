@@ -1,58 +1,13 @@
-button[disabled].btn-command-active {
-    opacity: 1;
-    border-color: #000;
-    -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, .5);
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, .5);
+.btn-cmd {
+    background-position: 4px center;
+    background-repeat: no-repeat;
 }
 
-fieldset ul {
-    margin-left: 15pt;
-    max-height: 92pt;
+.restrict-height {
+    max-height: 240px;
     overflow-y: auto;
 }
 
-div.help {
-    display: none;
-    font-weight: bold;
-    background: url("../img/action-needed.png") no-repeat 2pt 2pt;
-    padding-left: 28px;
-    margin: 1ex 2ex 0;
-    min-height: 32px;
-    -webkit-box-shadow: 4px 4px 7px -1px rgba(0, 0, 0, .25);
-    box-shadow: 4px 4px 7px -1px rgba(0, 0, 0, .25);
-    border-radius: 3pt;
-    border: 1pt solid #cccccc;
-}
-
-div.help em {
-    color: #5056a3;
-    border-bottom: 1px dotted #5056a3;
-    font-style: normal;
-}
-
-#container > fieldset {
-    border-top: 1pt solid #ccc;
-    padding-top: 1ex;
-    margin-top: 1ex;
-    padding-left: 2pt;
-}
-
-#container > fieldset:first-child {
-    border-top: 0 none;
-    padding-top: 0;
-    margin-top: 0;
-}
-
-/* true for all button icons: */
-.ico-cmd-treat,
-.ico-cmd-goto {
-    display: inline-block;
-    vertical-align: -1pt;
-    width: 12px;
-    height: 12px;
-    margin: 0 2pt 0 0;
-}
-
 /* individual settings and overrides: */
-.ico-cmd-treat { background: url("../img/ico-cmd-treat.png") no-repeat; }
-.ico-cmd-goto { background: url("../img/ico-cmd-goto.png") no-repeat; }
+.ico-cmd-treat { background-image: url("../img/ico-cmd-treat.png"); padding-left: 20px }
+.ico-cmd-goto { background-image: url("../img/ico-cmd-goto.png"); padding-left: 20px }

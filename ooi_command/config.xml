@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>ooi_command</Name>
     <DisplayName>OOI Commands</DisplayName>
-    <Version>0.6.0.0</Version>
+    <Version>0.6.1.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Command Objects of Interests</Description>
@@ -22,11 +22,11 @@
   </Catalog.ResourceDescription>
 
   <Platform.Wiring>
-    <InputEndpoint name="oois_in" type="text" label="OOIs" description="" friendcode="oois" />
-    <InputEndpoint name="ooi-types_in" type="text" label="OOI types" description="" friendcode="ooi-types" />
-    <InputEndpoint name="point_in" type="text" label="Coordinates" description="" friendcode="geo-lonlat" />
+    <InputEndpoint name="oois" type="text" label="OOIs" description="" friendcode="oois" />
+    <InputEndpoint name="ooiTypes" type="text" label="OOI types" description="" friendcode="ooi-types" />
+    <InputEndpoint name="point" type="text" label="Coordinates" description="" friendcode="geo-lonlat" />
 
-    <OutputEndpoint name="areas_created_out" type="text" label="Created Areas" description="Areas that were created during an action" friendcode="oois" />
+    <OutputEndpoint name="areasCreated" type="text" label="Created Areas" description="Areas that were created during an action" friendcode="oois" />
     <OutputEndpoint name="command" type="text" label="Command" description="Commands" friendcode="command" />
   </Platform.Wiring>
 
