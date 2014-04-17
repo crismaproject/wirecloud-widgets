@@ -3,6 +3,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         $scope.oois = [];
         $scope.ooiTypes = { };
         $scope.commands = [];
+        $scope.commandableEntityTypes = [];
         $scope.availableCommands = availableCommands;
         $scope.pendingCommand = null;
         $scope.mouseOverCommand = null;
@@ -14,6 +15,10 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
         $scope.prettyOOI = function(entity) {
             return entity.hasOwnProperty('entityName') ? entity.entityName : 'Entity #' + entity.entityId;
+        };
+
+        $scope.isCommandableEntity = function(ooi) {
+            return $scope.commandableEntityTypes.indexOf(ooi.entityTypeId) != -1;
         };
 
         $scope.showCommand = function(command) {
@@ -84,6 +89,22 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             $scope.$apply();
         };
 
+        /****************************************************************
+         * INTERNAL HOUSEKEEPING                                        *
+         ****************************************************************/
+        $scope.$watchCollection('availableCommands', function(commands) {
+            var commandable = { };
+            for (var i = 0; i < commands.length; i++)
+                if (commands[i].hasOwnProperty('entityTypeId'))
+                    commandable[commands[i].entityTypeId] = true;
+            $scope.commandableEntityTypes = [ ];
+            for (var c in commandable)
+                $scope.commandableEntityTypes.push(parseInt(c));
+        });
+
+        /****************************************************************
+         * WIRECLOUD BINDINGS                                           *
+         ****************************************************************/
         wirecloud.on('oois', function(oois) {
             $scope.oois = JSON.parse(oois);
             $scope.$apply();
@@ -104,6 +125,9 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 $scope.executePendingCommandWith(data.ooi);
         });
 
+        /****************************************************************
+         * BROWSER EVENT BINDINGS                                       *
+         ****************************************************************/
         $(document).keyup(function (eventData) {
             // Cancel any pending commands when the ESC key is captured
             if ($scope.pendingCommand && eventData.keyCode == 27)

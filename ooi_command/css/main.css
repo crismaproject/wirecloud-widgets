@@ -8,6 +8,10 @@
     overflow-y: auto;
 }
 
-/* individual settings and overrides: */
+/* command icons */
 .ico-cmd-treat { background-image: url("../img/ico-cmd-treat.png"); padding-left: 20px }
 .ico-cmd-goto { background-image: url("../img/ico-cmd-goto.png"); padding-left: 20px }
+
+/* entity type colors */
+.text-entity-type-7 { color: #b84763 }
+.text-entity-type-14 { color: #6747b8 }
