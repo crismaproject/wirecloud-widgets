@@ -23,6 +23,7 @@
             <time datetime="{{entry.time.toISOString()}}">{{entry.time | date:'HH:mm:ss'}}</time>
         </div>
         <div class="col-sm-11 raw">
+            <span ng-if="entry.times>1" class="badge" title="This entry was repeated {{entry.times}} times in a row.">{{entry.times}}</span>
             {{entry.data}}
         </div>
     </div>

@@ -8,12 +8,20 @@ angular.module('debugListener', ['debugListener.wirecloud'])
         };
 
         wirecloud.on('data', function(data) {
-            $scope.entries.unshift({
-                time: new Date(),
-                data: data
-            });
-            while ($scope.entries.length > maxRows)
-                $scope.entries.pop();
+            if ($scope.entries.length > 0 && $scope.entries[0].data == data) {
+                $scope.entries[0].times++;
+                $scope.entries[0].time = new Date();
+            } else {
+                $scope.entries.unshift({
+                    time: new Date(),
+                    times: 1,
+                    data: data
+                });
+                while ($scope.entries.length > maxRows)
+                    $scope.entries.pop();
+            }
+
+
             $scope.$apply();
         });
     }]);

@@ -3,10 +3,10 @@
     padding-bottom: 2.5pt;
 }
 
-.entry time {
+time {
     color: rgba(0, 0, 0, .5);
 }
 
-.entry .raw {
+.raw {
     font-family: 'Consolas', 'Courier New', monospace;
 }
