@@ -1,35 +1,12 @@
-#data {
-    list-style-type: none;
-    padding: 0
-}
-
-#data li {
+.entry {
     padding-top: 2.5pt;
     padding-bottom: 2.5pt;
 }
 
-#data li time {
-    font-size: 85%;
-    padding-right: 1em;
+.entry time {
     color: rgba(0, 0, 0, .5);
 }
 
-#data li .raw {
+.entry .raw {
     font-family: 'Consolas', 'Courier New', monospace;
-}
-
-#data li:nth-child(even) {
-    background-color: rgb(240, 247, 250)
-}
-
-#data li:hover {
-    background-color: rgb(200, 233, 250)
-}
-
-#data li.text-danger {
-    font-weight: bold;
-}
-
-#data li.text-danger:hover {
-    background-color: rgb(245, 216, 215);
 }

@@ -1,27 +1,37 @@
 /*global MashupPlatform*/
 
-/*
- * Iff the Wirecloud environment is available, register endpoints.
- */
-if (typeof MashupPlatform === 'undefined') {
-    console.warn('Wirecloud environment not detected.');
-    $(function() { appendData('The Wirecloud platform was not detected!', 'text-danger'); });
-} else {
-    var toConsole = false;
-    var applyPreferences = function () {
-        toConsole = MashupPlatform.prefs.get('to_console');
-        rowLimit = MashupPlatform.prefs.get('row_limit');
-    };
+angular.module('debugListener.wirecloud', [])
+    .factory('wirecloud', function () {
+        return {
+            getPreference: function (name, fallback) {
+                return typeof MashupPlatform !== 'undefined' ? MashupPlatform.prefs.get(name) : fallback;
+            },
 
-    MashupPlatform.prefs.registerCallback(applyPreferences);
-    applyPreferences();
+            on: function (event, callback) {
+                if (typeof MashupPlatform !== 'undefined')
+                    MashupPlatform.wiring.registerCallback(event, callback);
+                else if (!this.hasOwnProperty('$warned' + event)) {
+                    this['$warned' + event] = true;
+                    var dummyFunctionName = 'wcTriggerEv_' + event;
+                    console.warn('Wirecloud not detected. Use injected method window.' + dummyFunctionName + ' (event_data) to trigger this event manually manually.');
+                    window[dummyFunctionName] = function(arg) {
+                        callback(typeof arg === 'string' ? arg : JSON.stringify(arg));
+                    };
+                }
+            },
 
-    MashupPlatform.wiring.registerCallback('data', function (data) {
-        appendData(data);
-        if (toConsole)
-            console.log({
-                'received': true,
-                'data': data
-            });
+            send: function (wiringName, data) {
+                if (typeof MashupPlatform !== 'undefined') {
+                    if (typeof data !== 'string')
+                        data = JSON.stringify(data);
+                    MashupPlatform.wiring.pushEvent(wiringName, data);
+                } else {
+                    if (!this.hasOwnProperty('$warned')) {
+                        this['$warned'] = true;
+                        console.warn('Wirecloud is not available. Data sent to OutputEndpoints will be sent to the console instead.');
+                    }
+                    console.log([wiringName, data]);
+                }
+            }
+        }
     });
-}

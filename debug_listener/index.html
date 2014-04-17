@@ -1,15 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="debugListener">
 <head>
     <title>Wirecloud Debug Listener</title>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/main.css" type="text/css" rel="stylesheet"/>
     <script src="//code.jquery.com/jquery-2.1.0.min.js" type="text/javascript"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js" type="text/javascript"></script>
     <script src="js/main.js" type="text/javascript"></script>
     <script src="js/wirecloud.js" type="text/javascript"></script>
 </head>
-<body>
-<ul id="data"></ul>
+<body ng-controller="DebugListenerCtrl">
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="col-sm-offset-10 col-sm-2">
+            <button type="button" class="btn btn-sm btn-default pull-right" ng-click="clear()">Clear</button>
+        </div>
+    </div>
+
+    <div class="row-fluid entry" ng-repeat="entry in entries">
+        <div class="col-sm-1">
+            <time datetime="{{entry.time.toISOString()}}">{{entry.time | date:'HH:mm:ss'}}</time>
+        </div>
+        <div class="col-sm-11 raw">
+            {{entry.data}}
+        </div>
+    </div>
+</div>
 </body>
 </html>
