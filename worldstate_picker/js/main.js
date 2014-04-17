@@ -18,7 +18,9 @@ angular.module('worldStatePickerApp', ['ngResource'])
                     this['$warned' + event] = true;
                     var dummyFunctionName = 'wcTriggerEv_' + event;
                     console.warn('Wirecloud not detected. Use injected method window.' + dummyFunctionName + ' (event_data) to trigger this event manually manually.');
-                    window[dummyFunctionName] = callback;
+                    window[dummyFunctionName] = function(arg) {
+                        callback(typeof arg === 'string' ? arg : JSON.stringify(arg));
+                    };
                 }
             },
 
