@@ -1,28 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="worldStateSaver">
 <head>
     <title>World State saver</title>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/main.css" rel="stylesheet">
     <script src="//code.jquery.com/jquery-2.1.0.min.js" type="text/javascript"></script>
-    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script src="js/jq_extensions.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js" type="text/javascript"></script>
     <script src="js/wsrapi.js" type="text/javascript"></script>
-    <script src="js/wps.js" type="text/javascript"></script>
-    <script src="js/main.js" type="text/javascript"></script>
+    <script src="js/controller.worldStateSaverCtrl.js" type="text/javascript"></script>
+    <script src="js/service.icmm.js" type="text/javascript"></script>
+    <script src="js/service.ooiwsr.js" type="text/javascript"></script>
+    <script src="js/service.wirecloud.js" type="text/javascript"></script>
+    <script src="js/service.helper.js" type="text/javascript"></script>
 </head>
-<body>
+<body ng-controller="worldStateSaverCtrl">
 
-<div class="center">
-    <button id="saveBtn" type="button" class="btn btn-primary shadow">Save</button>
+<div style="text-align: center">
+    <button type="button" class="btn btn-primary" ng-click="finish()" ng-disabled="!worldState || busy">Save</button>
 </div>
 
-<aside>
-    <div id="errorContainer" class="text-danger"></div>
-    <div id="statusContainer" class="text-info"></div>
-    <div id="notificationContainer" class="text-success"></div>
-</aside>
+<ul>
+    <li>
+        <ng-pluralize count="commandQueue.length"
+                      when="{'0': 'No commands have been issued',
+        '1': 'One command has been issued',
+        'other': '{} commands have been issued'}"></ng-pluralize>
+
+        <ul>
+            <li ng-repeat="command in commandQueue | filter:commandHasDisplayableText">
+                <strong>{{prettyOOINames(command.affected)}}:</strong>
+                {{command.command.log}}
+            </li>
+        </ul>
+    </li>
+
+    <li ng-repeat="stat in status">
+        {{stat}}
+    </li>
+</ul>
 
 </body>
 </html>
