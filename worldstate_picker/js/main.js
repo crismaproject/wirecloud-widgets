@@ -78,6 +78,8 @@ angular.module('worldStatePickerApp', ['ngResource'])
         $scope.worldStateList = [];
         $scope.selectedWorldState = null;
 
+        $scope.ooiTypes = null;
+
         $scope.prettySimulation = function (simulation) {
             return simulation.description + ' (' + simulation.simulationId + ')';
         };
@@ -145,6 +147,8 @@ angular.module('worldStatePickerApp', ['ngResource'])
             var $progressBar = $('#progressBar');
             var $progressBarContainer = $('#progressBarContainer');
 
+            $progressBar.css({width: 0});
+
             var advanceProgress = function () {
                 progressCurrent++;
                 var options = { };
@@ -188,18 +192,23 @@ angular.module('worldStatePickerApp', ['ngResource'])
                     $scope.loaded = null;
                 });
 
-            ooiwsr.listEntityTypes()
-                .done(function (ooiTypes) {
-                    wirecloud.send('ooi_types', ooiTypes);
-                    advanceProgress();
-                })
-                .fail(function () {
-                    $scope.loaded = null;
-                });
+            var entityTypes = $scope.ooiTypes;
+            if (entityTypes) {
+                wirecloud.send('ooi_types', entityTypes);
+                advanceProgress();
+            } else
+                ooiwsr.listEntityTypes()
+                    .done(function (ooiTypes) {
+                        $scope.ooiTypes = ooiTypes;
+                        wirecloud.send('ooi_types', ooiTypes);
+                        advanceProgress();
+                    })
+                    .fail(function () {
+                        $scope.loaded = null;
+                    });
         };
 
         $scope.refreshSimulations();
-        //$scope.refreshWorldStates();
 
         wirecloud.on('load_simulation', function (simulation) {
             var setSimulation = function (simulationData) {
@@ -215,18 +224,18 @@ angular.module('worldStatePickerApp', ['ngResource'])
                 throw 'Not sure what to do with the specified object received over the load_simulation endpoint.';
         });
 
-/*        wirecloud.on('load_worldstate', function (newWorldState) {
-            if (!newWorldState.hasOwnProperty('$icmm'))
-                throw 'Cannot load with incomplete worldstate data (yet).'; // TODO: newWorldState will likely be an OOIWSR instance. Needs looking up in the ICMM to find out the ICMM instance.
-            $scope.selectedWorldState = newWorldState;
-            ooiwsr.fetch('/Entity?wsid=' + newWorldState.worldStateId)
-                .done(function (oois) {
-                    wirecloud.send('oois', oois);
-                })
-                .fail(function () {
-                    $scope.loaded = null;
-                });
-        });*/
+        /*        wirecloud.on('load_worldstate', function (newWorldState) {
+         if (!newWorldState.hasOwnProperty('$icmm'))
+         throw 'Cannot load with incomplete worldstate data (yet).'; // TODO: newWorldState will likely be an OOIWSR instance. Needs looking up in the ICMM to find out the ICMM instance.
+         $scope.selectedWorldState = newWorldState;
+         ooiwsr.fetch('/Entity?wsid=' + newWorldState.worldStateId)
+         .done(function (oois) {
+         wirecloud.send('oois', oois);
+         })
+         .fail(function () {
+         $scope.loaded = null;
+         });
+         });*/
     }]);
 
 String.prototype.pluralize = function (n) {
