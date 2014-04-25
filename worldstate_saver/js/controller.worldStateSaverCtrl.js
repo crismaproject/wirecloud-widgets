@@ -28,7 +28,7 @@ angular
         $scope.prettyOOINames = function (ooiIds) {
             return ooiIds.map(function (ooiId) {
                 if (typeof ooiId === 'object' && ooiId.hasOwnProperty('entityId'))
-                    ooiId = ooiId.entityTypeId;
+                    ooiId = ooiId.entityId;
                 for (var i = 0; i < $scope.knownOOIs.length; i++)
                     if ($scope.knownOOIs[i].entityId == ooiId)
                         return $scope.knownOOIs[i].entityName || ooiId.toString();
