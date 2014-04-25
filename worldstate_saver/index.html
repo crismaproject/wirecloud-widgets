@@ -16,14 +16,33 @@
 <body ng-controller="worldStateSaverCtrl">
 
 <div style="text-align: center">
-    <button type="button" class="btn btn-primary" ng-click="finish()" ng-disabled="!worldState || busy">Save</button>
+    <button type="button" class="btn btn-primary" ng-click="finish()" ng-disabled="!worldState || busy">
+        <span class="glyphicon glyphicon-time"></span>
+        <span class="glyphicon glyphicon-forward"></span>
+        Advance time
+    </button>
 </div>
 
 <ul>
+    <li ng-show="!worldState" class="text-danger">
+        <span class="glyphicon glyphicon-warning-sign"></span>
+        Waiting for world state&hellip;
+    </li>
+
+    <li ng-show="!knownOOIs.length" class="text-danger">
+        <span class="glyphicon glyphicon-warning-sign"></span>
+        Waiting for OOIs&hellip;
+    </li>
+
     <li>
         <ng-pluralize count="commandQueue.length"
                       when="{'0': 'No commands have been issued',
         '1': 'One command has been issued',
+        '2': 'Two commands have been issued',
+        '3': 'Three commands have been issued',
+        '4': 'Four commands have been issued',
+        '5': 'Five commands have been issued',
+        '6': 'Six commands have been issued',
         'other': '{} commands have been issued'}"></ng-pluralize>
 
         <ul>

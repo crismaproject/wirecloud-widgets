@@ -54,9 +54,11 @@ angular
             worldStateUpdater
                 .finalizeWorldState($scope.worldState, $scope.commandQueue, $scope.knownOOIs)
                 .then(
-                function(success) {
+                function(createdWorldState) {
                     $scope.status.push('Operation complete.');
                     $scope.busy = false;
+
+                    wirecloud.send('created_worldstate', createdWorldState);
                 },
                 function(error) {
                     $scope.status.push('Operation failed.');
