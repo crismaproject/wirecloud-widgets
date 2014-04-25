@@ -131,10 +131,12 @@ angular.module('worldStatePickerApp', ['ngResource'])
 
         $scope.refreshSimulations = function () {
             $scope.isRefreshingSimulations = true;
-            return ooiwsr.listSimulations()
+            return ooiwsr
+                .listSimulations()
                 .done(function (sims) {
                     $scope.simulationList = sims;
                     $scope.isRefreshingSimulations = false;
+                    $scope.$apply();
                 });
         };
 
