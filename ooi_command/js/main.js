@@ -35,7 +35,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         };
 
         $scope.activateCommand = function(command) {
-            $scope.pendingCommand = command;
+            $scope.pendingCommand = $.extend(true, {}, command);
 
             if (!command.hasOwnProperty('targetType'))
                 $scope.executePendingCommandWith(null);
