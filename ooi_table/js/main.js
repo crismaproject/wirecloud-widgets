@@ -139,12 +139,13 @@ GroupManager.prototype.setOOIs = function (oois) {
     // it's a bit of a dirty workaround, but it will suffice for now.
     var selected = [ ];
     var grouped = [ ];
+    var i, j;
 
     if (this.oois.length) {
         var selectedScope = $('tr[data-index].selected', this.container);
-        for (var i = 0; i < selectedScope.length; i++) {
+        for (i = 0; i < selectedScope.length; i++) {
             var ooiGroup = this.oois[$(selectedScope[i]).attr('data-index')];
-            for (var j = 0; j < ooiGroup.length; j++)
+            for (j = 0; j < ooiGroup.length; j++)
                 selected.push(ooiGroup[j].entityId);
         }
 
@@ -156,8 +157,11 @@ GroupManager.prototype.setOOIs = function (oois) {
 
     // now replace the old data with the new one
     this.oois = [ ];
-    for (var i = 0; i < oois.length; i++)
-        this.oois.push([ oois[i] ]);
+    for (i = 0; i < oois.length; i++) {
+        var ooi = oois[i];
+        if (!ooiTypeFilters.hasOwnProperty(ooi.entityTypeId) || ooiTypeFilters[ooi.entityTypeId](ooi))
+            this.oois.push([ oois[i] ]);
+    }
 
     this.rebuildUI();
 
