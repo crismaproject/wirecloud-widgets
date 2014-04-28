@@ -216,6 +216,8 @@ angular.module('worldStatePickerApp', ['ngResource'])
                 $scope.selectedSimulation = simulationData;
                 $scope.refreshWorldStates(simulationData.simulationId, true);
             };
+
+            simulation = JSON.parse(simulation);
             if (typeof simulation === 'number')
                 ooiwsr.getSimulation(simulation).done(setSimulation);
             else if(simulation.hasOwnProperty('simulationId'))
