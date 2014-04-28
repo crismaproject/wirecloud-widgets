@@ -30,6 +30,10 @@ angular.module('worldStateSaver.wirecloud', [])
                     }
                     console.log([wiringName, data]);
                 }
+            },
+
+            proxyURL: function (url) {
+                return typeof MashupPlatform !== 'undefined' ? MashupPlatform.http.buildProxyURL(url) : url;
             }
         }
     });

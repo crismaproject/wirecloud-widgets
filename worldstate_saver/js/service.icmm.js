@@ -1,7 +1,7 @@
 angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
     .service('icmm', ['$q', '$http', 'wirecloud', function($q, $http, wirecloud) {
         return {
-            icmm: wirecloud.getPreference('icmm', 'http://crisma.cismet.de/pilotC/icmm_api'),
+            icmm: wirecloud.proxyURL(wirecloud.getPreference('icmm')),
 
             /**
              * @param {string} resource
@@ -64,10 +64,10 @@ angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
                                 var parentIcmmWsUrl = $me.icmm + '/CRISMA.worldstates/' + parentWorldState['$icmm'].id + '?deduplicate=true&level=1';
                                 $http.get(parentIcmmWsUrl)
                                     .then(function(parentIcmmWs) {
-                                        if (!parentIcmmWs.hasOwnProperty('childworldstates'))
-                                            parentIcmmWs.childworldstates = [];
-                                        parentIcmmWs.childworldstates.push({ '$ref': '/CRISMA.worldstates/' + ids[0] });
-                                        $http.put(parentIcmmWsUrl, parentIcmmWs, $httpOptions)
+                                        if (!parentIcmmWs.data.hasOwnProperty('childworldstates'))
+                                            parentIcmmWs.data.childworldstates = [];
+                                        parentIcmmWs.data.childworldstates.push({ '$ref': '/CRISMA.worldstates/' + ids[0] });
+                                        $http.put(parentIcmmWsUrl, parentIcmmWs.data, $httpOptions)
                                             .then(function () {
                                                 deferred.resolve(ids[0]);
                                             }, deferred.reject);
