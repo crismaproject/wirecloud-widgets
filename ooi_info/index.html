@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html ng-app="ooiInfo">
+<head>
+    <title>Object of Interest</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="//code.jquery.com/jquery-2.1.0.min.js" type="text/javascript"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js" type="text/javascript"></script>
+    <script src="js/main.js" type="text/javascript"></script>
+    <script src="js/wirecloud.js" type="text/javascript"></script>
+</head>
+<body ng-controller="OoiInfoCtrl">
+
+<table ng-repeat="ooi in oois | filter:hasProperties | orderBy:'entityName'" class="table table-condensed table-hover table-bordered">
+    <caption>{{ooi.entityName}} <span class="text-muted">({{ooiTypeNames[ooi.entityTypeId]}})</span></caption>
+    <thead>
+    <tr>
+        <th style="width: 50%">Property</th>
+        <th style="width: 50%">Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="prop in ooi.entityInstancesProperties | filter:hasValues">
+        <td>{{ooiPropertyNames[prop.entityTypePropertyId]}}</td>
+        <td>{{prop.entityPropertyValue}}</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
