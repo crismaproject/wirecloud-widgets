@@ -1,25 +1,38 @@
 angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
         {
-            id: 'treat',
-            css: 'ico-cmd-treat',
-            displayName: 'Create treatment area',
-            help: 'This will create a new area in which patients can be treated.',
+            id: 'create-evac',
+            css: 'ico-cmd-evac',
+            displayName: 'Create evacuation zone',
+            help: 'This will create a new area designated to evacuate people.',
             targetType: 'point',
             spawnArea: {
-                entityName: 'Treatment area',
+                entityName: 'Evacuation zone',
                 entityTypeId: 14
             },
-            log: 'Create treatment area'
+            log: 'Create evacuation zone near lat. #{data.lat}, long. #{data.lon}'
         },
         {
-            id: 'treat',
-            css: 'ico-cmd-treat',
-            entityTypeId: 7,
-            displayName: 'Treat',
-            help: 'This command orders an ambulance to a specified location to treat or pick-up patients.',
+            id: 'create-decontamination',
+            css: 'ico-cmd-decontamination',
+            displayName: 'Create decontamination zone',
+            help: 'This will create a new area designated to decontamination.',
             targetType: 'point',
-            log: 'Treating patients near lat. #{data.lat}, long. #{data.lon}',
+            spawnArea: {
+                entityName: 'Decontamination zone',
+                entityTypeId: 14
+            },
+            log: 'Create decontamination zone near lat. #{data.lat}, long. #{data.lon}'
+        },
+        {
+            id: 'dispatch',
+            css: 'ico-cmd-goto',
+            entityTypeId: 7,
+            displayName: 'Dispatch',
+            help: 'This command orders an ambulance to a specified location to treat or pick-up patients.',
+            targetType: 'ooi',
+            targetRestrictedTo: 14,
+            log: 'Dispatch to area near lat. #{data.lat}, long. #{data.lon}',
             isAvailable: function (ambulance) {
                 var properties = ambulance.entityInstancesProperties;
                 for (var i = 0; i < properties.length; i++) {
