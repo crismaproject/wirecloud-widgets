@@ -1,6 +1,8 @@
 angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
     .service('icmm', ['$q', '$http', 'wirecloud', function($q, $http, wirecloud) {
         return {
+            icmm_direct: wirecloud.getPreference('icmm'),
+
             icmm: wirecloud.proxyURL(wirecloud.getPreference('icmm')),
 
             /**

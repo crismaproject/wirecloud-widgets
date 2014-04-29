@@ -1,11 +1,11 @@
-angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateSaver.icmm'])
+angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateSaver.icmm', 'worldStateSaver.wps'])
     .constant('emptyWorldState', {
         simulationId: null,
         worldStateParentId: null,
         description: '',
         dateTime: null
     })
-    .service('worldStateUpdater', ['$q', 'emptyWorldState', 'ooiwsr', 'icmm', function($q, emptyWorldState, ooiwsr, icmm) {
+    .service('worldStateUpdater', ['$q', 'emptyWorldState', 'ooiwsr', 'icmm', 'wps', function($q, emptyWorldState, ooiwsr, icmm, wps) {
         return {
             finalizeWorldState: function (activeWorldState, commands, knownOOIs) {
                 var deferred = $q.defer();
@@ -28,7 +28,13 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
                                             .then(function (icmmId) {
                                                 worldState['$icmm'] = { id: icmmId };
                                                 deferred.notify({status: 'ICMM has been updated', data: worldState, progress: 4});
-                                                deferred.resolve(worldState);
+                                                //deferred.resolve(worldState);
+                                                wps
+                                                    .executeProcess('AgentsResourceModel', { ICMMworldstateURL: icmm.icmm_direct + '/CRISMA.worldstates/' + icmmId })
+                                                    .then(function() {
+                                                        deferred.notify({status: 'Agent model has been invoked', data: worldState, progress: 5});
+                                                        deferred.resolve(worldState);
+                                                    });
                                             });
                                     });
                             });

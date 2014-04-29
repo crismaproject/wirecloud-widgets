@@ -9,6 +9,8 @@
     <script src="js/wsrapi.js" type="text/javascript"></script>
     <script src="js/controller.worldStateSaverCtrl.js" type="text/javascript"></script>
     <script src="js/service.icmm.js" type="text/javascript"></script>
+    <script src="js/wps.js" type="text/javascript"></script>
+    <script src="js/service.wps.js" type="text/javascript"></script>
     <script src="js/service.ooiwsr.js" type="text/javascript"></script>
     <script src="js/service.wirecloud.js" type="text/javascript"></script>
     <script src="js/service.helper.js" type="text/javascript"></script>
@@ -16,11 +18,20 @@
 <body ng-controller="worldStateSaverCtrl">
 
 <div style="text-align: center">
-    <button type="button" class="btn btn-primary" ng-click="finish()" ng-disabled="!worldState || busy">
-        <span class="glyphicon glyphicon-time"></span>
-        <span class="glyphicon glyphicon-forward"></span>
-        Advance time
-    </button>
+    <div>
+        <button type="button" class="btn btn-primary" ng-click="finish()" ng-disabled="!worldState || busy">
+            <span class="glyphicon glyphicon-time"></span>
+            <span class="glyphicon glyphicon-forward"></span>
+            Advance time
+        </button>
+    </div>
+
+    <div>
+        <label>
+            <input id="autoAdvance" type="checkbox" ng-model="autoAdvance">
+            Automatically advance to next world state when done?
+        </label>
+    </div>
 </div>
 
 <ul>

@@ -4,7 +4,7 @@
         <Vendor>AIT</Vendor>
         <Name>worldstate_saver</Name>
         <DisplayName>World State Saver</DisplayName>
-        <Version>0.6.2.4</Version>
+        <Version>0.6.2.5</Version>
         <Author>Manuel Warum</Author>
         <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
         <Description>
@@ -19,6 +19,7 @@
     <Platform.Preferences>
         <Preference name="ooiwsr" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI" default="http://localhost/api"/>
         <Preference name="icmm" type="text" description="URI to the ICMM API" label="ICMM API URI"/>
+        <Preference name="wps" type="text" description="URI to the WPS" label="WPS URI"/>
     </Platform.Preferences>
 
     <Platform.Wiring>

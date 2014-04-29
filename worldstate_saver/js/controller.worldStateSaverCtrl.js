@@ -3,6 +3,7 @@ angular
         'worldStateSaver.wirecloud',
         'worldStateSaver.icmm',
         'worldStateSaver.ooiwsr',
+        'worldStateSaver.wps',
         'worldStateSaver.helper'
     ])
     .config(function($logProvider){
@@ -14,6 +15,7 @@ angular
         $scope.commandQueue = [ ];
         $scope.status = [ ];
         $scope.busy = false;
+        $scope.autoAdvance = true;
 
         $scope.commandHasDisplayableText = function (command) {
             return command.command.hasOwnProperty('log');
