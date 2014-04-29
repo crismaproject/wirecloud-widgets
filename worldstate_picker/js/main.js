@@ -1,6 +1,6 @@
 angular.module('worldStatePickerApp', ['ngResource'])
     .factory('ooiwsr', ['wirecloud', function (wirecloud) {
-        var apiUri = wirecloud.getPreference('ooiwsr');
+        var apiUri = wirecloud.getPreference('ooiwsr', 'http://crisma-ooi.ait.ac.at/api');
         if (!apiUri) {
             throw 'No OOI-WSR API URI configured!';
         } else return new WorldStateRepository(apiUri);
@@ -40,7 +40,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
         }
     })
     .factory('icmm', ['$http', '$resource', 'wirecloud', function ($http, $resource, wirecloud) {
-        var icmmUri = wirecloud.getPreference('icmm');
+        var icmmUri = wirecloud.getPreference('icmm', 'http://crisma.cismet.de/pilotC/icmm_api');
         var icmmWsUri = icmmUri + '/CRISMA.worldstates?filter=ooiRepositorySimulationId%3A:simulationId';
         return $resource(icmmWsUri, { simulationId: '@id' }, {
             query: {
@@ -168,7 +168,12 @@ angular.module('worldStatePickerApp', ['ngResource'])
             $progressBar.removeClass('progress-bar-success');
             $scope.loaded = $scope.selectedWorldState;
 
-            wirecloud.send('simulation', $scope.selectedSimulation);
+            var simulation = $.extend({
+                selectedWorldState: $scope.selectedWorldState,
+                worldStates: $scope.worldStateList
+            }, $scope.selectedSimulation);
+
+            wirecloud.send('simulation', simulation);
             advanceProgress();
 
             var ooiwsrWorldStateAccess = JSON.parse($scope.selectedWorldState.worldstatedata[0].actualaccessinfo.replace(/'/g, '"'));
