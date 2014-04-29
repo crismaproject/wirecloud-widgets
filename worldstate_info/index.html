@@ -18,10 +18,18 @@
             {{activeSimulation.description}}
         </div>
 
-        <div class="col-sm-6" ng-show="activeWorldState" data-ws-id="{{activeWorldState.worldStateId}}">
+        <div class="col-sm-5" ng-show="activeWorldState && showAllWorldStates" data-ws-id="{{activeWorldState.worldStateId}}">
             <strong>World State:</strong>
             {{activeWorldState.description}}
             <span class="text-muted">({{activeWorldState.dateTime}})</span>
+        </div>
+
+        <div class="col-sm-5" ng-hide="showAllWorldStates">
+            <select ng-options="name for id in allWorldStates" ng-model="selectedWorldState"></select>
+        </div>
+
+        <div class="col-sm-1">
+            <input type="checkbox" ng-model="showAllWorldStates">
         </div>
     </div>
 </div>

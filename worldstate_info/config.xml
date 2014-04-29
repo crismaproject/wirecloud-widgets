@@ -19,6 +19,8 @@
     <Platform.Wiring>
         <InputEndpoint name="simulation" type="text" label="Simulation" friendcode="simulation"/>
         <InputEndpoint name="worldstate" type="text" label="World State" friendcode="worldstate"/>
+
+        <OutputEndpoint name="select_worldstate" type="text" label="Go to World State" friendcode="worldstate"/>
     </Platform.Wiring>
 
     <Platform.Link>

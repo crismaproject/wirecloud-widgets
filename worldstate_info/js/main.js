@@ -36,9 +36,16 @@ angular.module('worldStateInfoApp', [])
     .controller('WorldStateInfoApp', ['$scope', 'wirecloud', function ($scope, wirecloud) {
         $scope.activeSimulation = null;
         $scope.activeWorldState = null;
+        $scope.allWorldStates = [ ];
+        $scope.showAllWorldStates = false;
+        $scope.selectedWorldState = null;
 
         wirecloud.on('simulation', function (simulation) {
             $scope.activeSimulation = JSON.parse(simulation);
+            if ($scope.activeSimulation.hasOwnProperty('worldStates'))
+                $scope.allWorldStates = $scope.activeSimulation.worldStates;
+            if (!$scope.activeWorldState && $scope.activeSimulation.hasOwnProperty('selectedWorldState'))
+                $scope.activeWorldState = $scope.activeSimulation.selectedWorldState;
             $scope.$apply();
         });
 
