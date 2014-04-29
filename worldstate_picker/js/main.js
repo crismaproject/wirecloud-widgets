@@ -217,27 +217,15 @@ angular.module('worldStatePickerApp', ['ngResource'])
                 $scope.refreshWorldStates(simulationData.simulationId, true);
             };
 
-            simulation = JSON.parse(simulation);
+            try { simulation = JSON.parse(simulation); } catch (e) { }
+
             if (typeof simulation === 'number')
                 ooiwsr.getSimulation(simulation).done(setSimulation);
-            else if(simulation.hasOwnProperty('simulationId'))
+            else if(typeof simulation === 'object' && simulation.hasOwnProperty('simulationId'))
                 setSimulation(simulation);
             else
-                throw 'Not sure what to do with the specified object received over the load_simulation endpoint.';
+                console.warn('Not sure what to do with the specified object received over the load_simulation endpoint.');
         });
-
-        /*        wirecloud.on('load_worldstate', function (newWorldState) {
-         if (!newWorldState.hasOwnProperty('$icmm'))
-         throw 'Cannot load with incomplete worldstate data (yet).'; // TODO: newWorldState will likely be an OOIWSR instance. Needs looking up in the ICMM to find out the ICMM instance.
-         $scope.selectedWorldState = newWorldState;
-         ooiwsr.fetch('/Entity?wsid=' + newWorldState.worldStateId)
-         .done(function (oois) {
-         wirecloud.send('oois', oois);
-         })
-         .fail(function () {
-         $scope.loaded = null;
-         });
-         });*/
     }]);
 
 String.prototype.pluralize = function (n) {
