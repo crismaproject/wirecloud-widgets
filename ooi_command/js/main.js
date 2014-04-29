@@ -2,7 +2,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
     .controller('OoiCommandCtrl', ['$scope', 'wirecloud', 'availableCommands', function($scope, wirecloud, availableCommands) {
         $scope.oois = [];
         $scope.ooiTypes = { };
-        $scope.commands = [];
         $scope.commandableEntityTypes = [];
         $scope.availableCommands = availableCommands;
         $scope.pendingCommand = null;
@@ -84,7 +83,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             };
 
             wirecloud.send('command', commandObj);
-            $scope.commands.push(commandObj);
             $scope.pendingCommand = null;
             $scope.$apply();
         };

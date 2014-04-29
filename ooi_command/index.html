@@ -62,19 +62,6 @@
             </fieldset>
         </div>
     </div>
-
-    <div class="row-fluid" ng-show="commands.length">
-        <div class="col-sm-12">
-            <fieldset>
-            <legend>Issued commands:</legend>
-            <ul>
-                <li ng-repeat="command in commands">
-                    {{command.command.log}} (<span ng-repeat="affected in command.affected"><span ng-if="$index>0">, </span>{{affected.entityName}}</span>)
-                </li>
-            </ul>
-            </fieldset>
-        </div>
-    </div>
 </div>
 
 </body>
