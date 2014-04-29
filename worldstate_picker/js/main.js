@@ -1,6 +1,6 @@
 angular.module('worldStatePickerApp', ['ngResource'])
     .factory('ooiwsr', ['wirecloud', function (wirecloud) {
-        var apiUri = wirecloud.getPreference('ooiwsr', 'http://crisma-ooi.ait.ac.at/api');
+        var apiUri = wirecloud.getPreference('ooiwsr');
         if (!apiUri) {
             throw 'No OOI-WSR API URI configured!';
         } else return new WorldStateRepository(apiUri);
@@ -40,7 +40,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
         }
     })
     .factory('icmm', ['$http', '$resource', 'wirecloud', function ($http, $resource, wirecloud) {
-        var icmmUri = wirecloud.getPreference('icmm', 'http://crisma.cismet.de/pilotC/icmm_api');
+        var icmmUri = wirecloud.getPreference('icmm');
         var icmmWsUri = icmmUri + '/CRISMA.worldstates?filter=ooiRepositorySimulationId%3A:simulationId';
         return $resource(icmmWsUri, { simulationId: '@id' }, {
             query: {
