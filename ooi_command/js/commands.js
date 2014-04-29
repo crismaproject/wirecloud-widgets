@@ -29,10 +29,10 @@ angular.module('ooiCommand.commands', [])
             css: 'ico-cmd-goto',
             entityTypeId: 7,
             displayName: 'Dispatch',
-            help: 'This command orders an ambulance to a specified location to treat or pick-up patients.',
+            help: 'This command orders an ambulance to pick up patients and bring them to the specified hospital.',
             targetType: 'ooi',
-            targetRestrictedTo: 14,
-            log: 'Dispatch to area near lat. #{data.lat}, long. #{data.lon}',
+            targetRestrictedTo: 9,
+            log: 'Dispatch and haul patients to the hospital.',
             isAvailable: function (ambulance) {
                 var properties = ambulance.entityInstancesProperties;
                 for (var i = 0; i < properties.length; i++) {
@@ -43,15 +43,5 @@ angular.module('ooiCommand.commands', [])
                 }
                 return true;
             }
-        },
-        {
-            id: 'goto',
-            css: 'ico-cmd-goto',
-            entityTypeId: 14,
-            displayName: 'Set target',
-            help: 'This command will set where patients within this zone should be moved to next.',
-            targetType: 'ooi',
-            targetRestrictedTo: 14,
-            log: 'Treating patients will be moved to #{data.entityName}'
         }
     ]);
