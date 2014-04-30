@@ -8,5 +8,9 @@ var ooiTypeFilters = {
                 return property.entityPropertyValue === 0 || property.entityPropertyValue === '0';
         }
         return true;
+    },
+    14: function show(area) {
+        var geometry = area.entityInstancesGeometry;
+        return geometry.length;
     }
 };
