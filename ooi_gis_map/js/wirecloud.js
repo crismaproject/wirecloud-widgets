@@ -6,6 +6,17 @@ var selected = [];
 /** @const */
 var bboxExpression = /^(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+)$/;
 
+function setOOIs(entities) {
+    entitiesLookupTable = { };
+    for (var i = 0; i < entities.length; i++) {
+        var entity = entities[i];
+        if (entity.hasOwnProperty('entityId') && entity.entityId >= 0)
+            entitiesLookupTable[entity.entityId] = entity;
+
+        map.createOOI(entity);
+    }
+}
+
 /*
  * Iff the Wirecloud environment is available, register endpoints.
  */
@@ -39,15 +50,7 @@ if (typeof MashupPlatform === 'undefined') {
     applyPreferences();
 
     MashupPlatform.wiring.registerCallback('oois_in', function (data) {
-        entitiesLookupTable = { };
-        var entities = JSON.parse(data);
-        for (var i = 0; i < entities.length; i++) {
-            var entity = entities[i];
-            if (entity.hasOwnProperty('entityId') && entity.entityId >= 0)
-                entitiesLookupTable[entity.entityId] = entity;
-
-            map.createOOI(entity);
-        }
+        setOOIs(JSON.parse(data));
     });
 
     MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {
