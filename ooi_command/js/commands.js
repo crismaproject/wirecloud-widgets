@@ -42,6 +42,9 @@ angular.module('ooiCommand.commands', [])
                         return property.entityPropertyValue !== 0 && property.entityPropertyValue !== '0';
                 }
                 return true;
+            },
+            setProperties: {
+                315: '#{data.entityId}'
             }
         }
     ]);

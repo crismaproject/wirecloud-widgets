@@ -54,7 +54,16 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 if (root.hasOwnProperty(key))
                     root[key] = root[key].replace(/#\{((data|command)(\.[a-zA-Z0-9_]+|\[[0-9]+\])*)\}/g, function (x,y) {
                         // TODO: evaluate potential security concerns. eval is usually bad. but it gets the job done.
-                        return eval(y);
+                        try {
+                            return eval(y);
+                        } catch (e) {
+                            console.error({
+                                message: 'Failed to properly inject data into the current pending command',
+                                command: $scope.pendingCommand,
+                                key: key,
+                                key_in: root
+                            });
+                        }
                     });
                 return root;
             };
