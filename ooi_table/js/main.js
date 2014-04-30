@@ -93,12 +93,14 @@ GroupManager.prototype.rebuildUI = function () {
                 container.append($('<tr></tr>')
                     .addClass('grouped')
                     .attr('data-parent-id', i)
+                    .append($('<td class="text-muted"></td>').text(currentGroup[j].entityId))
                     .append($('<td></td>').text(currentGroup[j].entityName))
                     .append($('<td></td>').text(this.ooiTypes[currentGroup[j].entityTypeId] ? this.ooiTypes[currentGroup[j].entityTypeId].entityTypeName : '(' + currentGroup[0].entityTypeId + ')'))
                     .click(function () { $('tr[data-index='+$(this).attr('data-parent-id')+']', container).click(); }));
             }
         } else {
             row
+                .append($('<td class="text-muted"></td>').text(currentGroup[0].entityId))
                 .append($('<td></td>').text(currentGroup[0].entityName))
                 .append($('<td></td>').text(this.ooiTypes[currentGroup[0].entityTypeId] ? this.ooiTypes[currentGroup[0].entityTypeId].entityTypeName : '(' + currentGroup[0].entityTypeId + ')'));
         }
