@@ -34,7 +34,5 @@ angular.module('ooiInfo', ['ooiInfo.wirecloud'])
             }
 
             $scope.$apply();
-            console.log($scope.ooiTypeNames);
-            console.log($scope.ooiPropertyNames);
         });
     }]);
