@@ -1,6 +1,6 @@
 angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
-        {
+        /*{
             id: 'create-evac',
             css: 'ico-cmd-evac',
             displayName: 'Create evacuation zone',
@@ -23,7 +23,7 @@ angular.module('ooiCommand.commands', [])
                 entityTypeId: 14
             },
             log: 'Create decontamination zone near lat. #{data.lat}, long. #{data.lon}'
-        },
+        },*/
         {
             id: 'pickup',
             css: 'ico-cmd-goto',
