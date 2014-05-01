@@ -20,9 +20,12 @@
 <div style="text-align: center">
     <div>
         <button type="button" class="btn btn-primary" ng-click="finish()" ng-disabled="!worldState || busy">
-            <span class="glyphicon glyphicon-time"></span>
+            <!-- TODO: verify label of button -->
+            <ng-pluralize count="commandQueue.length"
+                          when="{'0': 'Advance time',
+                                 '1': 'Process command',
+                             'other': 'Process commands'}"></ng-pluralize>
             <span class="glyphicon glyphicon-forward"></span>
-            Advance time
         </button>
     </div>
 
