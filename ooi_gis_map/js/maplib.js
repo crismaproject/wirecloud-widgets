@@ -6,8 +6,9 @@
 function OpenLayersFacade(container) {
     /** @const */
     var EPSG_4326_PROJECTION = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
-    var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer');
-    var ooiLayer = new OpenLayers.Layer.Vector('OOI Layer');
+    var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer', { renderers: ["Canvas", "SVG", "VML"] });
+    var ooiLayer = new OpenLayers.Layer.Vector('OOI Layer', { renderers: ["Canvas", "SVG", "VML"] });
+    ooiLayer.setZIndex(1001);
     var ooiStyle = $.extend({}, OpenLayers.Feature.Vector.style['default'], {
         graphicWidth: 25,
         graphicHeight: 25,
