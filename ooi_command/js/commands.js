@@ -35,7 +35,7 @@ angular.module('ooiCommand.commands', [])
                     var property = properties[i];
                     // Check target availability time; 0 = now, >0 = later, <0 = never
                     if (property.entityTypePropertyId == 312)
-                        return property.entityPropertyValue !== 0 || property.entityPropertyValue !== '0';
+                        return property.entityPropertyValue == '0';
                 }
                 return true;
             },
@@ -49,7 +49,7 @@ angular.module('ooiCommand.commands', [])
             css: 'ico-cmd-goto',
             entityTypeId: 7,
             displayName: 'Dispatch Ambulances',
-            help: 'This command orders an ambulance to collect Patients from a Pickup-Area and transfer them to the specified hospital.',
+            help: 'This command orders an ambulance to transfer collected patients to the specified hospital.',
             targetType: 'ooi',
             targetRestrictedTo: 9,
             log: 'Bring patients to the hospital.',
@@ -59,7 +59,7 @@ angular.module('ooiCommand.commands', [])
                     var property = properties[i];
                     // Check target availability time; 0 = now, >0 = later, <0 = never
                     if (property.entityTypePropertyId == 312)
-                        return property.entityPropertyValue !== 0 && property.entityPropertyValue !== '0';
+                        return property.entityPropertyValue == '0';
                 }
                 return true;
             },
