@@ -58,8 +58,9 @@ angular
 
                     wirecloud.send('created_worldstate', createdWorldState);
                 },
-                function() {
-                    $scope.status.push('Operation failed.');
+                function(errorMesg) {
+                    $scope.status.push('Operation failed!');
+                    $scope.status.push('Failure reason:' + (errorMesg || 'unknown'));
                     $scope.busy = false;
                 },
                 function(x) {

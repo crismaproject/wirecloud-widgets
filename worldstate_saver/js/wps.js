@@ -117,7 +117,7 @@ WPS.prototype.executeProcess = function (processId, args) {
     argStr = encodeURIComponent(argStr);
     $.get(this.baseUri + '?service=WPS&request=Execute&version=1.0.0&identifier=' + processId + '&datainputs=' + argStr).done(function (response) {
         if ($('ProcessFailed', response).length)
-            deferred.rejectWith($this);
+            deferred.rejectWith($this, [response]);
         else {
             var returnValue = { };
             $('Output', response).each(function (index, output) {
