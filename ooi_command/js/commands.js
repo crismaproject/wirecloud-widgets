@@ -1,29 +1,20 @@
 angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
-        /*{
-            id: 'create-evac',
-            css: 'ico-cmd-evac',
-            displayName: 'Create evacuation zone',
-            help: 'This will create a new area designated to evacuate people.',
-            targetType: 'point',
-            spawnArea: {
-                entityName: 'Evacuation zone',
-                entityTypeId: 14
-            },
-            log: 'Create evacuation zone near lat. #{data.lat}, long. #{data.lon}'
-        },
         {
-            id: 'create-decontamination',
-            css: 'ico-cmd-decontamination',
-            displayName: 'Create decontamination zone',
-            help: 'This will create a new area designated to decontamination.',
+            id: 'create-pickup',
+            css: 'ico-cmd-pickup',
+            displayName: 'Create pickup area',
+            help: 'This will create a new area designated to pick up people.',
             targetType: 'point',
             spawnArea: {
-                entityName: 'Decontamination zone',
-                entityTypeId: 14
+                entityName: 'Pickup Area',
+                entityTypeId: 14,
+                entityInstancesProperties: [
+                    { entityTypePropertyId: 54, entityPropertyValue: 'Pickup-Area' }
+                ]
             },
-            log: 'Create decontamination zone near lat. #{data.lat}, long. #{data.lon}'
-        },*/
+            log: 'Create pickup area near lat. #{data.lat}, long. #{data.lon}'
+        },
         {
             id: 'pickup',
             css: 'ico-cmd-goto',
@@ -33,7 +24,9 @@ angular.module('ooiCommand.commands', [])
             targetType: 'ooi',
             targetRestrictedTo: 14,
             isTargetAllowed: function (data) {
-                return true; // TODO: requires pick-up area
+                return data.entityInstancesProperties.indexOfWhere(function (p) {
+                    return p.entityTypePropertyId == 54 && p.entityPropertyValue == 'Pickup-Area';
+                }) != -1;
             },
             log: 'Retrieve patients from an area.',
             isAvailable: function (ambulance) {
@@ -42,7 +35,7 @@ angular.module('ooiCommand.commands', [])
                     var property = properties[i];
                     // Check target availability time; 0 = now, >0 = later, <0 = never
                     if (property.entityTypePropertyId == 312)
-                        return property.entityPropertyValue !== 0 && property.entityPropertyValue !== '0';
+                        return property.entityPropertyValue == '0';
                 }
                 return true;
             },
@@ -50,12 +43,13 @@ angular.module('ooiCommand.commands', [])
                 314: '#{data.entityId}'
             }
         },
+
         {
             id: 'dispatch',
             css: 'ico-cmd-goto',
             entityTypeId: 7,
             displayName: 'Dispatch Ambulances',
-            help: 'This command orders an ambulance to collect Patients from a Pickup-Area and transfer them to the specified hospital.',
+            help: 'This command orders an ambulance to transfer collected patients to the specified hospital.',
             targetType: 'ooi',
             targetRestrictedTo: 9,
             log: 'Bring patients to the hospital.',
@@ -65,12 +59,25 @@ angular.module('ooiCommand.commands', [])
                     var property = properties[i];
                     // Check target availability time; 0 = now, >0 = later, <0 = never
                     if (property.entityTypePropertyId == 312)
-                        return property.entityPropertyValue !== 0 && property.entityPropertyValue !== '0';
+                        return property.entityPropertyValue == '0';
                 }
                 return true;
             },
-            setProperties: {
-                315: '#{data.entityId}'
+            apply: function(command, data, ooi, allOOIs) {
+                var i = allOOIs.indexOfWhere(function (o) {
+                    return o.entityTypeId == 14 && o.entityInstancesProperties.length &&
+                        o.entityInstancesProperties.indexOfWhere(function (p) {
+                            return p.entityTypePropertyId == 54 && p.entityPropertyValue == 'Pickup-Area';
+                        }) != -1});
+
+                if (i == -1) return null;
+
+                command.setProperties = $.extend({}, command.setProperties, {
+                    315: data.entityId,
+                    314: allOOIs[i]
+                });
+
+                return command;
             }
         }
     ]);

@@ -1,6 +1,7 @@
 angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
     .controller('OoiCommandCtrl', ['$scope', 'wirecloud', 'availableCommands', function($scope, wirecloud, availableCommands) {
         $scope.oois = [];
+        $scope.allObjects = [];
         $scope.ooiTypes = { };
         $scope.commandableEntityTypes = [];
         $scope.availableCommands = availableCommands;
@@ -46,10 +47,10 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
         $scope.executePendingCommandWith = function(data) {
             var command = $scope.pendingCommand;
-            var oois = !command.hasOwnProperty('entityTypeId') || $scope.oois.filter(function (ooi) {
+            var oois = command.hasOwnProperty('entityTypeId') ? $scope.oois.filter(function (ooi) {
                 return ooi.entityTypeId == command.entityTypeId &&
                     (!command.hasOwnProperty('isAvailable') || command.isAvailable(ooi));
-            });
+            }) : [];
             var inject = function(root, key) {
                 if (root.hasOwnProperty(key))
                     root[key] = root[key].replace(/#\{((data|command)(\.[a-zA-Z0-9_]+|\[[0-9]+\])*)\}/g, function (x,y) {
@@ -73,6 +74,14 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                     inject(command.setProperties, key);
             if (command.hasOwnProperty('log'))
                 inject(command, 'log');
+            if (command.hasOwnProperty('apply'))
+                for (var i = 0; i < oois.length; i++) {
+                    command = command.apply(command, data, oois[i], $scope.allObjects);
+                    if (!command) {
+                        console.log(['Command cancellation requested by command.apply()', command]);
+                        return;
+                    }
+                }
             if (command.hasOwnProperty('spawnArea')) {
                 var area = $.extend(true, {
                     'entityId': -($scope.areaSequenceId++),
@@ -117,6 +126,11 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             $scope.$apply();
         });
 
+        wirecloud.on('oois_all', function(oois) {
+            $scope.allObjects = JSON.parse(oois);
+            $scope.$apply();
+        });
+
         wirecloud.on('ooiTypes', function(ooiTypes) {
             $scope.ooiTypes = JSON.parse(ooiTypes).toDict('entityTypeId');
             $scope.$apply();
@@ -129,7 +143,8 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             if ($scope.pendingCommand.targetType === 'point')
                 $scope.executePendingCommandWith(data);
             else if ($scope.pendingCommand.targetType === 'ooi' && data.hasOwnProperty('ooi') &&
-                (!$scope.pendingCommand.hasOwnProperty('isTargetAllowed') || $scope.pendingCommand.isTargetAllowed(data.ooi)))
+                (!$scope.pendingCommand.hasOwnProperty('isTargetAllowed') || $scope.pendingCommand.isTargetAllowed(data.ooi)) &&
+                (!$scope.pendingCommand.hasOwnProperty('targetRestrictedTo') || $scope.pendingCommand.targetRestrictedTo == data.ooi.entityTypeId))
                 $scope.executePendingCommandWith(data.ooi);
         });
 

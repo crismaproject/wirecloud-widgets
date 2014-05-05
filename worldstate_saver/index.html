@@ -50,18 +50,18 @@
 
     <li>
         <ng-pluralize count="commandQueue.length"
-                      when="{'0': 'No commands have been issued',
-        '1': 'One command has been issued',
-        '2': 'Two commands have been issued',
-        '3': 'Three commands have been issued',
-        '4': 'Four commands have been issued',
-        '5': 'Five commands have been issued',
-        '6': 'Six commands have been issued',
-        'other': '{} commands have been issued'}"></ng-pluralize>
+                      when="{'0': 'No commands have been issued.',
+        '1': 'One command has been issued:',
+        '2': 'Two commands have been issued:',
+        '3': 'Three commands have been issued:',
+        '4': 'Four commands have been issued:',
+        '5': 'Five commands have been issued:',
+        '6': 'Six commands have been issued:',
+        'other': '{} commands have been issued:'}"></ng-pluralize>
 
         <ul>
             <li ng-repeat="command in commandQueue | filter:commandHasDisplayableText">
-                <strong>{{prettyOOINames(command.affected)}}:</strong>
+                <strong ng-if="command.affected && command.affected.length">{{prettyOOINames(command.affected)}}:</strong>
                 {{command.command.log}}
             </li>
         </ul>
