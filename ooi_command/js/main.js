@@ -4,6 +4,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         $scope.allObjects = [];
         $scope.ooiTypes = { };
         $scope.commandableEntityTypes = [];
+        $scope.possibleTargets = [];
         $scope.availableCommands = availableCommands;
         $scope.pendingCommand = null;
         $scope.mouseOverCommand = null;
@@ -39,6 +40,14 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
             if (!command.hasOwnProperty('targetType'))
                 $scope.executePendingCommandWith(null);
+            else {
+                var targets = $scope.allObjects;
+                if ($scope.pendingCommand.hasOwnProperty('targetRestrictedTo'))
+                    targets = targets.filter(function (x) { return x.entityTypeId == $scope.pendingCommand.targetRestrictedTo });
+                if ($scope.pendingCommand.hasOwnProperty('isTargetAllowed'))
+                    targets = targets.filter($scope.pendingCommand.isTargetAllowed);
+                $scope.possibleTargets = targets.slice();
+            }
         };
 
         $scope.cancelCommand = function() {
