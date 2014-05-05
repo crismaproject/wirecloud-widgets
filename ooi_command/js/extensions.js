@@ -19,3 +19,16 @@ Array.prototype.toDict = function(keyProperty) {
 
     return groups;
 };
+
+/**
+ * An indexOf function that uses a predicate to find the index of the first element in an array that satisfies
+ * the constraint.
+ * @param {function} predicate a function that accepts an element of the array and returns true or false.
+ * @param {object?} state an optional state that is passed along to the predicate.
+ * @returns {number} the index of the first element in the array that satisfies the predicate.
+ */
+Array.prototype.indexOfWhere = function (predicate, state) {
+    for (var i = 0; i < this.length; i++)
+        if (predicate(this[i], state)) return i;
+    return -1;
+};
