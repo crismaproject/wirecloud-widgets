@@ -128,7 +128,8 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             data = typeof data === 'string' ? JSON.parse(data) : data;
             if ($scope.pendingCommand.targetType === 'point')
                 $scope.executePendingCommandWith(data);
-            else if ($scope.pendingCommand.targetType === 'ooi' && data.hasOwnProperty('ooi'))
+            else if ($scope.pendingCommand.targetType === 'ooi' && data.hasOwnProperty('ooi') &&
+                (!$scope.pendingCommand.hasOwnProperty('isTargetAllowed') || $scope.pendingCommand.isTargetAllowed(data.ooi)))
                 $scope.executePendingCommandWith(data.ooi);
         });
 

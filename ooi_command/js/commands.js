@@ -1,6 +1,6 @@
 angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
-        {
+        /*{
             id: 'create-evac',
             css: 'ico-cmd-evac',
             displayName: 'Create evacuation zone',
@@ -23,7 +23,7 @@ angular.module('ooiCommand.commands', [])
                 entityTypeId: 14
             },
             log: 'Create decontamination zone near lat. #{data.lat}, long. #{data.lon}'
-        },
+        },*/
         {
             id: 'pickup',
             css: 'ico-cmd-goto',
@@ -32,6 +32,9 @@ angular.module('ooiCommand.commands', [])
             help: 'This command orders an ambulance to pick up patients around the specified location.',
             targetType: 'ooi',
             targetRestrictedTo: 14,
+            isTargetAllowed: function (data) {
+                return true; // TODO: requires pick-up area
+            },
             log: 'Retrieve patients from an area.',
             isAvailable: function (ambulance) {
                 var properties = ambulance.entityInstancesProperties;
@@ -51,8 +54,8 @@ angular.module('ooiCommand.commands', [])
             id: 'dispatch',
             css: 'ico-cmd-goto',
             entityTypeId: 7,
-            displayName: 'Dispatch to hospital',
-            help: 'This command orders an ambulance to bring patients to the specified hospital.',
+            displayName: 'Dispatch Ambulances',
+            help: 'This command orders an ambulance to collect Patients from a Pickup-Area and transfer them to the specified hospital.',
             targetType: 'ooi',
             targetRestrictedTo: 9,
             log: 'Bring patients to the hospital.',
