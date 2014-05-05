@@ -1,6 +1,7 @@
 angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
     .controller('OoiCommandCtrl', ['$scope', 'wirecloud', 'availableCommands', function($scope, wirecloud, availableCommands) {
         $scope.oois = [];
+        $scope.allObjects = [];
         $scope.ooiTypes = { };
         $scope.commandableEntityTypes = [];
         $scope.availableCommands = availableCommands;
@@ -73,6 +74,9 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                     inject(command.setProperties, key);
             if (command.hasOwnProperty('log'))
                 inject(command, 'log');
+            if (command.hasOwnProperty('apply'))
+                for (var i = 0; i < oois.length; i++)
+                    command = command.apply(command, data, oois[i], $scope.allObjects);
             if (command.hasOwnProperty('spawnArea')) {
                 var area = $.extend(true, {
                     'entityId': -($scope.areaSequenceId++),
@@ -114,6 +118,11 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
          ****************************************************************/
         wirecloud.on('oois', function(oois) {
             $scope.oois = JSON.parse(oois);
+            $scope.$apply();
+        });
+
+        wirecloud.on('oois_all', function(oois) {
+            $scope.allObjects = JSON.parse(oois);
             $scope.$apply();
         });
 

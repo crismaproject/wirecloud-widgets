@@ -69,8 +69,18 @@ angular.module('ooiCommand.commands', [])
                 }
                 return true;
             },
-            setProperties: {
-                315: '#{data.entityId}'
+            apply: function(command, data, ooi, allOOIs) {
+                command.setProperties = $.extend({}, command.setProperties, {
+                    315: data.entityId,
+                    314: allOOIs[0] // FIXME: should be pickup-area
+                });
             }
         }
     ]);
+
+function findFirstEntityOfType(oois, typeId) {
+    for (var i = 0; i < oois.length; i++)
+        if (oois[i].entityTypeId == typeId)
+            return oois[i]
+    return null;
+}
