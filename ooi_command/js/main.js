@@ -72,6 +72,9 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             if (command.hasOwnProperty('setProperties'))
                 for (var key in command.setProperties)
                     inject(command.setProperties, key);
+            if (command.hasOwnProperty('setGeometry'))
+                for (var key in command.setGeometry)
+                    inject(command.setGeometry, key);
             if (command.hasOwnProperty('log'))
                 inject(command, 'log');
             if (command.hasOwnProperty('apply'))

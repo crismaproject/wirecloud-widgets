@@ -1,19 +1,27 @@
 angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
         {
-            id: 'create-pickup',
+            id: 'move-pickup',
             css: 'ico-cmd-pickup',
-            displayName: 'Create pickup area',
-            help: 'This will create a new area designated to pick up people.',
+            entityTypeId: 14,
+            displayName: 'Move pickup area',
+            help: 'This will move the pickup area to a new location.',
             targetType: 'point',
-            spawnArea: {
-                entityName: 'Pickup Area',
-                entityTypeId: 14,
-                entityInstancesProperties: [
-                    { entityTypePropertyId: 54, entityPropertyValue: 'Pickup-Area' }
-                ]
+            log: 'Move pickup area to lat. #{data.lat}, long. #{data.lon}',
+            isAvailable: function (area) {
+                var properties = area.entityInstancesProperties;
+                for (var i = 0; i < properties.length; i++) {
+                    var property = properties[i];
+                    // prop. #54 = Area-Category
+                    if (property.entityTypePropertyId == 54)
+                        return property.entityPropertyValue == 'Pickup-Area';
+                }
+                return true;
             },
-            log: 'Create pickup area near lat. #{data.lat}, long. #{data.lon}'
+            setGeometry: {
+                lat: '#{data.lat}',
+                lon: '#{data.lon}'
+            }
         },
         {
             id: 'pickup',

@@ -110,6 +110,22 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
                         });
                     });
 
+                commands
+                    .filter(function (x) { return x.affected.length && x.command.hasOwnProperty('setGeometry') })
+                    .forEach(function(command) {
+                        command.affected.forEach(function(affectedId) {
+                            if (affectedId < 0) // target is a newly created OOI. Look up the ID
+                                affectedId = ooiMappings[affectedId];
+                            var changes = command.command.setGeometry;
+                            oois[affectedId].geometry = {
+                                geometry: {
+                                    coordinateSystemId: 4326,
+                                    wellKnownText: 'POINT ('+command.command.setGeometry.lat+' '+command.command.setGeometry.lon+')'
+                                }
+                            }
+                        });
+                    });
+
                 return oois;
             },
 
