@@ -23,12 +23,12 @@ angular.module('ooiCommand.commands', [])
                 lon: '#{data.lon}'
             }
         },
-        {
+        /*{
             id: 'pickup',
             css: 'ico-cmd-goto',
             entityTypeId: 7,
-            displayName: 'Pick up',
-            help: 'This command orders an ambulance to pick up patients around the specified location.',
+            displayName: 'Select Pick-up Area Location',
+            help: 'This command orders an ambulance to collect Patients form Pickup-Area and transfer them to  the specified hospital.',
             targetType: 'ooi',
             targetRestrictedTo: 14,
             isTargetAllowed: function (data) {
@@ -50,14 +50,14 @@ angular.module('ooiCommand.commands', [])
             setProperties: {
                 314: '#{data.entityId}'
             }
-        },
+        },*/
 
         {
             id: 'dispatch',
             css: 'ico-cmd-goto',
             entityTypeId: 7,
             displayName: 'Dispatch Ambulances',
-            help: 'This command orders an ambulance to transfer collected patients to the specified hospital.',
+            help: 'This command orders an ambulance to collect Patients from Pickup-Area and transfer them to the specified hospital.',
             targetType: 'ooi',
             targetRestrictedTo: 9,
             log: 'Bring patients to the hospital.',

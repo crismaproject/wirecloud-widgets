@@ -16,37 +16,48 @@
 
 <div ng-controller="OoiCommandCtrl">
 
-            <div class="btn-group">
-                <button ng-repeat="cmd in availableCommands | filter:showCommand" ng-disabled="pendingCommand"
-                        ng-click="activateCommand(cmd)" ng-mouseover="showHelpFor(cmd)"
-                        type="button" class="btn btn-default btn-sm btn-cmd {{cmd.css}}"
-                        title="{{cmd.help}}">{{cmd.displayName}}</button>
-            </div>
+    <div class="btn-group">
+        <button ng-repeat="cmd in availableCommands | filter:showCommand" ng-disabled="pendingCommand"
+                ng-click="activateCommand(cmd)" ng-mouseover="showHelpFor(cmd)"
+                type="button" class="btn btn-default btn-sm btn-cmd {{cmd.css}}"
+                title="{{cmd.help}}">{{cmd.displayName}}</button>
+    </div>
 
-            <div ng-show="mouseOverCommand">
-                <strong>{{mouseOverCommand.displayName}}:</strong>
-                {{mouseOverCommand.help}}
-            </div>
+    <div ng-show="mouseOverCommand">
+        <strong>{{mouseOverCommand.displayName}}:</strong>
+        {{mouseOverCommand.help}}
+    </div>
 
-            <hr ng-show="pendingCommand.targetType" />
+    <hr ng-show="pendingCommand.targetType" />
 
-            <div ng-show="pendingCommand.targetType" ng-switch on="pendingCommand.targetType">
-                <p>
-                    <span ng-switch-when="point">Please select a point on the map to proceed.</span>
+    <div ng-show="pendingCommand.targetType" ng-switch on="pendingCommand.targetType">
+        <p>
+            <span ng-switch-when="point">Please select a point on the map to proceed.</span>
                 <span ng-switch-when="ooi">
                     Please select an OOI on the map to proceed.
                     <span ng-if="pendingCommand.targetRestrictedTo">
-                        The OOI must be of type {{prettyOOIType(pendingCommand.targetRestrictedTo)}}.
+                        The OOI must be of type <strong>{{prettyOOIType(pendingCommand.targetRestrictedTo)}}</strong>.
                     </span>
                 </span>
-                </p>
-                <p>
-                    <button type="button" class="btn btn-danger btn-sm" ng-click="cancelCommand()">
-                        <span class="glyphicon glyphicon-remove"></span>
-                        Cancel command
-                    </button>
-                </p>
+        </p>
+
+        <div class="row-fluid">
+            <div class="col-xs-10" ng-if="pendingCommand.targetRestrictedTo && possibleTargets.length">
+                <select ng-options="ooi.entityName for ooi in possibleTargets" ng-model="selectedPossibleTarget" ng-required class="form-control input-sm"></select>
             </div>
+            <div class="col-xs-1" ng-if="pendingCommand.targetRestrictedTo && possibleTargets.length">
+                <button type="button" class="btn btn-primary btn-sm" ng-click="confirmPossibleTarget()" ng-enabled="selectedPossibleTarget">
+                    Use selected
+                </button>
+            </div>
+            <div class="col-xs-1">
+                <button type="button" class="btn btn-danger btn-sm" ng-click="cancelCommand()">
+                    <span class="glyphicon glyphicon-remove"></span>
+                    Cancel command
+                </button>
+            </div>
+        </div>
+    </div>
 
 </div>
 
