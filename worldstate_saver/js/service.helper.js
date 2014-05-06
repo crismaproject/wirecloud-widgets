@@ -15,7 +15,7 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
                 $me.createWorldState(activeWorldState, commands)
                     .then(function (worldState) {
                         deferred.notify({status: 'World state registered (OOI-WSR)', data: worldState, progress: 1});
-                        $me.createNewOOIs(knownOOIs)
+                        $.when($me.createNewOOIs(knownOOIs))
                             .then(function() {
                                 deferred.notify({status: 'New OOIs have been registered (OOI-WSR)', data: knownOOIs, progress: 2});
                                 knownOOIs = $me.applyCommands(knownOOIs, commands);
@@ -86,16 +86,17 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
             /** @private */
             applyCommands: function (oois, commands) {
                 var ooiMappings = { };
-                oois
-                    .filter(function (x) { return x.hasOwnProperty('_replacedByEntityId'); })
-                    .forEach(function (x) { ooiMappings[x.entityId] = x._replacedByEntityId; });
+                oois.forEach(function (x, i) {
+                    ooiMappings[x.entityId] = i;
+                    if (x.hasOwnProperty('_replacedByEntityId'))
+                        ooiMappings[x._replacedByEntityId] = i;
+                });
 
                 commands
                     .filter(function (x) { return x.affected.length && x.command.hasOwnProperty('setProperties') })
                     .forEach(function(command) {
                         command.affected.forEach(function(affectedId) {
-                            if (affectedId < 0) // target is a newly created OOI. Look up the ID
-                                affectedId = ooiMappings[affectedId];
+                            affectedId = ooiMappings[affectedId];
                             var changes = command.command.setProperties;
                             for (var key in changes) {
                                 var value = changes[key];
@@ -105,7 +106,7 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
                                     value = value.replace(/^-[1-9][0-9]*$/, function (v) {
                                         return ooiMappings[parseInt(v)];
                                     });
-                                setProperty(oois, affectedId, key, value);
+                                this.setProperty(oois, affectedId, key, value);
                             }
                         });
                     });
@@ -114,8 +115,7 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
                     .filter(function (x) { return x.affected.length && x.command.hasOwnProperty('setGeometry') })
                     .forEach(function(command) {
                         command.affected.forEach(function(affectedId) {
-                            if (affectedId < 0) // target is a newly created OOI. Look up the ID
-                                affectedId = ooiMappings[affectedId];
+                            affectedId = ooiMappings[affectedId];
                             var changes = command.command.setGeometry;
                             oois[affectedId].geometry = {
                                 geometry: {
@@ -127,6 +127,21 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
                     });
 
                 return oois;
+            },
+
+            setProperty: function (oois, ooiIndex, key, value) {
+                // Note: passing in the array and the according index is required here since arrays are the only type that
+                // are passed by reference (and we want that)
+
+                var index = -1;
+                for (var i = 0; index == -1 && i < oois[ooiIndex].entityInstancesProperties.length; i++)
+                    if (oois[ooiIndex].entityInstancesProperties[i].entityTypePropertyId == key)
+                        index = i;
+
+                if (index != -1)
+                    oois[ooiIndex].entityInstancesProperties[index].entityTypePropertyId = value;
+                else
+                    oois[ooiIndex].entityInstancesProperties.push({entityTypePropertyId: key, entityPropertyValue: value});
             },
 
             createOOIPropertiesUpdates: function (worldStateId, oois) {

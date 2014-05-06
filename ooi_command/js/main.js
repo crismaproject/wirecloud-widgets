@@ -1,9 +1,11 @@
 angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
-    .controller('OoiCommandCtrl', ['$scope', 'wirecloud', 'availableCommands', function($scope, wirecloud, availableCommands) {
+    .controller('OoiCommandCtrl', ['$scope', '$timeout', 'wirecloud', 'availableCommands', function($scope, $timeout, wirecloud, availableCommands) {
         $scope.oois = [];
         $scope.allObjects = [];
         $scope.ooiTypes = { };
         $scope.commandableEntityTypes = [];
+        $scope.possibleTargets = [];
+        $scope.selectedPossibleTarget = null;
         $scope.availableCommands = availableCommands;
         $scope.pendingCommand = null;
         $scope.mouseOverCommand = null;
@@ -39,10 +41,25 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
             if (!command.hasOwnProperty('targetType'))
                 $scope.executePendingCommandWith(null);
+            else {
+                var targets = $scope.allObjects;
+                if ($scope.pendingCommand.hasOwnProperty('targetRestrictedTo'))
+                    targets = targets.filter(function (x) { return x.entityTypeId == $scope.pendingCommand.targetRestrictedTo });
+                if ($scope.pendingCommand.hasOwnProperty('isTargetAllowed'))
+                    targets = targets.filter($scope.pendingCommand.isTargetAllowed);
+                $scope.possibleTargets = targets.slice();
+            }
         };
 
         $scope.cancelCommand = function() {
             $scope.pendingCommand = null;
+        };
+
+        $scope.confirmPossibleTarget = function() {
+            var ooi = $scope.selectedPossibleTarget;
+            $timeout(function() {
+                $scope.executePendingCommandWith({ooi: ooi});
+            });
         };
 
         $scope.executePendingCommandWith = function(data) {
@@ -97,6 +114,10 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 wirecloud.send('areasCreated', [area]);
             }
 
+            oois = oois.map(function (ooi) {
+                return ooi.hasOwnProperty('entityId') ? ooi.entityId : ooi;
+            });
+
             var commandObj = {
                 affected: oois,
                 command: command,
@@ -105,6 +126,12 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
             wirecloud.send('command', commandObj);
             $scope.pendingCommand = null;
+
+            if ($scope.possibleTargets.length) {
+                $scope.possibleTargets = [];
+                $scope.selectedPossibleTarget = null;
+            }
+
             $scope.$apply();
         };
 
