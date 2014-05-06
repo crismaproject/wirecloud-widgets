@@ -176,8 +176,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
             wirecloud.send('simulation', simulation);
             advanceProgress();
 
-            var ooiwsrWorldStateAccess = JSON.parse($scope.selectedWorldState.worldstatedata[0].actualaccessinfo.replace(/'/g, '"'));
-            var ooiwsrWorldStateId = ooiwsrWorldStateAccess.id;
+            var ooiwsrWorldStateId = getOOIWSRWorldStateIdForICMMWorldState($scope.selectedWorldState);
             ooiwsr.getWorldState(ooiwsrWorldStateId)
                 .done(function (worldState) {
                     worldState['$icmm'] = $scope.selectedWorldState;
@@ -231,7 +230,45 @@ angular.module('worldStatePickerApp', ['ngResource'])
             else
                 console.warn('Not sure what to do with the specified object received over the load_simulation endpoint.');
         });
+
+        wirecloud.on('load_worldstate', function (icmmWorldState) {
+            var ooiwsrWorldStateId = getOOIWSRWorldStateIdForICMMWorldState(icmmWorldState);
+            ooiwsr.getWorldState(ooiwsrWorldStateId)
+                .done(function (worldState) {
+                    worldState['$icmm'] = icmmWorldState;
+                    wirecloud.send('worldstate', worldState);
+                })
+                .fail(function () {
+                    $scope.loaded = null;
+                });
+
+            ooiwsr.fetch('/Entity?wsid=' + ooiwsrWorldStateId)
+                .done(function (oois) {
+                    wirecloud.send('oois', oois);
+                })
+                .fail(function () {
+                    $scope.loaded = null;
+                });
+
+            var entityTypes = $scope.ooiTypes;
+            if (entityTypes)
+                wirecloud.send('ooi_types', entityTypes);
+            else
+                ooiwsr.listEntityTypes()
+                    .done(function (ooiTypes) {
+                        $scope.ooiTypes = ooiTypes;
+                        wirecloud.send('ooi_types', ooiTypes);
+                    })
+                    .fail(function () {
+                        $scope.loaded = null;
+                    });
+        });
     }]);
+
+function getOOIWSRWorldStateIdForICMMWorldState(icmmWorldState) {
+    var ooiwsrWorldStateAccess = JSON.parse(icmmWorldState.worldstatedata[0].actualaccessinfo.replace(/'/g, '"'));
+    return ooiwsrWorldStateAccess.id;
+}
 
 String.prototype.pluralize = function (n) {
     if (n == 1) return 'one ' + this;
