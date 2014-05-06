@@ -37,8 +37,15 @@ angular.module('worldStateInfoApp', [])
         $scope.activeSimulation = null;
         $scope.activeWorldState = null;
         $scope.allWorldStates = [ ];
-        $scope.showAllWorldStates = false;
-        $scope.selectedWorldState = null;
+        $scope.readonly = wirecloud.getPreference('readonly', false);
+
+        $scope.prettyWorldStateName = function (worldState) {
+            return worldState.name + ' (#' + worldState.id + ')';
+        };
+
+        $scope.goToWorldState = function () {
+            wirecloud.send('select_worldstate', $scope.activeWorldState);
+        };
 
         wirecloud.on('simulation', function (simulation) {
             $scope.activeSimulation = JSON.parse(simulation);
@@ -50,7 +57,17 @@ angular.module('worldStateInfoApp', [])
         });
 
         wirecloud.on('worldstate', function (worldstate) {
-            $scope.activeWorldState = JSON.parse(worldstate);
+            worldstate = JSON.parse(worldstate);
+            if (worldstate.hasOwnProperty('$icmm'))
+                worldstate = worldstate['$icmm'];
+
+            $scope.activeWorldState = null;
+            if ($scope.allWorldStates.length)
+                for (var i = 0; i < $scope.allWorldStates.length; i++)
+                    if ($scope.allWorldStates[i].id == worldstate.id)
+                        $scope.activeWorldState = $scope.allWorldStates[i];
+            if (!$scope.activeWorldState)
+                $scope.activeWorldState = JSON.parse(worldstate);
             $scope.$apply();
         });
     }]);
