@@ -50,7 +50,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
                     level: 2,
                     fields: 'id,ooiRepositorySimulationId,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo',
                     deduplicate: true,
-                    limit: 500
+                    limit: 1000000
                 },
                 transformResponse: function (data) {
                     var col = JSON.parse(data).$collection;
