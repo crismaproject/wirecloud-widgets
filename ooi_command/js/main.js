@@ -5,11 +5,14 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         $scope.ooiTypes = { };
         $scope.commandableEntityTypes = [];
         $scope.possibleTargets = [];
-        $scope.selectedPossibleTarget = null;
+        $scope.selectedPossibleTarget = { ooi: null };
         $scope.availableCommands = availableCommands;
         $scope.pendingCommand = null;
         $scope.mouseOverCommand = null;
         $scope.areaSequenceId = 1;
+
+        $scope.$watch('selectedPossibleTarget', function(n, o) { console.log(['spt', n, o]) });
+        $scope.$watch('possibleTargets', function(n, o) { console.log(['pt', n, o]) });
 
         $scope.prettyOOIType = function(entityTypeId) {
             return $scope.ooiTypes.hasOwnProperty(entityTypeId) ? $scope.ooiTypes[entityTypeId].entityTypeName : 'Type #' + entityTypeId;
@@ -56,10 +59,8 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         };
 
         $scope.confirmPossibleTarget = function() {
-            var ooi = $scope.selectedPossibleTarget;
-            $timeout(function() {
-                $scope.executePendingCommandWith({ooi: ooi});
-            });
+            var data = $scope.selectedPossibleTarget.ooi;
+            $timeout(function(){$scope.executePendingCommandWith(data);});
         };
 
         $scope.executePendingCommandWith = function(data) {
@@ -127,10 +128,8 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             wirecloud.send('command', commandObj);
             $scope.pendingCommand = null;
 
-            if ($scope.possibleTargets.length) {
+            if ($scope.possibleTargets.length)
                 $scope.possibleTargets = [];
-                $scope.selectedPossibleTarget = null;
-            }
 
             $scope.$apply();
         };

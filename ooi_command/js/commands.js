@@ -82,7 +82,7 @@ angular.module('ooiCommand.commands', [])
 
                 command.setProperties = $.extend({}, command.setProperties, {
                     315: data.entityId,
-                    314: allOOIs[i]
+                    314: allOOIs[i].entityId
                 });
 
                 return command;
