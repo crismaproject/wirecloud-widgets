@@ -78,6 +78,11 @@ angular.module('ooiCommand.commands', [])
                             return p.entityTypePropertyId == 54 && p.entityPropertyValue == 'Pickup-Area';
                         }) != -1});
 
+                if (i == -1)
+                    i = allOOIs.indexOfWhere(function (o) {
+                        return o.entityTypeId == 14;
+                    });
+
                 if (i == -1) return null;
 
                 command.setProperties = $.extend({}, command.setProperties, {
