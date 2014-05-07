@@ -60,7 +60,7 @@ angular.module('ooiCommand.commands', [])
             help: 'This command orders an ambulance to collect Patients from Pickup-Area and transfer them to the specified hospital.',
             targetType: 'ooi',
             targetRestrictedTo: 9,
-            log: 'Bring patients to the hospital.',
+            log: 'Bring patients to #{data.entityName}.',
             isAvailable: function (ambulance) {
                 var properties = ambulance.entityInstancesProperties;
                 for (var i = 0; i < properties.length; i++) {
