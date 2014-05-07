@@ -93,53 +93,51 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
                         ooiMappings[x._replacedByEntityId] = i;
                 });
 
-                commands
-                    .filter(function (x) { return x.affected.length && x.command.hasOwnProperty('setProperties') })
-                    .forEach(function(command) {
-                        command.affected.forEach(function(affectedId) {
-                            affectedId = ooiMappings[affectedId];
-                            var changes = command.command.setProperties;
-                            for (var key in changes) {
-                                var value = changes[key];
-                                if (typeof value === 'number' && value < 0)
-                                    value = ooiMappings[value];
-                                else if (typeof value === 'string')
-                                    value = value.replace(/^-[1-9][0-9]*$/, function (v) {
-                                        return ooiMappings[parseInt(v)];
-                                    });
-                                $self.setProperty(oois, affectedId, key, value);
-                            }
-                        });
-                    });
+                var propUpdates = commands.filter(function (x) { return x.affected.length && x.command.hasOwnProperty('setProperties') });
+                for (var i = 0; i < propUpdates.length; i++) {
+                    var command = propUpdates[i];
+                    for (var j = 0; j < command.affected.length; j++) {
+                        var affectedId = ooiMappings[command.affected[j]];
+                        var changes = command.command.setProperties;
+                        for (var key in changes) {
+                            var value = changes[key];
+                            if (typeof value === 'number' && value < 0)
+                                value = ooiMappings[value];
+                            else if (typeof value === 'string')
+                                value = value.replace(/^-[1-9][0-9]*$/, function (v) {
+                                    return ooiMappings[parseInt(v)];
+                                });
 
-                commands
-                    .filter(function (x) { return x.affected.length && x.command.hasOwnProperty('setGeometry') })
-                    .forEach(function(command) {
-                        command.affected.forEach(function(affectedId) {
-                            affectedId = ooiMappings[affectedId];
-                            var changes = command.command.setGeometry;
-                            oois[affectedId].geometry = {
-                                geometry: {
-                                    coordinateSystemId: 4326,
-                                    wellKnownText: 'POINT ('+command.command.setGeometry.lat+' '+command.command.setGeometry.lon+')'
-                                }
+                            var index = -1;
+                            if (typeof key === 'string') key = parseInt(key);
+                            for (var k = 0; index == -1 && k < oois[affectedId].entityInstancesProperties.length; k++)
+                                if (oois[affectedId].entityInstancesProperties[k].entityTypePropertyId == key)
+                                    index = k;
+
+                            if (index != -1)
+                                oois[affectedId].entityInstancesProperties[index].entityPropertyValue = value;
+                            else
+                                oois[affectedId].entityInstancesProperties.push({entityTypePropertyId: key, entityPropertyValue: value});
+                        }
+                    }
+                }
+
+                var geoUpdates = commands.filter(function (x) { return x.affected.length && x.command.hasOwnProperty('setGeometry') });
+                for (var i = 0; i < geoUpdates.length; i++) {
+                    var command = geoUpdates[i];
+                    for (var j = 0; j < command.affected.length; j++) {
+                        var affectedId = ooiMappings[command.affected[j]];
+                        var changes = command.command.setGeometry;
+                        oois[affectedId].geometry = {
+                            geometry: {
+                                coordinateSystemId: 4326,
+                                wellKnownText: 'POINT ('+changes.lat+' '+changes.lon+')'
                             }
-                        });
-                    });
+                        }
+                    }
+                }
 
                 return oois;
-            },
-
-            setProperty: function (oois, ooiIndex, key, value) {
-                var index = -1;
-                for (var i = 0; index == -1 && i < oois[ooiIndex].entityInstancesProperties.length; i++)
-                    if (oois[ooiIndex].entityInstancesProperties[i].entityTypePropertyId == key)
-                        index = i;
-
-                if (index != -1)
-                    oois[ooiIndex].entityInstancesProperties[index].entityTypePropertyId = value;
-                else
-                    oois[ooiIndex].entityInstancesProperties.push({entityTypePropertyId: key, entityPropertyValue: value});
             },
 
             createOOIPropertiesUpdates: function (worldStateId, oois) {
