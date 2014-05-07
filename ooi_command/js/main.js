@@ -11,9 +11,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         $scope.mouseOverCommand = null;
         $scope.areaSequenceId = 1;
 
-        $scope.$watch('selectedPossibleTarget', function(n, o) { console.log(['spt', n, o]) });
-        $scope.$watch('possibleTargets', function(n, o) { console.log(['pt', n, o]) });
-
         $scope.prettyOOIType = function(entityTypeId) {
             return $scope.ooiTypes.hasOwnProperty(entityTypeId) ? $scope.ooiTypes[entityTypeId].entityTypeName : 'Type #' + entityTypeId;
         };
