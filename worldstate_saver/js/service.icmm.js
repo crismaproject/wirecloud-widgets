@@ -38,11 +38,6 @@ angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
              * @returns {promise}
              */
             insertWorldState: function(worldState, parentWorldState) {
-
-                //
-                // FIXME: ICMM insertion still fails!
-                //
-
                 var $me = this;
                 var deferred = $q.defer();
                 var promise = deferred.promise;
@@ -58,7 +53,7 @@ angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
                 $q
                     .all([$me.getNextId('worldstates'), $me.getNextId('transitions'), $me.getNextId('dataitems')])
                     .then(function(ids) {
-                        var icmmWs = $me.buildNewWorldState(parentWorldState['$icmm'].id, worldState.id, ids[0], ids[1], ids[2]);
+                        var icmmWs = $me.buildNewWorldState(parentWorldState['$icmm'].id, worldState.worldStateId, ids[0], ids[1], ids[2]);
                         deferred.notify({status: 'Created world state object', data: icmmWs});
                         $http.put($me.icmm + '/CRISMA.worldstates/' + ids[0], icmmWs, $httpOptions)
                             .then(function() {
@@ -96,7 +91,7 @@ angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
                     '$self': '/CRISMA.worldstates/' + newIcmmId,
                     'id': newIcmmId,
                     'name': 'WS ' + ooiwsrId,
-                    'description': 'Generated world state',
+                    'description': 'Wirecloud generated world state',
                     'categories': [ { '$ref': '/CRISMA.categories/2' } ],
                     'creator': 'Wirecloud',
                     'created': now,
