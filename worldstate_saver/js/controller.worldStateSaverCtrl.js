@@ -65,7 +65,6 @@ angular
                 },
                 function(x) {
                     $scope.status.push(x.status);
-                    console.info(x);
                 });
         }
     }]);

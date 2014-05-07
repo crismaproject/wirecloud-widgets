@@ -86,6 +86,7 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
             /** @private */
             applyCommands: function (oois, commands) {
                 var ooiMappings = { };
+                var $self = this;
                 oois.forEach(function (x, i) {
                     ooiMappings[x.entityId] = i;
                     if (x.hasOwnProperty('_replacedByEntityId'))
@@ -106,7 +107,7 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
                                     value = value.replace(/^-[1-9][0-9]*$/, function (v) {
                                         return ooiMappings[parseInt(v)];
                                     });
-                                this.setProperty(oois, affectedId, key, value);
+                                $self.setProperty(oois, affectedId, key, value);
                             }
                         });
                     });
@@ -130,9 +131,6 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
             },
 
             setProperty: function (oois, ooiIndex, key, value) {
-                // Note: passing in the array and the according index is required here since arrays are the only type that
-                // are passed by reference (and we want that)
-
                 var index = -1;
                 for (var i = 0; index == -1 && i < oois[ooiIndex].entityInstancesProperties.length; i++)
                     if (oois[ooiIndex].entityInstancesProperties[i].entityTypePropertyId == key)
