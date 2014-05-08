@@ -38,7 +38,7 @@
                     </label>
                 </div>
                 <span class="help-block" ng-show="showAll">
-                    <em>Any and all</em> simulation runs will be shown. There can be <em>a lot</em> of world states.
+                    If checked, all world states will be shown; otherwise you will only be presented with leaf world states.
                 </span>
             </div>
         </div>
@@ -48,7 +48,7 @@
             <div class="col-sm-10">
                 <div class="input-group">
                     <select id="worldStateInput" class="form-control"
-                            ng-options="prettyWorldState(w) for w in worldStateList | filter:showWorldState | orderBy:created" ng-model="selectedWorldState"
+                            ng-options="prettyWorldState(w) for w in worldStateList | filter:showWorldState | orderBy:'simulatedTime'" ng-model="selectedWorldState"
                             ng-required></select>
                     <span class="input-group-btn">
                         <button type="button" class="btn btn-default" ng-click="refreshWorldStates(selectedSimulation.simulationId)" ng-disabled="isRefreshingWorldstates">
@@ -61,9 +61,14 @@
 
         <div class="row-fluid col-sm-offset-2 col-sm-10" ng-if="selectedWorldState && selectedSimulation">
             <div class="panel panel-default">
-                <div class="panel-heading">{{selectedSimulation.description}}</div>
+                <div class="panel-heading"><h4><strong>Simulation:</strong> {{selectedSimulation.description}}</h4></div>
                 <div class="panel-body">
                     <div class="container-fluid">
+                        <div class="row-fluid">
+                            <div class="col-sm-4 text-muted">Simulation ID:</div>
+                            <div class="col-sm-8 text-muted">{{selectedSimulation.simulationId}}</div>
+                        </div>
+
                         <div class="row-fluid">
                             <div class="col-sm-4">Simulation started on:</div>
                             <div class="col-sm-8"><time datetime="{{selectedSimulation.startDateTime}}">{{selectedSimulation.startDateTime | date:'EEEE, d. MMMM yyyy, H:mm' }}</time></div>
@@ -71,11 +76,16 @@
 
                         <div class="row-fluid">
                             <div class="col-sm-4">Current time:</div>
-                            <div class="col-sm-8"><time>{{selectedWorldState.created | date:'EEEE, d. MMMM yyyy, H:mm' }}</time></div>
+                            <div class="col-sm-8"><time>{{selectedWorldState.simulatedTime | date:'EEEE, d. MMMM yyyy, H:mm' }}</time></div>
                         </div>
 
                         <div class="row-fluid">
-                            <div class="col-sm-offset-4 col-sm-8"><small class="text-muted">{{ timeDifference(selectedSimulation.startDateTime, selectedWorldState.created) }} after the simulation started</small></div>
+                            <div class="col-sm-offset-4 col-sm-8"><small class="text-muted">{{ timeDifference(selectedSimulation.startDateTime, selectedWorldState.simulatedTime) }} after the simulation started</small></div>
+                        </div>
+
+                        <div class="row-fluid">
+                            <div class="col-sm-4 text-muted">World State ID:</div>
+                            <div class="col-sm-8 text-muted">{{selectedWorldState.id}}</div>
                         </div>
 
                         <div class="row-fluid">

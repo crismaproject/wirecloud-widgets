@@ -48,7 +48,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
                 isArray: true,
                 params: {
                     level: 2,
-                    fields: 'id,ooiRepositorySimulationId,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo',
+                    fields: 'id,ooiRepositorySimulationId,name,description,created,simulatedTime,childworldstates,categories,worldstatedata,actualaccessinfo',
                     deduplicate: true,
                     limit: 1000000
                 },
@@ -66,7 +66,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
     }])
     .controller('WorldStatePickerApp', ['$scope', 'icmm', 'ooiwsr', 'wirecloud', function ($scope, icmm, ooiwsr, wirecloud) {
         $scope.loaded = null;
-        $scope.showAll = false;
+        $scope.showAll = true;
         $scope.isRefreshingSimulations = false;
         $scope.isRefreshingWorldstates = false;
 
@@ -85,7 +85,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
         };
         $scope.prettyWorldState = function (worldState) {
             var meta = [];
-            if (worldState.created) meta.push(new Date(worldState.created).toLocaleString());
+            if (worldState.simulatedTime) meta.push(new Date(worldState.simulatedTime).toLocaleString());
             if (worldState.description) meta.push(noHtml(worldState.description));
 
             return meta.length ?
