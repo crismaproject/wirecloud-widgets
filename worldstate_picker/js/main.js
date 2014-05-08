@@ -81,12 +81,12 @@ angular.module('worldStatePickerApp', ['ngResource'])
         $scope.ooiTypes = null;
 
         $scope.prettySimulation = function (simulation) {
-            return simulation.description + ' (' + simulation.simulationId + ')';
+            return noHtml(simulation.description) + ' (' + simulation.simulationId + ')';
         };
         $scope.prettyWorldState = function (worldState) {
             var meta = [];
             if (worldState.created) meta.push(new Date(worldState.created).toLocaleString());
-            if (worldState.description) meta.push(worldState.description);
+            if (worldState.description) meta.push(noHtml(worldState.description));
 
             return meta.length ?
                 worldState.name + ' (' + meta.join('; ') + ')' :
@@ -268,6 +268,12 @@ angular.module('worldStatePickerApp', ['ngResource'])
 function getOOIWSRWorldStateIdForICMMWorldState(icmmWorldState) {
     var ooiwsrWorldStateAccess = JSON.parse(icmmWorldState.worldstatedata[0].actualaccessinfo.replace(/'/g, '"'));
     return ooiwsrWorldStateAccess.id;
+}
+
+// This is a VERY rudimentary check to see if we're handling a string beginning with <html>. If so, strip everything
+// but the text bits.
+function noHtml(str) {
+    return str.substr(0, 6) == '<html>' ? $(str).text() : str;
 }
 
 String.prototype.pluralize = function (n) {
