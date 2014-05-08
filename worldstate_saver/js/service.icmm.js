@@ -13,7 +13,7 @@ angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
             getNextId: function(resource) {
                 var deferred = $q.defer();
                 var promise = deferred.promise;
-                $http.get(this.icmm + '/CRISMA.' + resource + '?omitNullValues=true&limit=1000')
+                $http.get(this.icmm + '/CRISMA.' + resource + '?omitNullValues=true&limit=1000000')
                     .success(function(data) {
                         var id = 1;
                         var ids = data['$collection']
