@@ -187,8 +187,9 @@ function graphicFor(entityTypeId) {
     //noinspection FallthroughInSwitchStatementJS
     switch (entityTypeId) {
         case 7:
-        case 8:
             return 'img/ambulance.png';
+        case 8:
+            return 'img/ambulance_station.png';
         case 9:
             return 'img/hospital.png';
         case 10:
