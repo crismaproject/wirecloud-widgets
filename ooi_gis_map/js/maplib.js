@@ -12,7 +12,7 @@ function OpenLayersFacade(container) {
     var ooiStyle = $.extend({}, OpenLayers.Feature.Vector.style['default'], {
         graphicWidth: 25,
         graphicHeight: 25,
-        fillOpacity:.7,
+        fillOpacity:.65,
         externalGraphic: 'img/ooi.png'
     });
 
