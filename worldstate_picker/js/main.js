@@ -48,7 +48,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
                 isArray: true,
                 params: {
                     level: 2,
-                    fields: 'id,ooiRepositorySimulationId,name,description,created,simulatedTime,childworldstates,categories,worldstatedata,actualaccessinfo',
+                    fields: 'id,ooiRepositorySimulationId,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo',
                     deduplicate: true,
                     limit: 1000000
                 },
