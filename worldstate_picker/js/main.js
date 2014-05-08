@@ -48,7 +48,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
                 isArray: true,
                 params: {
                     level: 2,
-                    fields: 'id,ooiRepositorySimulationId,name,description,created,childworldstates,categories,worldstatedata,actualaccessinfo',
+                    fields: 'id,ooiRepositorySimulationId,name,description,created,simulatedTime,childworldstates,categories,worldstatedata,actualaccessinfo',
                     deduplicate: true,
                     limit: 1000000
                 },
@@ -81,7 +81,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
         $scope.ooiTypes = null;
 
         $scope.prettySimulation = function (simulation) {
-            return noHtml(simulation.description) + ' (' + simulation.simulationId + ')';
+            return noHtml(simulation.description || 'Simulation') + ' (' + simulation.simulationId + ')';
         };
         $scope.prettyWorldState = function (worldState) {
             var meta = [];

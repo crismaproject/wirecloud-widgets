@@ -53,7 +53,7 @@ angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
                 $q
                     .all([$me.getNextId('worldstates'), $me.getNextId('transitions'), $me.getNextId('dataitems')])
                     .then(function(ids) {
-                        var icmmWs = $me.buildNewWorldState(parentWorldState['$icmm'].id, worldState.worldStateId, worldState.simulationId, ids[0], ids[1], ids[2]);
+                        var icmmWs = $me.buildNewWorldState(parentWorldState['$icmm'], worldState.worldStateId, ids[0], ids[1], ids[2]);
                         deferred.notify({status: 'Created world state object', data: icmmWs});
                         $http.put($me.icmm + '/CRISMA.worldstates/' + ids[0], icmmWs, $httpOptions)
                             .then(function() {
@@ -77,16 +77,15 @@ angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
 
             /**
              * Builds a new ICMM world state object using the specified identifiers.
-             * @param {number} wsParentId the ICMM ID of the parent world state
+             * @param {*} wsParent the ICMM instance of the parent world state
              * @param {number} ooiwsrId the OOIWSR ID of this world state
-             * @param {number} simulationId the OOIWSR ID of the current simulation
              * @param {number} newIcmmId the ICMM ID of this world state
              * @param {number} transitionId the transition ID used in this world state
              * @param {number} dataItemId the data item ID used to describe this world state
              * @private
              * @returns {Object}
              */
-            buildNewWorldState: function (wsParentId, ooiwsrId, simulationId, newIcmmId, transitionId, dataItemId) {
+            buildNewWorldState: function (wsParent, ooiwsrId, newIcmmId, transitionId, dataItemId) {
                 var now = new Date();
                 return {
                     '$self': '/CRISMA.worldstates/' + newIcmmId,
@@ -95,8 +94,9 @@ angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
                     'description': 'Wirecloud generated world state',
                     'categories': [ { '$ref': '/CRISMA.categories/2' } ],
                     'creator': 'Wirecloud',
-                    'ooiRepositorySimulationId': simulationId,
+                    'ooiRepositorySimulationId': wsParent['ooiRepositorySimulationId'],
                     'created': now,
+                    'simulatedTime': wsParent['simulatedTime'],
                     'origintransition': {
                         '$self': '/CRISMA.transitions/' + transitionId,
                         'id': transitionId,
@@ -130,7 +130,7 @@ angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
                         }
                     ],
                     'parentworldstate': {
-                        '$ref': '/CRISMA.worldstates/' + wsParentId
+                        '$ref': '/CRISMA.worldstates/' + wsParent.id
                     },
                     'childworldstates': []
                 };
