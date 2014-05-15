@@ -3,7 +3,6 @@ if (typeof MashupPlatform !== 'undefined') {
     MashupPlatform.wiring.registerCallback('signal', function () {
         var wirecloud = top.Wirecloud;
         var id = MashupPlatform.prefs.get('tab_id');
-        console.log('Trying to switch to tab with id: ' + id);
         var tab = null;
 
         if (/[0-9]+/.test(id)) {
