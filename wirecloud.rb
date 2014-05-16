@@ -1,8 +1,9 @@
-require 'singleton'
+#require 'singleton'
 require 'mechanize'
 require 'json'
 require 'pp'
-require 'logger'
+require 'uri'
+#require 'logger'
 
 class Wirecloud
   #include Singleton
@@ -10,6 +11,7 @@ class Wirecloud
   LOGIN_PATH = '/login'
   WORKSPACES_PATH = '/api/workspaces'
   RESOURCES_PATH = '/api/resources'
+  RESOURCE_PATH = '/api/resource/%{vendor}/%{name}/%{version}'
 
   attr_accessor :agent
   attr_accessor :base_uri
@@ -18,7 +20,7 @@ class Wirecloud
     self.base_uri = base_uri
     self.agent = Mechanize.new do |config|
       config.follow_redirect = true
-      config.log = Logger.new('log.txt')
+      #config.log = Logger.new('log.txt')
     end
   end
 
@@ -34,16 +36,23 @@ class Wirecloud
     end
   end
 
-  def upload_widget!(file)
+  def upload_resource!(file)
     raise StandardError unless File.exists?(file)
     agent.post(base_uri + RESOURCES_PATH, {
         :force_create => true,
         :file => File.new(file, 'rb')
-    }) do |response|
-      PP.pp response
-      PP.pp response.body
-      PP.pp response.code
+    })
+  end
+
+  def resources
+    agent.get(base_uri + RESOURCES_PATH) do |resources|
+      return JSON.parse resources.body unless resources.code != '200'
     end
+  end
+
+  def delete_resource!(vendor, name, version)
+    path = URI.encode(RESOURCE_PATH % { :vendor => vendor, :name => name, :version => version })
+    agent.delete(base_uri + path)
   end
 
   def workspaces
