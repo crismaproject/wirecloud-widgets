@@ -1,6 +1,7 @@
 require 'zip/zip'
 require 'nokogiri'
 require_relative 'catalog'
+require_relative 'wirecloud'
 
 BOOTSTRAP_URI = 'http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css'
 XSLT_XML_FILE = 'widget.xslt'
@@ -121,6 +122,30 @@ task :all => [:cleanup, :update, :doc] do
   end
 end
 
+desc 'Deploy to Wirecloud'
+task :deploy, [:username, :password, :instance] do |_, args|
+  args.with_defaults(:instance => 'http://wirecloud.ait.ac.at')
+
+  raise 'No username specified!' unless args[:username]
+  raise 'No password specified!' unless args[:password]
+
+  puts "Connecting to #{args[:instance]} as #{args[:username]}..."
+  wirecloud = Wirecloud.new args[:instance]
+  wirecloud.login! args[:username], args[:password]
+
+  remote_resources = wirecloud.resources
+  if remote_resources.any?
+    puts "#{remote_resources.count} operator(s) discovered on remote server."
+    remote_resources.keys.sort.each { |k| puts "  #{k}" }
+  end
+
+  Dir.glob('*.wgt').each do |bundledFile|
+    puts "Uploading: #{bundledFile}"
+    wirecloud.upload_resource! bundledFile
+    # FIXME: continue work here
+  end
+end
+
 desc 'Update catalog'
 task :catalog, [:username, :password] do |_, args|
   raise 'No username specified!' unless args[:username]
@@ -135,6 +160,7 @@ task :catalog, [:username, :password] do |_, args|
     puts "* Updating node #{catalog_id} using #{config_file}"
     config_data = Nokogiri::XML(File.read(config_file)).remove_namespaces!
 
+    # TODO: replace with Wirecloud's new Wirecloud.inspect_config method
     cfg_title = config_data.xpath('//Catalog.ResourceDescription/DisplayName').text
     cfg_description = config_data.xpath('//Catalog.ResourceDescription/Description').text
     cfg_version = config_data.xpath('//Catalog.ResourceDescription/Version').text

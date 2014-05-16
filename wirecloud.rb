@@ -1,5 +1,6 @@
 #require 'singleton'
 require 'mechanize'
+require 'nokogiri'
 require 'json'
 require 'pp'
 require 'uri'
@@ -37,7 +38,7 @@ class Wirecloud
   end
 
   def upload_resource!(file)
-    raise StandardError unless File.exists?(file)
+    raise StandardError.new unless File.exists?(file)
     agent.post(base_uri + RESOURCES_PATH, {
         :force_create => true,
         :file => File.new(file, 'rb')
@@ -64,6 +65,28 @@ class Wirecloud
   def workspace(id)
     agent.get(base_uri + WORKSPACES_PATH + "/#{id}") do |workspace|
       return JSON.parse workspace.body unless workspace.code != '200'
+    end
+  end
+
+
+  def self.inspect_config(config_file)
+    raise StandardError.new('No such file') unless File.exists?(config_file)
+    doc = Nokogiri::XML(open(config_file))
+    doc_namespaces = doc.namespaces
+    if doc_namespaces['xmlns'] =~ /wirecloud\.conwet\.fi\.upm\.es/i
+      # wirecloud xml format
+      { vendor: doc.css('Vendor').text,
+        name: doc.css('Name').text,
+        version: doc.css('Version').text,
+        format: 'wirecloud' }
+    elsif doc_namespaces['xmlns:rdf'] =~ /www\.w3\.org\/1999\/02\/22-rdf-syntax-ns/i
+      # RDF xml format
+      { vendor: doc.xpath('//gr:BusinessEntity[@rdf:about="http://vendoruri/"]/foaf:name').text,
+        name: doc.xpath('//wire:Operator/dcterms:title|//wire:Widget/dcterms:title').text,
+        version: doc.xpath('//wire:Operator/usdl-core:versionInfo|//wire:Widget/usdl-core:versionInfo').text,
+        format: 'rdf' }
+    else
+      { format: 'unknown' }
     end
   end
 end
