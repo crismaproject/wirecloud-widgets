@@ -34,10 +34,11 @@ class Wirecloud
     end
   end
 
-  def upload_widget(file)
+  def upload_widget!(file)
+    raise StandardError unless File.exists?(file)
     agent.post(base_uri + RESOURCES_PATH, {
         :force_create => true,
-        :file => File.new(file)
+        :file => File.new(file, 'rb')
     }) do |response|
       PP.pp response
       PP.pp response.body
