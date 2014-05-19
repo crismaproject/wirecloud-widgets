@@ -1,6 +1,7 @@
 require 'zip/zip'
 require 'nokogiri'
 require_relative 'catalog'
+require_relative 'wirecloud'
 
 BOOTSTRAP_URI = 'http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css'
 XSLT_XML_FILE = 'widget.xslt'
@@ -121,6 +122,60 @@ task :all => [:cleanup, :update, :doc] do
   end
 end
 
+desc 'Deploy to Wirecloud'
+task :deploy, [:username, :password, :instance] do |_, args|
+  args.with_defaults(:instance => 'http://wirecloud.ait.ac.at')
+
+  raise 'No username specified!' unless args[:username]
+  raise 'No password specified!' unless args[:password]
+
+  puts "Connecting to #{args[:instance]} as #{args[:username]}..."
+  wirecloud = Wirecloud.new args[:instance]
+  wirecloud.login! args[:username], args[:password]
+
+  remote_resources = wirecloud.resources
+  remote_resources_to_drop = [ ]
+  resources_to_up = [ ]
+
+  Dir.glob('*.wgt').each do |bundledFile|
+    Zip::ZipFile.open bundledFile, false do |zip|
+      xml = Nokogiri::XML(zip.read('config.xml'))
+      cfg = Wirecloud.inspect_config xml
+      cfg[:file] = bundledFile
+      key_str = "#{cfg[:vendor]}/#{cfg[:name]}/#{cfg[:version]}"
+      remote_resources_to_drop.push(cfg) if remote_resources.has_key? key_str
+      resources_to_up.push(cfg)
+    end
+  end
+
+  begin
+    if remote_resources_to_drop.any?
+      puts 'WARNING!'
+      puts 'The following components will be removed and re-uploaded:'
+      remote_resources_to_drop.each { |r| puts "  * #{r[:vendor]}/#{r[:name]}/#{r[:version]}" }
+      puts 'This cannot be undone and may cause side-effects.'
+      puts 'Are you absolutely, positively certain you want to continue? [y/N]'
+      choice = $stdin.getc
+      exit if choice =~ /^[^y]$/i
+
+      remote_resources_to_drop.each do |r|
+        puts "Removing #{r[:name]}..."
+        wirecloud.delete_resource! r[:vendor], r[:name], r[:version]
+      end
+    end
+
+    resources_to_up.each do |r|
+      puts "Uploading #{r[:name]} (#{r[:file]})..."
+      wirecloud.upload_resource! r[:file]
+    end
+  rescue
+    $stderr.puts 'Something went horribly, horribly wrong. This is nothing I can recover from.'
+    $stderr.puts 'Please IMMEDIATELY verify the state of your wirecloud instance:'
+    $stderr.puts "URL: #{args[:instance]}, account: #{args[:username]}"
+    raise
+  end
+end
+
 desc 'Update catalog'
 task :catalog, [:username, :password] do |_, args|
   raise 'No username specified!' unless args[:username]
@@ -135,6 +190,7 @@ task :catalog, [:username, :password] do |_, args|
     puts "* Updating node #{catalog_id} using #{config_file}"
     config_data = Nokogiri::XML(File.read(config_file)).remove_namespaces!
 
+    # TODO: replace with Wirecloud's new Wirecloud.inspect_config method?
     cfg_title = config_data.xpath('//Catalog.ResourceDescription/DisplayName').text
     cfg_description = config_data.xpath('//Catalog.ResourceDescription/Description').text
     cfg_version = config_data.xpath('//Catalog.ResourceDescription/Version').text
