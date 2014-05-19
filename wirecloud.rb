@@ -1,14 +1,10 @@
-#require 'singleton'
 require 'mechanize'
 require 'nokogiri'
 require 'json'
 require 'pp'
 require 'uri'
-#require 'logger'
 
 class Wirecloud
-  #include Singleton
-
   LOGIN_PATH = '/login'
   WORKSPACES_PATH = '/api/workspaces'
   RESOURCES_PATH = '/api/resources'
@@ -21,7 +17,6 @@ class Wirecloud
     self.base_uri = base_uri
     self.agent = Mechanize.new do |config|
       config.follow_redirect = true
-      #config.log = Logger.new('log.txt')
     end
   end
 
@@ -69,24 +64,28 @@ class Wirecloud
   end
 
 
-  def self.inspect_config(config_file)
+  def self.inspect_config_file(config_file)
     raise StandardError.new('No such file') unless File.exists?(config_file)
     doc = Nokogiri::XML(open(config_file))
+    inspect_config(doc)
+  end
+
+  def self.inspect_config(doc)
     doc_namespaces = doc.namespaces
     if doc_namespaces['xmlns'] =~ /wirecloud\.conwet\.fi\.upm\.es/i
       # wirecloud xml format
-      { vendor: doc.css('Vendor').text,
-        name: doc.css('Name').text,
-        version: doc.css('Version').text,
-        format: 'wirecloud' }
+      {vendor: doc.css('Vendor').text,
+       name: doc.css('Name').text,
+       version: doc.css('Version').text,
+       format: 'wirecloud'}
     elsif doc_namespaces['xmlns:rdf'] =~ /www\.w3\.org\/1999\/02\/22-rdf-syntax-ns/i
       # RDF xml format
-      { vendor: doc.xpath('//gr:BusinessEntity[@rdf:about="http://vendoruri/"]/foaf:name').text,
-        name: doc.xpath('//wire:Operator/dcterms:title|//wire:Widget/dcterms:title').text,
-        version: doc.xpath('//wire:Operator/usdl-core:versionInfo|//wire:Widget/usdl-core:versionInfo').text,
-        format: 'rdf' }
+      {vendor: doc.xpath('//gr:BusinessEntity[@rdf:about="http://vendoruri/"]/foaf:name').text,
+       name: doc.xpath('//wire:Operator/dcterms:title|//wire:Widget/dcterms:title').text,
+       version: doc.xpath('//wire:Operator/usdl-core:versionInfo|//wire:Widget/usdl-core:versionInfo').text,
+       format: 'rdf'}
     else
-      { format: 'unknown' }
+      {format: 'unknown'}
     end
   end
 end
