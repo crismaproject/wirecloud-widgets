@@ -23,34 +23,6 @@ angular.module('ooiCommand.commands', [])
                 lon: '#{data.lon}'
             }
         },
-        /*{
-            id: 'pickup',
-            css: 'ico-cmd-goto',
-            entityTypeId: 7,
-            displayName: 'Select Pick-up Area Location',
-            help: 'This command orders an ambulance to collect Patients form Pickup-Area and transfer them to  the specified hospital.',
-            targetType: 'ooi',
-            targetRestrictedTo: 14,
-            isTargetAllowed: function (data) {
-                return data.entityInstancesProperties.indexOfWhere(function (p) {
-                    return p.entityTypePropertyId == 54 && p.entityPropertyValue == 'Pickup-Area';
-                }) != -1;
-            },
-            log: 'Retrieve patients from an area.',
-            isAvailable: function (ambulance) {
-                var properties = ambulance.entityInstancesProperties;
-                for (var i = 0; i < properties.length; i++) {
-                    var property = properties[i];
-                    // Check target availability time; 0 = now, >0 = later, <0 = never
-                    if (property.entityTypePropertyId == 312)
-                        return property.entityPropertyValue == '0';
-                }
-                return true;
-            },
-            setProperties: {
-                314: '#{data.entityId}'
-            }
-        },*/
 
         {
             id: 'dispatch',
@@ -58,9 +30,24 @@ angular.module('ooiCommand.commands', [])
             entityTypeId: 7,
             displayName: 'Dispatch Ambulances',
             help: 'This command orders an ambulance to collect Patients from Pickup-Area and transfer them to the specified hospital.',
-            targetType: 'ooi',
-            targetRestrictedTo: 9,
-            log: 'Bring patients to #{data.entityName}.',
+            arguments: [
+                {
+                    targetType: 'ooi',
+                    targetRestrictedTo: 9,
+                    displayName: 'Hospital'
+                }, {
+                    targetType: 'ooi',
+                    targetRestrictedTo: 14,
+                    displayName: 'Pickup Area',
+                    isTargetAllowed: function (area) {
+                        return area.entityInstancesProperties.length &&
+                            area.entityInstancesProperties.indexOfWhere(function (p) {
+                                return p.entityTypePropertyId == 54 && p.entityPropertyValue == 'Pickup-Area';
+                            }) != -1;
+                    }
+                }
+            ],
+            log: 'Bring patients from #{data[1].entityName} to #{data[0].entityName}.',
             isAvailable: function (ambulance) {
                 var properties = ambulance.entityInstancesProperties;
                 for (var i = 0; i < properties.length; i++) {
@@ -71,23 +58,10 @@ angular.module('ooiCommand.commands', [])
                 }
                 return true;
             },
-            apply: function(command, data, ooi, allOOIs) {
-                var i = allOOIs.indexOfWhere(function (o) {
-                    return o.entityTypeId == 14 && o.entityInstancesProperties.length &&
-                        o.entityInstancesProperties.indexOfWhere(function (p) {
-                            return p.entityTypePropertyId == 54 && p.entityPropertyValue == 'Pickup-Area';
-                        }) != -1});
-
-                if (i == -1)
-                    i = allOOIs.indexOfWhere(function (o) {
-                        return o.entityTypeId == 14;
-                    });
-
-                if (i == -1) return null;
-
+            apply: function(command, data) {
                 command.setProperties = $.extend({}, command.setProperties, {
-                    315: data.entityId,
-                    314: allOOIs[i].entityId
+                    315: data[0].entityId,
+                    314: data[1].entityId
                 });
 
                 return command;

@@ -4,8 +4,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         $scope.allObjects = [];
         $scope.ooiTypes = { };
         $scope.commandableEntityTypes = [];
-        $scope.possibleTargets = [];
-        $scope.selectedPossibleTarget = { ooi: null };
         $scope.availableCommands = availableCommands;
         $scope.pendingCommand = null;
         $scope.mouseOverCommand = null;
@@ -36,39 +34,48 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             $scope.mouseOverCommand = command;
         };
 
-        $scope.activateCommand = function(command) {
-            $scope.pendingCommand = $.extend(true, {}, command);
-
-            if (!command.hasOwnProperty('targetType'))
-                $scope.executePendingCommandWith(null);
-            else {
-                var targets = $scope.allObjects;
-                if ($scope.pendingCommand.hasOwnProperty('targetRestrictedTo'))
-                    targets = targets.filter(function (x) { return x.entityTypeId == $scope.pendingCommand.targetRestrictedTo });
-                if ($scope.pendingCommand.hasOwnProperty('isTargetAllowed'))
-                    targets = targets.filter($scope.pendingCommand.isTargetAllowed);
-                $scope.possibleTargets = targets.slice();
+        $scope.acceptsArgument = function(argumentSpec, argument) {
+            var accept = true;
+            if (argumentSpec.targetType == 'ooi') {
+                accept =
+                    (!argumentSpec.hasOwnProperty('targetRestrictedTo') || argument.entityTypeId == argumentSpec.targetRestrictedTo) &&
+                    (!argumentSpec.hasOwnProperty('isTargetAllowed') || argumentSpec.isTargetAllowed(argument));
             }
+
+            return accept;
+        };
+
+        $scope.activateCommand = function(command) {
+            $scope.pendingCommand = $.extend(true, {candidates: [], data: []}, command);
+
+            if (!command.hasOwnProperty('arguments') || !command.arguments.length)
+                $scope.executePendingCommand();
+            else
+                for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
+                    $scope.pendingCommand.candidates[i] = $scope.allObjects.filter(function (x) {
+                        return $scope.acceptsArgument($scope.pendingCommand.arguments[i], x);
+                    });
         };
 
         $scope.cancelCommand = function() {
             $scope.pendingCommand = null;
         };
 
-        $scope.confirmPossibleTarget = function() {
-            var data = $scope.selectedPossibleTarget.ooi;
-            $timeout(function(){$scope.executePendingCommandWith(data);});
-        };
-
-        $scope.executePendingCommandWith = function(data) {
+        $scope.executePendingCommand = function() {
             var command = $scope.pendingCommand;
+            var data = $scope.pendingCommand.data;
             var oois = command.hasOwnProperty('entityTypeId') ? $scope.oois.filter(function (ooi) {
                 return ooi.entityTypeId == command.entityTypeId &&
                     (!command.hasOwnProperty('isAvailable') || command.isAvailable(ooi));
             }) : [];
+
+            console.log(command);
+            console.log(data);
+            console.log(oois);
+
             var inject = function(root, key) {
                 if (root.hasOwnProperty(key))
-                    root[key] = root[key].replace(/#\{((data|command)(\.[a-zA-Z0-9_]+|\[[0-9]+\])*)\}/g, function (x,y) {
+                    root[key] = root[key].replace(/#\{(data(\.[a-zA-Z0-9_]+|\[[0-9]+\])*)\}/g, function (x,y) {
                         // TODO: evaluate potential security concerns. eval is usually bad. but it gets the job done.
                         try {
                             return eval(y);
@@ -122,13 +129,11 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 data: data
             };
 
+            delete commandObj.command.data;
+            delete commandObj.command.candidates;
+
             wirecloud.send('command', commandObj);
             $scope.pendingCommand = null;
-
-            if ($scope.possibleTargets.length)
-                $scope.possibleTargets = [];
-
-            $scope.$apply();
         };
 
         /****************************************************************

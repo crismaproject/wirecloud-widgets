@@ -28,39 +28,26 @@
         {{mouseOverCommand.help}}
     </div>
 
-    <hr ng-show="pendingCommand.targetType" />
+    <div class="container-fluid" ng-show="pendingCommand">
+        <hr />
 
-    <div ng-show="pendingCommand.targetType" ng-switch on="pendingCommand.targetType">
-        <p>
-            <span ng-switch-when="point">Please select a point on the map to proceed.</span>
-                <span ng-switch-when="ooi">
-                    Please select an OOI on the map to proceed.
-                    <span ng-if="pendingCommand.targetRestrictedTo">
-                        The OOI must be of type <strong>{{prettyOOIType(pendingCommand.targetRestrictedTo)}}</strong>.
-                    </span>
-                </span>
-        </p>
-    </div>
+        <div ng-repeat="(i, arg) in pendingCommand.arguments" class="row-fluid">
+            <div class="col-sm-3">
+                <label for="pcArg{{i}}">{{arg.displayName || 'Target'}}</label>
+            </div>
 
-    <div class="row-fluid">
-        <div class="col-xs-10" ng-if="pendingCommand.targetRestrictedTo && possibleTargets.length">
-            <select ng-model="selectedPossibleTarget.ooi" ng-options="ooi as ooi.entityName for ooi in possibleTargets" required class="form-control input-sm"></select>
+            <div class="col-sm-9">
+                <select id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" required="required" class="form-control"></select>
+            </div>
         </div>
-        <div class="col-xs-2" ng-if="pendingCommand.targetRestrictedTo && possibleTargets.length">
-            <div class="btn-group">
-                <button type="button" class="btn btn-success btn-sm" ng-click="confirmPossibleTarget()" title="Use selected OOI">
-                    <span class="glyphicon glyphicon-ok"></span>
-                    Use
-                </button>
 
-                <button type="button" class="btn btn-danger btn-sm" ng-click="cancelCommand()" title="Cancel the current command">
-                    <span class="glyphicon glyphicon-remove"></span>
-                    Cancel
-                </button>
+        <div class="row-fluid">
+            <div class="btn-group">
+                <button type="button" class="btn btn-danger" ng-click="cancelCommand()">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="executePendingCommand()">Execute</button>
             </div>
         </div>
     </div>
-
 </div>
 
 </body>
