@@ -130,7 +130,7 @@ task :deploy, [:username, :password, :instance] do |_, args|
   raise 'No password specified!' unless args[:password]
 
   puts "Connecting to #{args[:instance]} as #{args[:username]}..."
-  wirecloud = Wirecloud.new args[:instance]
+  wirecloud = Wirecloud.new(args[:instance] =~ /^http/i ? args[:instance] : "http://#{args[:instance]}")
   wirecloud.login! args[:username], args[:password]
 
   remote_resources = wirecloud.resources
