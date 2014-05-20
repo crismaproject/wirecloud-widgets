@@ -61,6 +61,13 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             $scope.pendingCommand = null;
         };
 
+        $scope.canExecutePendingCommand = function() {
+            if (!$scope.pendingCommand) return false;
+            for (var i = 0; i < $scope.pendingCommand.data.length; i++)
+                if (!$scope.pendingCommand.data[i]) return false;
+            return true;
+        };
+
         $scope.executePendingCommand = function() {
             var command = $scope.pendingCommand;
             var data = $scope.pendingCommand.data;

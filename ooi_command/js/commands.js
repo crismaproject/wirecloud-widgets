@@ -38,13 +38,13 @@ angular.module('ooiCommand.commands', [])
                 }, {
                     targetType: 'ooi',
                     targetRestrictedTo: 14,
-                    displayName: 'Pickup Area',
+                    displayName: 'Pickup Area'/*,
                     isTargetAllowed: function (area) {
                         return area.entityInstancesProperties.length &&
                             area.entityInstancesProperties.indexOfWhere(function (p) {
                                 return p.entityTypePropertyId == 54 && p.entityPropertyValue == 'Pickup-Area';
                             }) != -1;
-                    }
+                    }*/
                 }
             ],
             log: 'Bring patients from #{data[1].entityName} to #{data[0].entityName}.',

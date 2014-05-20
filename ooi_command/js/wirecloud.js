@@ -13,7 +13,7 @@ angular.module('ooiCommand.wirecloud', [])
                     var dummyFunctionName = 'wcTriggerEv_' + event;
                     console.warn('Wirecloud not detected. Use injected method window.' + dummyFunctionName + ' (event_data) to trigger this event manually manually.');
                     window[dummyFunctionName] = function(arg) {
-                        callback(typeof arg === 'string' ? arg : JSON.stringify(arg));
+                        callback(typeof arg === 'string' ? arg : angular.toJson(arg));
                     };
                 }
             },
@@ -21,7 +21,7 @@ angular.module('ooiCommand.wirecloud', [])
             send: function (wiringName, data) {
                 if (typeof MashupPlatform !== 'undefined') {
                     if (typeof data !== 'string')
-                        data = JSON.stringify(data);
+                        data = angular.toJson(data);
                     MashupPlatform.wiring.pushEvent(wiringName, data);
                 } else {
                     if (!this.hasOwnProperty('$warned')) {

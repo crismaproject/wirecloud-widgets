@@ -44,7 +44,7 @@
         <div class="row-fluid">
             <div class="btn-group">
                 <button type="button" class="btn btn-danger" ng-click="cancelCommand()">Cancel</button>
-                <button type="button" class="btn btn-primary" ng-click="executePendingCommand()">Execute</button>
+                <button type="button" class="btn btn-primary" ng-click="executePendingCommand()" ng-disabled="!canExecutePendingCommand()">Execute</button>
             </div>
         </div>
     </div>
