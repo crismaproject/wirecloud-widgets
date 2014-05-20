@@ -16,38 +16,47 @@
 
 <div ng-controller="OoiCommandCtrl">
 
-    <div class="btn-group">
-        <button ng-repeat="cmd in availableCommands | filter:showCommand" ng-disabled="pendingCommand"
-                ng-click="activateCommand(cmd)" ng-mouseover="showHelpFor(cmd)"
-                type="button" class="btn btn-default btn-sm btn-cmd {{cmd.css}}"
-                title="{{cmd.help}}">{{cmd.displayName}}</button>
-    </div>
-
-    <div ng-show="mouseOverCommand">
-        <strong>{{mouseOverCommand.displayName}}:</strong>
-        {{mouseOverCommand.help}}
-    </div>
-
-    <div class="container-fluid" ng-show="pendingCommand">
-        <hr />
-
-        <div ng-repeat="(i, arg) in pendingCommand.arguments" class="row-fluid">
-            <div class="col-sm-3">
-                <label for="pcArg{{i}}">{{arg.displayName || 'Target'}}</label>
-            </div>
-
-            <div class="col-sm-9">
-                <select id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" required="required" class="form-control"></select>
-            </div>
+    <div ng-hide="pendingCommand">
+        <div class="btn-group">
+            <button ng-repeat="cmd in availableCommands | filter:showCommand" ng-disabled="pendingCommand"
+                    ng-click="activateCommand(cmd)" ng-mouseover="showHelpFor(cmd)"
+                    type="button" class="btn btn-default btn-sm btn-cmd {{cmd.css}}"
+                    title="{{cmd.help}}">{{cmd.displayName}}</button>
         </div>
 
-        <div class="row-fluid">
-            <div class="btn-group">
+        <div ng-show="mouseOverCommand">
+            <strong>{{mouseOverCommand.displayName}}:</strong>
+            {{mouseOverCommand.help}}
+        </div>
+    </div>
+    <fieldset ng-show="pendingCommand">
+        <legend>{{pendingCommand.displayName}}</legend>
+
+        <div class="container-fluid">
+            <div ng-repeat="(i, arg) in pendingCommand.arguments" class="row-fluid">
+                <div class="col-sm-3">
+                    <label for="pcArg{{i}}">{{arg.displayName || 'Target'}}:</label>
+                </div>
+
+                <div class="col-sm-9" ng-switch="arg.targetType">
+                    <select ng-switch-when="ooi" id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" required="required" class="form-control"></select>
+                    <div ng-switch-when="point" class="form-inline">
+                        <div>
+                            <abbr title="Latitude">Lat.</abbr> <input type="number" min="-180" max="180" value="0" step="0.00001" class="form-control" ng-value="pendingCommand.data[i].lat" required="required">
+                            <abbr title="Longitude">Lon.</abbr> <input type="number" min="-90" max="90" value="0" step="0.00001" class="form-control" ng-value="pendingCommand.data[i].lon" required="required">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+
+            <div style="text-align: right">
                 <button type="button" class="btn btn-danger" ng-click="cancelCommand()">Cancel</button>
                 <button type="button" class="btn btn-primary" ng-click="executePendingCommand()" ng-disabled="!canExecutePendingCommand()">Execute</button>
             </div>
         </div>
-    </div>
+    </fieldset>
 </div>
 
 </body>

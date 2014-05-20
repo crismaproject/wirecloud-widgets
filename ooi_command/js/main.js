@@ -46,7 +46,15 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         };
 
         $scope.activateCommand = function(command) {
-            $scope.pendingCommand = $.extend(true, {candidates: [], data: []}, command);
+            $scope.pendingCommand = $.extend(true, {
+                candidates: [],
+                data: command.arguments.map(function(x) {
+                    switch(x.targetType) {
+                        case 'point': return { lat:0, lon:0 };
+                        default: return null;
+                    }
+                })
+            }, command);
 
             if (!command.hasOwnProperty('arguments') || !command.arguments.length)
                 $scope.executePendingCommand();
@@ -63,6 +71,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
         $scope.canExecutePendingCommand = function() {
             if (!$scope.pendingCommand) return false;
+            console.log(['execability check', $scope.pendingCommand]);
             for (var i = 0; i < $scope.pendingCommand.data.length; i++)
                 if (!$scope.pendingCommand.data[i]) return false;
             return true;
@@ -75,10 +84,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 return ooi.entityTypeId == command.entityTypeId &&
                     (!command.hasOwnProperty('isAvailable') || command.isAvailable(ooi));
             }) : [];
-
-            console.log(command);
-            console.log(data);
-            console.log(oois);
 
             var inject = function(root, key) {
                 if (root.hasOwnProperty(key))
@@ -132,7 +137,13 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
             var commandObj = {
                 affected: oois,
-                command: command,
+                command: {
+                    id: command.id,
+                    log: command.log,
+                    setGeometry: command.setGeometry,
+                    setProperties: command.setProperties,
+                    spawnArea: command.spawnArea
+                },
                 data: data
             };
 

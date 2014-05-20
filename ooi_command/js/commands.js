@@ -6,7 +6,6 @@ angular.module('ooiCommand.commands', [])
             entityTypeId: 14,
             displayName: 'Move pickup area',
             help: 'This will move the pickup area to a new location.',
-            targetType: 'point',
             log: 'Move pickup area to lat. #{data.lat}, long. #{data.lon}',
             isAvailable: function (area) {
                 var properties = area.entityInstancesProperties;
@@ -18,6 +17,12 @@ angular.module('ooiCommand.commands', [])
                 }
                 return true;
             },
+            arguments: [
+                {
+                    displayName: 'New location',
+                    targetType: 'point'
+                }
+            ],
             setGeometry: {
                 lat: '#{data.lat}',
                 lon: '#{data.lon}'
