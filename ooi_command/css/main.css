@@ -9,8 +9,9 @@
 }
 
 /* command icons */
-.ico-cmd-treat { background-image: url("../img/ico-cmd-treat.png"); padding-left: 20px }
-.ico-cmd-goto { background-image: url("../img/ico-cmd-goto.png"); padding-left: 20px }
+.ico-cmd-treat { background-image: url("../img/ico-cmd-treat.svg"); padding-left: 22px }
+.ico-cmd-goto { background-image: url("../img/ico-cmd-goto.svg"); padding-left: 22px }
+.ico-cmd-move { background-image: url("../img/ico-cmd-move.svg"); padding-left: 22px }
 
 /* entity type colors */
 .text-entity-type-7 { color: #b84763 }

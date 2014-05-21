@@ -2,11 +2,11 @@ angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
         {
             id: 'move-pickup',
-            css: 'ico-cmd-pickup',
+            css: 'ico-cmd-move',
             entityTypeId: 14,
-            displayName: 'Move pickup area',
-            help: 'This will move the pickup area to a new location.',
-            log: 'Move pickup area to lat. #{data.lat}, long. #{data.lon}',
+            displayName: 'Move treatment area',
+            help: 'This will move the treatment area to a new location.',
+            log: 'Move treatment area to lat. #{data.lat}, long. #{data.lon}',
             isAvailable: function (area) {
                 var properties = area.entityInstancesProperties;
                 for (var i = 0; i < properties.length; i++) {
@@ -31,19 +31,15 @@ angular.module('ooiCommand.commands', [])
 
         {
             id: 'dispatch',
-            css: 'ico-cmd-goto',
+            css: 'ico-cmd-treat',
             entityTypeId: 7,
             displayName: 'Dispatch Ambulances',
-            help: 'This command orders an ambulance to collect Patients from Pickup-Area and transfer them to the specified hospital.',
+            help: 'This command orders an ambulance to treat patients at a treatment area.',
             arguments: [
                 {
                     targetType: 'ooi',
-                    targetRestrictedTo: 9,
-                    displayName: 'Hospital'
-                }, {
-                    targetType: 'ooi',
                     targetRestrictedTo: 14,
-                    displayName: 'Pickup Area'/*,
+                    displayName: 'Treatment Area'/*,
                     isTargetAllowed: function (area) {
                         return area.entityInstancesProperties.length &&
                             area.entityInstancesProperties.indexOfWhere(function (p) {
@@ -52,7 +48,7 @@ angular.module('ooiCommand.commands', [])
                     }*/
                 }
             ],
-            log: 'Bring patients from #{data[1].entityName} to #{data[0].entityName}.',
+            log: 'Treat patients at #{data[0].entityName}.',
             isAvailable: function (ambulance) {
                 var properties = ambulance.entityInstancesProperties;
                 for (var i = 0; i < properties.length; i++) {
@@ -65,8 +61,47 @@ angular.module('ooiCommand.commands', [])
             },
             apply: function(command, data) {
                 command.setProperties = $.extend({}, command.setProperties, {
-                    315: data[0].entityId,
-                    314: data[1].entityId
+                    315: '',
+                    314: data[0].entityId
+                });
+
+                return command;
+            }
+        },
+
+        {
+            id: 'evac',
+            css: 'ico-cmd-goto',
+            entityTypeId: 7,
+            displayName: 'Evacuate patients',
+            help: 'This command orders an ambulance to evacuate patients from a treatment area and bring them to a specified hospital.',
+            arguments: [
+                {
+                    targetType: 'ooi',
+                    targetRestrictedTo: 14,
+                    displayName: 'Pick up at'
+                },
+                {
+                    targetType: 'ooi',
+                    targetRestrictedTo: 9,
+                    displayName: 'Evacuate to'
+                }
+            ],
+            log: 'Evacuate patients from #{data[0].entityName} and bring them to #{data[1].entityName}.',
+            isAvailable: function (ambulance) {
+                var properties = ambulance.entityInstancesProperties;
+                for (var i = 0; i < properties.length; i++) {
+                    var property = properties[i];
+                    // Check target availability time; 0 = now, >0 = later, <0 = never
+                    if (property.entityTypePropertyId == 312)
+                        return property.entityPropertyValue == '0';
+                }
+                return true;
+            },
+            apply: function(command, data) {
+                command.setProperties = $.extend({}, command.setProperties, {
+                    315: data[1].entityId,
+                    314: data[0].entityId
                 });
 
                 return command;
