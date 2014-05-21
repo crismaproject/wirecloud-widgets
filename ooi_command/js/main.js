@@ -50,8 +50,10 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 candidates: [],
                 data: command.arguments.map(function(x) {
                     switch(x.targetType) {
-                        case 'point': return { lat:0, lon:0 };
-                        default: return null;
+                        case 'point':
+                            return { lat:0, lon:0 };
+                        default:
+                            return null;
                     }
                 })
             }, command);
@@ -171,7 +173,11 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
          * WIRECLOUD BINDINGS                                           *
          ****************************************************************/
         wirecloud.on('oois', function(oois) {
-            $scope.oois = JSON.parse(oois);
+            if ($scope.pendingCommand) {
+                // TODO: if command is being prepared for execution, any NEWLY selected OOIs should be treated as potential arguments rather than selections.
+            } else {
+                $scope.oois = JSON.parse(oois);
+            }
             $scope.$apply();
         });
 
