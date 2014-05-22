@@ -173,11 +173,18 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
          * WIRECLOUD BINDINGS                                           *
          ****************************************************************/
         wirecloud.on('oois', function(oois) {
-            if ($scope.pendingCommand) {
-                // TODO: if command is being prepared for execution, any NEWLY selected OOIs should be treated as potential arguments rather than selections.
-            } else {
-                $scope.oois = JSON.parse(oois);
-            }
+            oois = JSON.parse(oois);
+
+            var added = oois.filter(function (x) { return $scope.oois.indexOfWhere(function (y) { return y.entityId == x.entityId; })== -1 });
+            var removed = $scope.oois.filter(function (x) { return oois.indexOfWhere(function (y) { return y.entityId == x.entityId; }) == -1 });
+
+            $scope.oois = oois;
+
+            if (added.length)
+                itemsAdded(added);
+            if (removed.length)
+                itemsRemoved(removed);
+
             $scope.$apply();
         });
 
@@ -211,4 +218,31 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             if ($scope.pendingCommand && eventData.keyCode == 27)
                 $scope.$apply($scope.cancelCommand);
         });
+
+
+        function itemsAdded(oois) {
+            if (!oois || !oois.length) return;
+
+            /* Iff new OOIs have been selected and there's a command pending, try to assign newly selected OOIs to
+             * any data slots that still require a value. The assumption here is that the user selected the OOI with
+             * the intent to fill a slot.
+             */
+            if ($scope.pendingCommand) {
+                var commandArgumentCount = $scope.pendingCommand.arguments.length;
+                for (var i = 0; i < commandArgumentCount; i++)
+                    if (!$scope.pendingCommand.data[i]) // argument slot for pending command is still unset
+                        for (var j = 0; j < oois.length; j++) {
+                            if ($scope.acceptsArgument($scope.pendingCommand.arguments[i], oois[j])) {
+                                var index = $scope.pendingCommand.candidates[i].indexOfWhere(function (x) { return x.entityId == oois[j].entityId; });
+                                if (index != -1) {
+                                    $scope.pendingCommand.data[i] = $scope.pendingCommand.candidates[i][index];
+                                    break;
+                                }
+                            }
+                        }
+            }
+        }
+
+        function itemsRemoved(oois) {
+        }
     }]);
