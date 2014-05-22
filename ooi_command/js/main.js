@@ -73,7 +73,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
         $scope.canExecutePendingCommand = function() {
             if (!$scope.pendingCommand) return false;
-            console.log(['execability check', $scope.pendingCommand]);
             for (var i = 0; i < $scope.pendingCommand.data.length; i++)
                 if (!$scope.pendingCommand.data[i]) return false;
             return true;
