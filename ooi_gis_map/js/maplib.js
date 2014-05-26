@@ -65,8 +65,8 @@ function OpenLayersFacade(container) {
         var points = [ ];
         for (var i = 0; i < steps; i++)
             points[i] = new OpenLayers.Geometry.Point(
-                center.x + radius * Math.cos(stept * i),
-                center.y + radius * Math.sin(stept * i)
+                    center.x + radius * Math.cos(stept * i),
+                    center.y + radius * Math.sin(stept * i)
             );
 
         var poly = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(points)]);
@@ -88,6 +88,33 @@ function OpenLayersFacade(container) {
                 new OpenLayers.Bounds(left, bottom, right, top).transform(EPSG_4326_PROJECTION, mapProjection()) :
                 null
         });
+    };
+
+    /**
+     * Sets the center of the map to the specified coordinates.
+     * @param {float} lat
+     * @param {float} lon
+     * @param {float?} z
+     */
+    this.focusOn = function (lat, lon, z) {
+        map.setCenter(latLon(lat, lon), z);
+    };
+
+    /**
+     * Repositions the map so that it contains all elements displayed on it.
+     * @return {boolean} true, if the map moves to a new extent; false otherwise.
+     */
+    this.focusOnAll = function () {
+        var maxExtent = new OpenLayers.Bounds();
+        if (ooiLayer.features.length)
+            maxExtent = maxExtent.extend(ooiLayer.getDataExtent());
+        if (geometryLayer.features.length)
+            maxExtent = maxExtent.extend(geometryLayer.getDataExtent());
+        var size = maxExtent.getSize();
+        if (size.h > 0 && size.w > 0) {
+            map.zoomToExtent(maxExtent);
+            return true;
+        } else return false;
     };
 
     /**

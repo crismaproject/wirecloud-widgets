@@ -36,21 +36,27 @@ if (typeof MashupPlatform === 'undefined') {
 } else {
     var applyPreferences = function () {
         var bboxMatch = bboxExpression.exec(MashupPlatform.prefs.get('bbox'));
-        if (bboxMatch) {
+        if (bboxMatch)
             map.setBBox(
                 parseFloat(bboxMatch[1]),
                 parseFloat(bboxMatch[2]),
                 parseFloat(bboxMatch[3]),
                 parseFloat(bboxMatch[4])
             );
-        }
     };
 
     MashupPlatform.prefs.registerCallback(applyPreferences);
     applyPreferences();
 
+    MashupPlatform.wiring.registerCallback('focus', function (data) {
+        var focusOn = JSON.parse(data);
+        if (focusOn.hasOwnProperty('lat') && focusOn.hasOwnProperty('lon'))
+            map.focusOn(focusOn.lat, focusOn.lon);
+    });
+
     MashupPlatform.wiring.registerCallback('oois_in', function (data) {
         setOOIs(JSON.parse(data));
+        window.setTimeout(map.focusOnAll, 1800);
     });
 
     MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {

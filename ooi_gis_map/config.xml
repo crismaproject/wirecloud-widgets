@@ -1,44 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Template xmlns="http://wirecloud.conwet.fi.upm.es/ns/template#">
-  <Catalog.ResourceDescription>
-    <Vendor>AIT</Vendor>
-    <Name>ooi_gis_map</Name>
-    <DisplayName>OOI GIS Map</DisplayName>
-    <Version>0.6.1.2</Version>
-    <Author>Manuel Warum</Author>
-    <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
-    <Description>
-      This is a basic OpenLayers widget using OpenStreetMap tiles. It is capable of displaying areas and individual
-      objects of interests on a geographical map. Users can select individual objects of interest by clicking on them.
-      In addition, this widget synchronizes user selection with other connected widgets that support this behaviour,
-      such as the OOI table widget.
-      Data, imagery and map information are provided by OpenStreetMap and contributors under the CC-BY-SA license.
-    </Description>
-    <ImageURI>img/catalogue.png</ImageURI>
-    <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
-    <WikiURI>http://127.0.0.1/index.htm</WikiURI>
-  </Catalog.ResourceDescription>
+    <Catalog.ResourceDescription>
+        <Vendor>AIT</Vendor>
+        <Name>ooi_gis_map</Name>
+        <DisplayName>OOI GIS Map</DisplayName>
+        <Version>0.6.2.0</Version>
+        <Author>Manuel Warum</Author>
+        <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
+        <Description>
+            This is a basic OpenLayers widget using OpenStreetMap tiles. It is capable of displaying areas and individual
+            objects of interests on a geographical map. Users can select individual objects of interest by clicking on them.
+            In addition, this widget synchronizes user selection with other connected widgets that support this behaviour,
+            such as the OOI table widget.
+            Data, imagery and map information are provided by OpenStreetMap and contributors under the CC-BY-SA license.
+        </Description>
+        <ImageURI>img/catalogue.png</ImageURI>
+        <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
+        <WikiURI>http://127.0.0.1/index.htm</WikiURI>
+    </Catalog.ResourceDescription>
 
     <Platform.Preferences>
         <Preference name="bbox" type="text" description="Bounding box" label="Bounding Box"/>
     </Platform.Preferences>
 
-  <Platform.Wiring>
-    <InputEndpoint name="oois_in" type="text" label="OOIs" description="Objects of interest" friendcode="oois"/>
-    <InputEndpoint name="oois_selected_in" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
-    <InputEndpoint name="bbox" type="text" label="Bounding Box" friendcode="bbox"/>
+    <Platform.Wiring>
+        <InputEndpoint name="oois_in" type="text" label="OOIs" description="Objects of interest" friendcode="oois"/>
+        <InputEndpoint name="oois_selected_in" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
+        <InputEndpoint name="bbox" type="text" label="Bounding Box" friendcode="bbox"/>
+        <InputEndpoint name="focus" type="text" label="Focus" friendcode="geo-lonlat"/>
 
-    <OutputEndpoint name="oois_selected_out" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
-    <OutputEndpoint name="center_point" type="text" label="Center" description="Sends a signal whenever the shown center changes" friendcode="geo-lonlat"/>
-    <OutputEndpoint name="clicked" type="text" label="Click" description="Sends a signal whenever an empty area of the map is clicked" friendcode="geo-lonlat"/>
-  </Platform.Wiring>
+        <OutputEndpoint name="oois_selected_out" type="text" label="Selected OOIs" description="Selected objects of interest" friendcode="oois"/>
+        <OutputEndpoint name="center_point" type="text" label="Center" description="Sends a signal whenever the shown center changes" friendcode="geo-lonlat"/>
+        <OutputEndpoint name="clicked" type="text" label="Click" description="Sends a signal whenever an empty area of the map is clicked" friendcode="geo-lonlat"/>
+    </Platform.Wiring>
 
-  <Platform.Context/>
+    <Platform.Context/>
 
-  <Platform.Link>
-    <XHTML href="index.html" cacheable="false"/>
-  </Platform.Link>
+    <Platform.Link>
+        <XHTML href="index.html" cacheable="false"/>
+    </Platform.Link>
 
-  <Platform.Rendering width="12" height="26"/>
+    <Platform.Rendering width="12" height="26"/>
 </Template>
