@@ -113,13 +113,11 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             if (command.hasOwnProperty('log'))
                 inject(command, 'log');
             if (command.hasOwnProperty('apply'))
-                for (var i = 0; i < oois.length; i++) {
-                    command = command.apply(command, data, oois[i], $scope.allObjects);
-                    if (!command) {
-                        console.log(['Command cancellation requested by command.apply()', command]);
+                for (var i = 0; i < oois.length; i++)
+                    if (!command.apply(command, data, oois[i], $scope.allObjects)) {
+                        console.log('Command cancellation requested by command.apply()');
                         return;
                     }
-                }
             if (command.hasOwnProperty('spawnArea')) {
                 var area = $.extend(true, {
                     'entityId': -($scope.areaSequenceId++),
@@ -147,9 +145,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 },
                 data: data
             };
-
-            delete commandObj.command.data;
-            delete commandObj.command.candidates;
 
             wirecloud.send('command', commandObj);
             $scope.pendingCommand = null;

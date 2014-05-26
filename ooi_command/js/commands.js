@@ -39,13 +39,13 @@ angular.module('ooiCommand.commands', [])
                 {
                     targetType: 'ooi',
                     targetRestrictedTo: 14,
-                    displayName: 'Treatment Area'/*,
+                    displayName: 'Treatment Area',
                     isTargetAllowed: function (area) {
                         return area.entityInstancesProperties.length &&
                             area.entityInstancesProperties.indexOfWhere(function (p) {
                                 return p.entityTypePropertyId == 54 && p.entityPropertyValue == 'Pickup-Area';
                             }) != -1;
-                    }*/
+                    }
                 }
             ],
             log: 'Treat patients at #{data[0].entityName}.',

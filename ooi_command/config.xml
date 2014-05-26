@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>ooi_command</Name>
     <DisplayName>OOI Commands</DisplayName>
-    <Version>0.6.5.0</Version>
+    <Version>0.6.5.1</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Command Objects of Interests</Description>
