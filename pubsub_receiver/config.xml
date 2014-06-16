@@ -13,7 +13,7 @@
         <wire:displayName>PubSub receiver</wire:displayName>
         <dcterms:description>This operator receives signals from a PubSub publisher.</dcterms:description>
         <dcterms:creator rdf:resource="http://creatoruri/"/>
-        <usdl-core:versionInfo>0.1.0.1</usdl-core:versionInfo>
+        <usdl-core:versionInfo>0.1.0.2</usdl-core:versionInfo>
         <wire:hasImageUri rdf:resource="img/catalogue.png"/>
         <usdl-core:utilizedResource rdf:resource="js/main.js"/>
         <foaf:page rdf:resource="http://conwet.fi.upm.es/docs/display/wirecloud"/>
@@ -27,9 +27,31 @@
 
         <wire:hasRequirement>
             <wire:Feature>
-                <rdfs:label>PubSub</rdfs:label>
+                <rdfs:label>NGSI</rdfs:label>
             </wire:Feature>
         </wire:hasRequirement>
+
+        <wire:hasPlatformPreference>
+            <wire:PlatformPreference rdf:ID="preference_1">
+                <wire:index>1</wire:index>
+                <dcterms:title>ngsi_uri</dcterms:title>
+                <wire:type>text</wire:type>
+                <dcterms:description>URL of the NGSI endpoint</dcterms:description>
+                <rdfs:label>NGSI URI</rdfs:label>
+                <wire:default>http://crisma.ait.ac.at/orion/</wire:default>
+            </wire:PlatformPreference>
+        </wire:hasPlatformPreference>
+
+        <wire:hasPlatformPreference>
+            <wire:PlatformPreference rdf:ID="preference_2">
+                <wire:index>2</wire:index>
+                <dcterms:title>ngsi_proxy_uri</dcterms:title>
+                <wire:type>text</wire:type>
+                <dcterms:description>URL of the NGSI proxy</dcterms:description>
+                <rdfs:label>NGSI Proxy</rdfs:label>
+                <wire:default>http://crisma.ait.ac.at:3000</wire:default>
+            </wire:PlatformPreference>
+        </wire:hasPlatformPreference>
 
         <wire:hasPlatformWiring>
             <wire:PlatformWiring rdf:ID="wiring">

@@ -1,31 +1,31 @@
 /*global MashupPlatform*/
 
-var mySubEndPoint = new MashupPlatform.SilboPS.SubEndPoint({
-    open: function(endpoint) {
-        console.log('PubSub endpoint opened');
-        console.log(arguments);
-    },
-    close: function(endpoint) {
-        console.log('PubSub endpoint closed');
-        console.log(arguments);
-    },
-    advertise: function(endpoint, advertise) {
-        console.log('PubSub endpoint advertising');
-        console.log(arguments);
-    },
-    unadvertise: function(endpoint, unadvertise) {
-        console.log('PubSub endpoint unadvertising');
-        console.log(arguments);
-    },
-    notify: function(endpoint, notification) {
-        console.log('PubSub endpoint notifying');
-        console.log(arguments);
+var ngsiConnectionOptions = {
+    ngsi_proxy_url: MashupPlatform.prefs.get('ngsi_proxy_uri')
+};
+
+
+var ngsiConnection = new NGSI.Connection(MashupPlatform.prefs.get('ngsi_uri'), ngsiConnectionOptions);
+var entityList = [{type: 'CRISMA.worldstates', id: '.*', isPattern: true}];
+var attributeList = [];
+
+ngsiConnection.query(entityList, attributeList, {
+    flat: true,
+    onSuccess: function (data) {
+        console.log('QUERY');
+        console.log(data);
     }
 });
 
-var cxtFunc = new MashupPlatform.SilboPS.ContextFunction();
-var filter = new MashupPlatform.SilboPS.Filter();
+var duration = 'PT5M'; // FIXME: increase limit, e.g. 'PT2H'
+var throttling = null;
+var notifyConditions = [];
 
-mySubEndPoint.subscribe(filter, cxtFunc);
-
-window.setTimeout(function () { mySubEndPoint.close(); }, 60000);
+// The following will FAIL without having a NGSI proxy to begin with:
+ngsiConnection.createSubscription(entityList, attributeList, duration, throttling, notifyConditions, {
+    flat: true,
+    onNotify: function (data) {
+        console.log('NOTIFY');
+        console.log(data);
+    }
+});
