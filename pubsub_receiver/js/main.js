@@ -19,7 +19,10 @@ ngsiConnection.query(entityList, attributeList, {
 
 var duration = 'PT5M'; // FIXME: increase limit, e.g. 'PT2H'
 var throttling = null;
-var notifyConditions = [];
+var notifyConditions = [{
+    type: 'ONCHANGE',
+    condValues: ['dataslot_OOI-worldstate-ref']
+}];
 
 // The following will FAIL without having a NGSI proxy to begin with:
 ngsiConnection.createSubscription(entityList, attributeList, duration, throttling, notifyConditions, {
