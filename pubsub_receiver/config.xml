@@ -53,6 +53,17 @@
             </wire:PlatformPreference>
         </wire:hasPlatformPreference>
 
+        <wire:hasPlatformPreference>
+            <wire:PlatformPreference rdf:ID="preference_3">
+                <wire:index>3</wire:index>
+                <dcterms:title>entity_scope</dcterms:title>
+                <wire:type>text</wire:type>
+                <dcterms:description>Entity type</dcterms:description>
+                <rdfs:label>Entity type</rdfs:label>
+                <wire:default>CRISMA.worldstates</wire:default>
+            </wire:PlatformPreference>
+        </wire:hasPlatformPreference>
+
         <wire:hasPlatformWiring>
             <wire:PlatformWiring rdf:ID="wiring">
                 <wire:hasOutputEndpoint>
