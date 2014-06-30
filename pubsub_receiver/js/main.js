@@ -12,8 +12,7 @@ var attributeList = [];
 ngsiConnection.query(entityList, attributeList, {
     flat: true,
     onSuccess: function (data) {
-        console.log('QUERY');
-        console.log(data);
+        MashupPlatform.wiring.pushEvent('signal', typeof data !== 'string' ? JSON.stringify(data) : data);
     }
 });
 
