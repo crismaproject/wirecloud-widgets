@@ -12,11 +12,13 @@ var ngsiConnection = new NGSI.Connection(ngsiUri, ngsiConnectionOptions);
 var entityList = [{type: entityScope, id: '.*', isPattern: true}];
 var attributeList = [];
 
-ngsiConnection.query(entityList, attributeList, {
-    flat: true,
-    onSuccess: function (data) {
-        MashupPlatform.wiring.pushEvent('signal', typeof data !== 'string' ? JSON.stringify(data) : data);
-    }
+MashupPlatform.wiring.registerCallback('query_request', function () {
+    ngsiConnection.query(entityList, attributeList, {
+        flat: true,
+        onSuccess: function (data) {
+            MashupPlatform.wiring.pushEvent('signal', typeof data !== 'string' ? JSON.stringify(data) : data);
+        }
+    });
 });
 
 //var duration = 'PT15M'; // FIXME: increase limit, e.g. 'PT2H'
