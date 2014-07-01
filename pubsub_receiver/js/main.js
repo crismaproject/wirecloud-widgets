@@ -12,10 +12,14 @@ var ngsiConnection = new NGSI.Connection(ngsiUri, ngsiConnectionOptions);
 var entityList = [{type: entityScope, id: '.*', isPattern: true}];
 var attributeList = [];
 
-MashupPlatform.wiring.registerCallback('query_request', function () {
+MashupPlatform.wiring.registerCallback('query_request', function (token) {
     ngsiConnection.query(entityList, attributeList, {
         flat: true,
         onSuccess: function (data) {
+            if (token) {
+                data = typeof data === 'string' ? JSON.parse(data) : data;
+                data['query_request_token'] = token;
+            }
             MashupPlatform.wiring.pushEvent('signal', typeof data !== 'string' ? JSON.stringify(data) : data);
         }
     });

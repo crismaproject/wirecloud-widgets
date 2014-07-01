@@ -13,7 +13,7 @@
         <wire:displayName>PubSub receiver</wire:displayName>
         <dcterms:description>This operator receives signals from a PubSub publisher.</dcterms:description>
         <dcterms:creator rdf:resource="http://creatoruri/"/>
-        <usdl-core:versionInfo>0.1.0.5</usdl-core:versionInfo>
+        <usdl-core:versionInfo>0.1.0.6</usdl-core:versionInfo>
         <wire:hasImageUri rdf:resource="img/catalogue.png"/>
         <usdl-core:utilizedResource rdf:resource="js/main.js"/>
         <foaf:page rdf:resource="http://conwet.fi.upm.es/docs/display/wirecloud"/>
@@ -69,7 +69,11 @@
                 <wire:hasInputEndpoint>
                     <wire:InputEndpoint rdf:ID="input_1">
                         <dcterms:title>query_request</dcterms:title>
-                        <dcterms:description>Whenever any data is received, this operator will perform an NGSI query.</dcterms:description>
+                        <dcterms:description>
+                            Whenever any data is received, this operator will perform an NGSI query.
+                            The signal may contain a string-based token which will be carried forwarded through the
+                            'signal' endpoint as a property named 'query_request_token'.
+                        </dcterms:description>
                         <wire:type>text</wire:type>
                         <rdfs:label>Query request</rdfs:label>
                         <wire:friendcode>any</wire:friendcode>
