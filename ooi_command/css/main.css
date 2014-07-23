@@ -16,3 +16,6 @@
 /* entity type colors */
 .text-entity-type-7 { color: #b84763 }
 .text-entity-type-14 { color: #6747b8 }
+
+.container-args * { margin-bottom: 1ex; }
+.container-args:first-child { margin-bottom: 0; }
