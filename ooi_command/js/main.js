@@ -61,10 +61,12 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             if (!command.hasOwnProperty('arguments') || !command.arguments.length)
                 $scope.executePendingCommand();
             else
-                for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
+                for (var i = 0; i < $scope.pendingCommand.arguments.length; i++) {
+                    var argument = $scope.pendingCommand.arguments[i];
                     $scope.pendingCommand.candidates[i] = $scope.allObjects.filter(function (x) {
-                        return $scope.acceptsArgument($scope.pendingCommand.arguments[i], x);
+                        return $scope.acceptsArgument(argument, x);
                     });
+                }
         };
 
         $scope.cancelCommand = function() {

@@ -2,11 +2,11 @@
 <html ng-app="ooiCommand">
 <head>
     <title>Object of Interest commands</title>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/main.css" type="text/css" rel="stylesheet"/>
     <script src="//code.jquery.com/jquery-2.1.0.min.js" type="text/javascript"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js" type="text/javascript"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.20/angular.min.js" type="text/javascript"></script>
     <script src="js/extensions.js" type="text/javascript"></script>
     <script src="js/commands.js" type="text/javascript"></script>
     <script src="js/main.js" type="text/javascript"></script>
@@ -32,7 +32,7 @@
     <fieldset ng-show="pendingCommand">
         <legend>{{pendingCommand.displayName}}</legend>
 
-        <div class="container-fluid">
+        <div class="container-fluid container-args">
             <div ng-repeat="(i, arg) in pendingCommand.arguments" class="row-fluid">
                 <div class="col-sm-3">
                     <label for="pcArg{{i}}">{{arg.displayName || 'Target'}}:</label>
