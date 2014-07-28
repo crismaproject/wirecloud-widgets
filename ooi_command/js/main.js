@@ -55,7 +55,9 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                         case 'number':
                             return 1;
                         case 'option':
-                            return x.hasOwnProperty('options') ? x.options[0] : null;
+                            if (x.hasOwnProperty('getOptions') && typeof(x.getOptions) === 'function')
+                                x.options = x.getOptions($scope.allObjects);
+                            return x.hasOwnProperty('options') && x.options.length > 0 ? x.options[0] : null;
                         default:
                             return null;
                     }
