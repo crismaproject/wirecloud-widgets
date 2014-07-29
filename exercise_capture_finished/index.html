@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="exerciseCaptureFinishedApp">
+<head>
+    <title>Exercise Capture Finished</title>
+	
+    <link rel="stylesheet" href="libs/bootstrap/css/bootstrap.css">
+	
+    <script src="libs/angular-1.2.13/angular.js"></script>
+    <script src="libs/angular-1.2.13/angular-resource.min.js"></script>
+    <script src="js/main.js" type="text/javascript"></script>
+    <script src="js/wirecloud.js" type="text/javascript"></script>
+    <script src="js/icmm.js" type="text/javascript"></script>
+</head>
+<body ng-controller="exerciseCaptureFinishedController">
+
+<div class="btn-group-vertical">
+	<button 
+		type="button"
+		class="btn btn-success btn-xs" 
+		style="margin-top: 2px;" 
+		data-toggle="tooltip" data-placement="top" title="Load selected exercise scenario for capturing data of a new exercise run." 
+		ng-click='load()'>
+		<span class='glyphicon glyphicon-plus'></span>
+	</button>		
+	<button 
+		type="button"
+		class="btn btn-success btn-xs" 
+		style="margin-top: 2px;" 
+		data-toggle="tooltip" data-placement="top" title="Finish capturing and store data." 
+		ng-click='finished()'>
+		<span class='glyphicon glyphicon-ok'></span>
+	</button>		
+</div>
+</body>
+</html>

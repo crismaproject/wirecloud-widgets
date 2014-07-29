@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Template xmlns="http://wirecloud.conwet.fi.upm.es/ns/template#">
+    <Catalog.ResourceDescription>
+        <Vendor>AIT</Vendor>
+        <Name>indicator_view</Name>
+        <DisplayName>CRISMA Indicator View</DisplayName>
+        <Version>0.1.0.8</Version>
+        <Author>Maria Egly</Author>
+        <Mail>maria.egly@ait.ac.at</Mail>
+        <Description>
+            Indicator viewer. Shows a tree of worldstates based on a user selected root worldstate, 
+			a timeline for all indicators of type "timeintervals" contained in the worldstates shown in the tree, 
+			and a bar chart for indicators of types "number" or "histogram"
+        </Description>
+        <ImageURI>img/catalogue.png</ImageURI>
+        <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
+        <WikiURI>http://127.0.0.1/index.htm</WikiURI>
+    </Catalog.ResourceDescription>
+
+    <Platform.Preferences>
+        <Preference name="icmm" type="text" description="URI to the ICMM API" label="ICMM API URI"/>
+        <Preference name="showGroupBy" type="boolean" description="Check this item if the user shall be able to switch grouping of indicators" label="Switch Group"/>
+        <Preference name="showTree" type="boolean" description="Check this item if the worldstate tree shall be displayed" label="Display Worldstate Tree"/>
+        <Preference name="showTimeline" type="boolean" description="Check this item if the timeline indicators shall be displayed" label="Display Timeline"/>
+        <Preference name="showChart" type="boolean" description="Check this item if the histogram indicators shall be displayed" label="Display Chart"/>
+    </Platform.Preferences>
+
+    <Platform.Wiring>
+        <InputEndpoint name="basic_worldstate" type="text" label="Basic World State" description="The root world state for the tree" friendcode="basic_worldstate"/>
+        <OutputEndpoint name="selected_indicators" type="text" label="Selected Indicators" description="The indicators selected by the user" friendcode="selected_indicators"/>
+        <OutputEndpoint name="selected_worldstates" type="text" label="Selected World States" description="The world states selected by the user" friendcode="selected_worldstates"/>
+    </Platform.Wiring>
+
+    <Platform.Link>
+        <XHTML href="index.html"/>
+    </Platform.Link>
+
+    <Platform.Rendering width="6" height="12"/>
+</Template>
