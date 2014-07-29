@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Template xmlns="http://wirecloud.conwet.fi.upm.es/ns/template#">
+    <Catalog.ResourceDescription>
+        <Vendor>AIT</Vendor>
+        <Name>pilotECaptureFinished</Name>
+        <DisplayName>Exercise Capture Finished</DisplayName>
+        <Version>0.1.0.6</Version>
+        <Author>Maria Egly</Author>
+        <Mail>maria.egly@ait.ac.at</Mail>
+        <Description>
+            Finishes exercise capture and creates new ICMM worldstate.
+        </Description>
+        <ImageURI>img/catalogue.png</ImageURI>
+        <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
+        <WikiURI>http://127.0.0.1/index.htm</WikiURI>
+    </Catalog.ResourceDescription>
+
+    <Platform.Preferences>
+        <Preference name="icmm" type="text" description="URI to the ICMM API" label="ICMM API URI"/>
+    </Platform.Preferences>
+
+    <Platform.Wiring>
+        <InputEndpoint name="ws_template_in" type="text" label="World State" description="The basic world state describing the scenario" friendcode="ws_template_in"/>
+        <InputEndpoint name="ws_data" type="text" label="Metadata for new exercise" description="Metadata for new exercise" friendcode="ws_data"/>
+        <InputEndpoint name="dataitem" type="text" label="Dataslot URL" description="The dataitem containing the captured data" friendcode="dataitem"/>
+        <InputEndpoint name="isEditing" type="boolean" label="Is Editing" description="is in editing mode" friendcode="isEditing"/>
+        <OutputEndpoint name="ws_template_out" type="text" label="World State" description="The basic world state describing the scenario" friendcode="ws_template_out"/>
+        <OutputEndpoint name="setEditing" type="boolean" label="Set Editing Mode" description="The editing state." friendcode="setEditing"/>
+        <OutputEndpoint name="wsCreated" type="boolean" label="New worldstate created." description="Indicates that a new worldstate was created." friendcode="wsCreated"/>
+    </Platform.Wiring>
+
+    <Platform.Link>
+        <XHTML href="index.html"/>
+    </Platform.Link>
+
+    <Platform.Rendering width="6" height="12"/>
+</Template>
