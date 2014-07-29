@@ -1,0 +1,78 @@
+indicator-intervals {
+    background: #ee0000;
+    padding: 3px;
+}
+
+indicator-interval {
+    background: #eee;
+    padding: 3px;
+}
+
+.indicator-interval {
+  width: 0;
+  transition: all 1s ease-out;
+  -moz-transition: all 1s ease-out;
+  -webkit-transition: all 1s ease-out;
+}
+
+.indicator-text {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 5px;
+  color: white;
+  fill: black;
+}
+
+.indicator-text-selected {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 5px;
+  color: white;
+  fill: #CC0000;
+}
+
+.duration-text {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 5px;
+  color: white;
+  fill: black;
+}
+
+.indicator-interval {
+  stroke: #b2b2b2;
+  fill: #b2b2b2;
+}
+
+.indicator-interval-selected {
+  stroke: #CC0000;
+  fill: #CC0000;
+}
+
+.indicator-interval-tooltip {   
+  position: absolute;           
+  text-align: center;           
+  width: 200px;                  
+  height: 36px;                 
+  padding: 2px;             
+  font: 12px sans-serif;        
+  background: lightsteelblue;   
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none;         
+}
+
+
+.indicator-timeIntervalsTest {
+    fill: #00cc00;
+}
+
+.indicator-timeIntervalsTest2 {
+    fill: #0000cc;
+}

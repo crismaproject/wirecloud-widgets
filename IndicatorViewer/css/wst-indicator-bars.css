@@ -1,0 +1,58 @@
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: steelblue;
+    stroke: red;
+    stroke-width: 1px;
+}
+
+.x.axis path {
+  display: none;
+}
+
+div.indicator-bars-tooltip {   
+  position: absolute;           
+  text-align: center;           
+  width: 450px;                  
+  height: 48px;                 
+  padding: 2px;             
+  font: 12px sans-serif;        
+  background: lightsteelblue;   
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none;         
+}
+
+.indicator-deathIndicator {
+    fill: black;
+}
+
+.indicator-seriouslyDeterioratedIndicator {
+    fill: gray;
+}
+
+.indicator-improvedIndicator {
+    fill: green;
+}
+
+.indicator-lifeIndicator-black {
+    fill: black;
+}
+.indicator-lifeIndicator-red {
+    fill: red;
+}
+.indicator-lifeIndicator-yellow {
+    fill: yellow;
+}
+.indicator-lifeIndicator-green {
+    fill: green;
+}
