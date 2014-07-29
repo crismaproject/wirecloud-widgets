@@ -5,7 +5,7 @@
         <Vendor>AIT</Vendor>
         <Name>worldstate_info</Name>
         <DisplayName>World State Info</DisplayName>
-        <Version>0.6.1.0</Version>
+        <Version>0.6.1.1</Version>
         <Author>Manuel Warum</Author>
         <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
         <Description>
@@ -15,6 +15,10 @@
         <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
         <WikiURI>http://127.0.0.1/index.htm</WikiURI>
     </Catalog.ResourceDescription>
+
+    <Platform.Preferences>
+        <Preference name="readonly" type="boolean" label="Read-only"/>
+    </Platform.Preferences>
 
     <Platform.Wiring>
         <InputEndpoint name="simulation" type="text" label="Simulation" friendcode="simulation"/>
