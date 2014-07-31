@@ -1,3 +1,6 @@
+//var RENDERERS = ["Canvas", "SVG", "VML"];
+var RENDERERS = ["SVG"];
+
 /**
  * A façade-like interface to handle interaction with the OpenLayers library.
  * @param {string} container the id of the DOM element where the map should be rendered
@@ -6,14 +9,14 @@
 function OpenLayersFacade(container) {
     /** @const */
     var EPSG_4326_PROJECTION = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
-    var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer', { renderers: ["Canvas", "SVG", "VML"], displayInLayerSwitcher: false });
-    var ooiLayer = new OpenLayers.Layer.Vector('Other OOIs', { renderers: ["Canvas", "SVG", "VML"], displayInLayerSwitcher: false });
+    var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer', { renderers: RENDERERS, displayInLayerSwitcher: false });
+    var ooiLayer = new OpenLayers.Layer.Vector('Other OOIs', { renderers: RENDERERS, displayInLayerSwitcher: false });
     ooiLayer.setZIndex(1000);
 
     var ooiStyle = $.extend({}, OpenLayers.Feature.Vector.style['default'], {
         graphicWidth: 31,
         graphicHeight: 31,
-        fillOpacity:.65,
+        fillOpacity:.8,
         externalGraphic: 'img/ooi.png'
     });
 
@@ -40,7 +43,7 @@ function OpenLayersFacade(container) {
     entityTypes
         .filter(function(x) { return x.hasOwnProperty('dedicatedLayer'); })
         .forEach(function(x, i) {
-            var dedicatedLayer = new OpenLayers.Layer.Vector(x.dedicatedLayer, { renderers: ["Canvas", "SVG", "VML"] });
+            var dedicatedLayer = new OpenLayers.Layer.Vector(x.dedicatedLayer, { renderers: RENDERERS });
             dedicatedLayer.setZIndex(1000 - i);
             x.layer = dedicatedLayer;
             map.addLayer(x.layer);
@@ -50,10 +53,12 @@ function OpenLayersFacade(container) {
      * Selection control that captures and relays clicks on OOIs and misc. geometry
      * @type {OpenLayers.Control.SelectFeature}
      */
-    var selectControl = new OpenLayers.Control.SelectFeature([geometryLayer, ooiLayer], { clickout: true });
+    var selectControl = new OpenLayers.Control.SelectFeature(map.layers.filter(function(x) { return x instanceof OpenLayers.Layer.Vector }), { clickout: true });
     selectControl.onSelect = function (e) {
-        if (e.layer == geometryLayer || e.layer == ooiLayer) mapClickEvent(e, { ooi: e.attributes });
-        else mapClickEvent(e);
+        if (e.layer instanceof OpenLayers.Layer.OSM)
+            mapClickEvent(e);
+        else
+            mapClickEvent(e, { ooi: e.attributes });
     };
     map.addControl(selectControl);
     selectControl.activate();
@@ -156,7 +161,6 @@ function OpenLayersFacade(container) {
             );
 
             var layer = this.layerFor.call(this, ooi.entityTypeId);
-            console.log(layer);
             layer.addFeatures(actualVector);
         }
     };
@@ -230,8 +234,6 @@ function OpenLayersFacade(container) {
  * @returns {string} a relative path to an image corresponding to the specified entity type ID.
  */
 function graphicFor(entityTypeId) {
-    var entry = entityTypes.find(function (x) {
-        return entityTypeId == x.id;
-    });
+    var entry = entityTypes.find(function (x) { return entityTypeId == x.id; });
     return entry ? entry['img'] : 'img/ooi.png';
 }
