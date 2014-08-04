@@ -15,6 +15,7 @@ function setOOIs(entities) {
 
         map.createOOI(entity);
     }
+    window.setTimeout(map.focusOnAll, 1500);
 }
 
 /*
@@ -56,7 +57,6 @@ if (typeof MashupPlatform === 'undefined') {
 
     MashupPlatform.wiring.registerCallback('oois_in', function (data) {
         setOOIs(JSON.parse(data));
-        window.setTimeout(map.focusOnAll, 1800);
     });
 
     MashupPlatform.wiring.registerCallback('oois_selected_in', function (data) {

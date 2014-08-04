@@ -107,9 +107,9 @@ function OpenLayersFacade(container) {
     this.focusOnAll = function () {
         var maxExtent = new OpenLayers.Bounds();
         if (ooiLayer.features.length)
-            maxExtent = maxExtent.extend(ooiLayer.getDataExtent());
+            maxExtent.extend(ooiLayer.getDataExtent());
         if (geometryLayer.features.length)
-            maxExtent = maxExtent.extend(geometryLayer.getDataExtent());
+            maxExtent.extend(geometryLayer.getDataExtent());
         var size = maxExtent.getSize();
         if (size.h > 0 && size.w > 0) {
             map.zoomToExtent(maxExtent);
