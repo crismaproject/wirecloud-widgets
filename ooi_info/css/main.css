@@ -1,0 +1,15 @@
+.prop-21 .value:after,
+.prop-22 .value:after {
+    padding-left: .8ex;
+    content: 'km/h';
+    font-size: 80%
+}
+
+.prop-30 .value:after,
+.prop-40 .value:after,
+.prop-42 .value:after,
+.prop-49 .value:after {
+    padding-left: .8ex;
+    content: '%';
+    font-size: 80%
+}
