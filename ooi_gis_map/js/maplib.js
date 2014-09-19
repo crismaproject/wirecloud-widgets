@@ -29,7 +29,7 @@ function OpenLayersFacade(container) {
             new OpenLayers.Layer.OSM("OpenStreetMap",
                 ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
                     "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-                    "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
+                    "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"], {'displayInLayerSwitcher':false}),
             geometryLayer,
             ooiLayer
         ],
@@ -46,6 +46,8 @@ function OpenLayersFacade(container) {
             var dedicatedLayer = new OpenLayers.Layer.Vector(x.dedicatedLayer, { renderers: RENDERERS });
             dedicatedLayer.setZIndex(1000 - i);
             x.layer = dedicatedLayer;
+            if (x.hasOwnProperty('inactive') && x.inactive)
+                dedicatedLayer.setVisibility(false);
             map.addLayer(x.layer);
         });
 
@@ -126,10 +128,9 @@ function OpenLayersFacade(container) {
      */
     this.focusOnAll = function () {
         var maxExtent = new OpenLayers.Bounds();
-        if (ooiLayer.features.length)
-            maxExtent.extend(ooiLayer.getDataExtent());
-        if (geometryLayer.features.length)
-            maxExtent.extend(geometryLayer.getDataExtent());
+        map.layers
+            .filter(function(x) { return x instanceof OpenLayers.Layer.Vector && x.features.length; })
+            .forEach(function(x) { maxExtent.extend(x.getDataExtent()); });
         var size = maxExtent.getSize();
         if (size.h > 0 && size.w > 0) {
             map.zoomToExtent(maxExtent);
