@@ -1,5 +1,5 @@
-angular.module('ooiInfo', ['ooiInfo.wirecloud'])
-    .controller('OoiInfoCtrl', ['$scope', 'wirecloud', function($scope, wirecloud) {
+angular.module('ooiInfo', ['ooiInfo.wirecloud', 'ooiInfo.prettify'])
+    .controller('OoiInfoCtrl', ['$scope', 'wirecloud', 'prettify', function($scope, wirecloud, prettify) {
         $scope.oois = [];
         $scope.ooiTypeNames = { };
         $scope.ooiPropertyNames = { };
@@ -10,6 +10,19 @@ angular.module('ooiInfo', ['ooiInfo.wirecloud'])
         $scope.hasValues = function (prop) {
             return typeof prop.entityPropertyValue !== 'string' || prop.entityPropertyValue.length;
         };
+
+        $scope.prettify = prettify;
+
+        var useOOIName = function (ooiId) {
+            if (!ooiId) return null;
+            var ooi = $scope.oois.find(function (x) { return x.entityId == ooiId; });
+            return ooi ? ooi.entityName : null;
+        };
+        $scope.prettify.rule()
+            .forProperty(45)
+            .forProperty(311)
+            .forProperty(313)
+            .thenDo(useOOIName);
 
         wirecloud.on('oois', function (oois) {
             if (typeof oois === 'string')

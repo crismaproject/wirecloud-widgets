@@ -1,110 +1,64 @@
 angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
         {
-            id: 'move-pickup',
-            css: 'ico-cmd-move',
-            entityTypeId: 14,
-            displayName: 'Move treatment area',
-            help: 'This will move the treatment area to a new location.',
-            log: 'Move treatment area to lat. #{data.lat}, long. #{data.lon}',
-            isAvailable: function (area) {
-                var properties = area.entityInstancesProperties;
-                for (var i = 0; i < properties.length; i++) {
-                    var property = properties[i];
-                    // prop. #54 = Area-Category
-                    if (property.entityTypePropertyId == 54)
-                        return property.entityPropertyValue == 'Pickup-Area';
-                }
-                return true;
-            },
-            arguments: [
-                {
-                    displayName: 'New location',
-                    targetType: 'point'
-                }
-            ],
-            setGeometry: {
-                lat: '#{data.lat}',
-                lon: '#{data.lon}'
-            }
-        },
-
-        {
-            id: 'dispatch',
+            id: 'dispatch-from-station',
             css: 'ico-cmd-treat',
-            entityTypeId: 7,
-            displayName: 'Dispatch Ambulances',
-            help: 'This command orders an ambulance to treat patients at a treatment area.',
+            entityTypeId: 8,
+            displayName: 'Move ambulances',
+            help: 'This will dispatch a number of ambulances to the scene to perform an action.',
+            log: 'Move to lat. #{data.lat}, long. #{data.lon}',
+
             arguments: [
                 {
-                    targetType: 'ooi',
-                    targetRestrictedTo: 14,
-                    displayName: 'Treatment Area',
-                    isTargetAllowed: function (area) {
-                        return area.entityInstancesProperties.length &&
-                            area.entityInstancesProperties.indexOfWhere(function (p) {
-                                return p.entityTypePropertyId == 54 && p.entityPropertyValue == 'Pickup-Area';
-                            }) != -1;
-                    }
-                }
-            ],
-            log: 'Treat patients at #{data[0].entityName}.',
-            isAvailable: function (ambulance) {
-                var properties = ambulance.entityInstancesProperties;
-                for (var i = 0; i < properties.length; i++) {
-                    var property = properties[i];
-                    // Check target availability time; 0 = now, >0 = later, <0 = never
-                    if (property.entityTypePropertyId == 312)
-                        return property.entityPropertyValue == '0';
-                }
-                return true;
-            },
-            apply: function(command, data) {
-                command.setProperties = $.extend({}, command.setProperties, {
-                    315: '',
-                    314: data[0].entityId
-                });
-
-                return command;
-            }
-        },
-
-        {
-            id: 'evac',
-            css: 'ico-cmd-goto',
-            entityTypeId: 7,
-            displayName: 'Evacuate patients',
-            help: 'This command orders an ambulance to evacuate patients from a treatment area and bring them to a specified hospital.',
-            arguments: [
-                {
-                    targetType: 'ooi',
-                    targetRestrictedTo: 14,
-                    displayName: 'Pick up at'
+                    displayName: 'How many',
+                    targetType: 'number'
                 },
                 {
-                    targetType: 'ooi',
-                    targetRestrictedTo: 9,
-                    displayName: 'Evacuate to'
+                    displayName: 'From',
+                    targetType: 'option',
+                    options: [ 'Expel from station', 'Closest to scene' ]
+                },
+                {
+                    displayName: 'Send to',
+                    targetType: 'point',
+                    targetRestrictedTo: 14
+                },
+                {
+                    displayName: 'Then',
+                    targetType: 'option',
+                    options: [ 'Do nothing', 'Rescue', 'Treat', 'Transport', 'Refill' ]
                 }
-            ],
-            log: 'Evacuate patients from #{data[0].entityName} and bring them to #{data[1].entityName}.',
-            isAvailable: function (ambulance) {
-                var properties = ambulance.entityInstancesProperties;
-                for (var i = 0; i < properties.length; i++) {
-                    var property = properties[i];
-                    // Check target availability time; 0 = now, >0 = later, <0 = never
-                    if (property.entityTypePropertyId == 312)
-                        return property.entityPropertyValue == '0';
-                }
-                return true;
-            },
-            apply: function(command, data) {
-                command.setProperties = $.extend({}, command.setProperties, {
-                    315: data[1].entityId,
-                    314: data[0].entityId
-                });
+            ]
+        },
 
-                return command;
-            }
+        {
+            id: 'dispatch-amb',
+            css: 'ico-cmd-treat',
+            entityTypeId: 7,
+            displayName: 'Move ambulance',
+            help: 'This will dispatch the selected ambulance(s) to the scene to perform an action.',
+            log: 'Move to lat. #{data.lat}, long. #{data.lon}',
+
+            arguments: [
+                {
+                    displayName: 'Send to',
+                    targetType: 'ooi',
+                    targetRestrictedTo: 14
+                },
+                {
+                    displayName: 'Then',
+                    targetType: 'option',
+                    options: [ 'Do nothing', 'Rescue', 'Treat', 'Transport', 'Refill' ]
+                }
+            ]
+        },
+
+        {
+            id: 'cancel',
+            css: 'ico-cmd-goto',
+            entityTypeId: 7,
+            displayName: 'Return',
+            help: 'Return to the station immediately.',
+            log: 'Return to station'
         }
     ]);

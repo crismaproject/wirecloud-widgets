@@ -36,7 +36,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
         $scope.acceptsArgument = function(argumentSpec, argument) {
             var accept = true;
-            if (argumentSpec.targetType == 'ooi') {
+            if (argumentSpec.targetType == 'ooi' || argumentSpec.targetType == 'point') {
                 accept =
                     (!argumentSpec.hasOwnProperty('targetRestrictedTo') || argument.entityTypeId == argumentSpec.targetRestrictedTo) &&
                     (!argumentSpec.hasOwnProperty('isTargetAllowed') || argumentSpec.isTargetAllowed(argument));
@@ -52,6 +52,12 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                     switch(x.targetType) {
                         case 'point':
                             return { lat:0, lon:0 };
+                        case 'number':
+                            return 1;
+                        case 'option':
+                            if (x.hasOwnProperty('getOptions') && typeof(x.getOptions) === 'function')
+                                x.options = x.getOptions($scope.allObjects);
+                            return x.hasOwnProperty('options') && x.options.length > 0 ? x.options[0] : null;
                         default:
                             return null;
                     }
@@ -164,6 +170,17 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             for (var c in commandable)
                 $scope.commandableEntityTypes.push(parseInt(c));
         });
+
+        $scope.assignCoordinatesFromOOItoPoint = function(argumentId, ooi) {
+            var wktString = ooi.entityInstancesGeometry[0].geometry.geometry.wellKnownText;
+            var wkt = new Wkt.Wkt();
+            wkt.read(wktString);
+            $scope.pendingCommand.data[argumentId] = {
+                lat: wkt.components[0]['x'], // TODO
+                lon: wkt.components[0]['y'], // TODO
+                ooi: ooi
+            };
+        };
 
         /****************************************************************
          * WIRECLOUD BINDINGS                                           *

@@ -13,7 +13,8 @@ function setOOIs(entities) {
         if (entity.hasOwnProperty('entityId') && entity.entityId >= 0)
             entitiesLookupTable[entity.entityId] = entity;
 
-        map.createOOI(entity);
+        if (entity.hasOwnProperty('entityInstancesGeometry') && entity.entityInstancesGeometry.length > 0)
+            map.createOOI(entity);
     }
     window.setTimeout(map.focusOnAll, 1500);
 }

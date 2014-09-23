@@ -1,3 +1,6 @@
+//var RENDERERS = ["Canvas", "SVG", "VML"];
+var RENDERERS = ["SVG"];
+
 /**
  * A façade-like interface to handle interaction with the OpenLayers library.
  * @param {string} container the id of the DOM element where the map should be rendered
@@ -6,13 +9,14 @@
 function OpenLayersFacade(container) {
     /** @const */
     var EPSG_4326_PROJECTION = new OpenLayers.Projection('EPSG:4326'); // WGS 1984
-    var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer', { renderers: ["Canvas", "SVG", "VML"] });
-    var ooiLayer = new OpenLayers.Layer.Vector('OOI Layer', { renderers: ["Canvas", "SVG", "VML"] });
-    ooiLayer.setZIndex(1001);
+    var geometryLayer = new OpenLayers.Layer.Vector('Geometry Layer', { renderers: RENDERERS, displayInLayerSwitcher: false });
+    var ooiLayer = new OpenLayers.Layer.Vector('Other OOIs', { renderers: RENDERERS, displayInLayerSwitcher: false });
+    ooiLayer.setZIndex(1000);
+
     var ooiStyle = $.extend({}, OpenLayers.Feature.Vector.style['default'], {
-        graphicWidth: 25,
-        graphicHeight: 25,
-        fillOpacity:.65,
+        graphicWidth: 31,
+        graphicHeight: 31,
+        fillOpacity:.8,
         externalGraphic: 'img/ooi.png'
     });
 
@@ -25,7 +29,7 @@ function OpenLayersFacade(container) {
             new OpenLayers.Layer.OSM("OpenStreetMap",
                 ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
                     "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-                    "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
+                    "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"], {'displayInLayerSwitcher':false}),
             geometryLayer,
             ooiLayer
         ],
@@ -36,17 +40,35 @@ function OpenLayersFacade(container) {
         }
     });
 
+    entityTypes
+        .filter(function(x) { return x.hasOwnProperty('dedicatedLayer'); })
+        .forEach(function(x, i) {
+            var dedicatedLayer = new OpenLayers.Layer.Vector(x.dedicatedLayer, { renderers: RENDERERS });
+            dedicatedLayer.setZIndex(1000 - i);
+            x.layer = dedicatedLayer;
+            if (x.hasOwnProperty('inactive') && x.inactive)
+                dedicatedLayer.setVisibility(false);
+            map.addLayer(x.layer);
+        });
+
     /**
      * Selection control that captures and relays clicks on OOIs and misc. geometry
      * @type {OpenLayers.Control.SelectFeature}
      */
-    var selectControl = new OpenLayers.Control.SelectFeature([geometryLayer, ooiLayer], { clickout: true });
+    var selectControl = new OpenLayers.Control.SelectFeature(map.layers.filter(function(x) { return x instanceof OpenLayers.Layer.Vector }), { clickout: true });
     selectControl.onSelect = function (e) {
-        if (e.layer == geometryLayer || e.layer == ooiLayer) mapClickEvent(e, { ooi: e.attributes });
-        else mapClickEvent(e);
+        if (e.layer instanceof OpenLayers.Layer.OSM)
+            mapClickEvent(e);
+        else
+            mapClickEvent(e, { ooi: e.attributes });
     };
     map.addControl(selectControl);
     selectControl.activate();
+
+
+    var switcherControl = new OpenLayers.Control.LayerSwitcher();
+    map.addControl(switcherControl);
+    switcherControl.activate();
 
     /** @private */
     this.map = map;
@@ -106,10 +128,9 @@ function OpenLayersFacade(container) {
      */
     this.focusOnAll = function () {
         var maxExtent = new OpenLayers.Bounds();
-        if (ooiLayer.features.length)
-            maxExtent.extend(ooiLayer.getDataExtent());
-        if (geometryLayer.features.length)
-            maxExtent.extend(geometryLayer.getDataExtent());
+        map.layers
+            .filter(function(x) { return x instanceof OpenLayers.Layer.Vector && x.features.length; })
+            .forEach(function(x) { maxExtent.extend(x.getDataExtent()); });
         var size = maxExtent.getSize();
         if (size.h > 0 && size.w > 0) {
             map.zoomToExtent(maxExtent);
@@ -126,25 +147,28 @@ function OpenLayersFacade(container) {
      */
     this.createOOI = function (ooi) {
         var wkt = new OpenLayers.Format.WKT(ooi);
-        try {
-            var wktData = ooi.entityInstancesGeometry[0].geometry.geometry.wellKnownText;
-            var vector = wkt.read(wktData);
-            if (ooi.entityTypeId == 14 && vector.geometry instanceof OpenLayers.Geometry.Point)
-                this.createArea.call(this, vector.geometry.x, vector.geometry.y, ooi);
-            else {
-                var actualVector = new OpenLayers.Feature.Vector(
-                    latLon(vector.geometry.x, vector.geometry.y),
-                    ooi,
-                    $.extend({}, ooiStyle, {
-                        title: ooi.entityName,
-                        externalGraphic: graphicFor(ooi.entityTypeId)
-                    })
-                );
+        var wktData = ooi.entityInstancesGeometry[0].geometry.geometry.wellKnownText;
+        var vector = wkt.read(wktData);
+        if (ooi.entityTypeId == 14 && vector.geometry instanceof OpenLayers.Geometry.Point)
+            this.createArea.call(this, vector.geometry.x, vector.geometry.y, ooi);
+        else {
+            var actualVector = new OpenLayers.Feature.Vector(
+                latLon(vector.geometry.x, vector.geometry.y),
+                ooi,
+                $.extend({}, ooiStyle, {
+                    title: ooi.entityName,
+                    externalGraphic: graphicFor(ooi.entityTypeId)
+                })
+            );
 
-                ooiLayer.addFeatures(actualVector);
-            }
+            var layer = this.layerFor.call(this, ooi.entityTypeId);
+            layer.addFeatures(actualVector);
         }
-        catch (e) { }
+    };
+
+    this.layerFor = function(entityTypeId) {
+        var entry = entityTypes.find(function (x) { return entityTypeId == x.id; });
+        return entry && entry.hasOwnProperty('layer') ? entry['layer'] : ooiLayer;
     };
 
     /**
@@ -211,19 +235,6 @@ function OpenLayersFacade(container) {
  * @returns {string} a relative path to an image corresponding to the specified entity type ID.
  */
 function graphicFor(entityTypeId) {
-    //noinspection FallthroughInSwitchStatementJS
-    switch (entityTypeId) {
-        case 7:
-            return 'img/ambulance.png';
-        case 8:
-            return 'img/ambulance_station.png';
-        case 9:
-            return 'img/hospital.png';
-        case 10:
-            return 'img/person.png';
-        case 11:
-            return 'img/danger.png';
-        default:
-            return 'img/ooi.png';
-    }
+    var entry = entityTypes.find(function (x) { return entityTypeId == x.id; });
+    return entry ? entry['img'] : 'img/ooi.png';
 }
