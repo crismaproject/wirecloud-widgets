@@ -22,7 +22,11 @@ angular.module('ooiCommand.commands', [])
                 },
                 {
                     displayName: 'How many',
-                    targetType: 'number'
+                    targetType: 'number',
+                    minimum: 1,
+                    maximum: function (oois) {
+                        return oois.filter(function (x) { return x.entityTypeId == 7; }).length;
+                    }
                 },
                 {
                     displayName: 'Send to',

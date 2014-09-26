@@ -64,14 +64,17 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 })
             }, command);
 
-            if (!command.hasOwnProperty('arguments') || !command.arguments.length)
-                $scope.executePendingCommand();
-            else
+            if (command.hasOwnProperty('arguments'))
                 for (var i = 0; i < $scope.pendingCommand.arguments.length; i++) {
                     var argument = $scope.pendingCommand.arguments[i];
-                    $scope.pendingCommand.candidates[i] = $scope.allObjects.filter(function (x) {
-                        return $scope.acceptsArgument(argument, x);
-                    });
+                    if (argument.targetType == 'ooi')
+                        $scope.pendingCommand.candidates[i] = $scope.allObjects.filter(function (x) {
+                            return $scope.acceptsArgument(argument, x);
+                        });
+                    else if (argument.targetType == 'number') {
+                        $scope.pendingCommand.minimum = $scope.getInt(argument.minimum, 1);
+                        $scope.pendingCommand.maximum = $scope.getInt(argument.maximum);
+                    }
                 }
         };
 
@@ -156,6 +159,10 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
             wirecloud.send('command', commandObj);
             $scope.pendingCommand = null;
+        };
+
+        $scope.getInt = function (value, fallback) {
+            return typeof value === 'function' ? value($scope.allObjects) : value ? value : fallback;
         };
 
         /****************************************************************

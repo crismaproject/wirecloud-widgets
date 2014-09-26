@@ -26,7 +26,7 @@
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li ng-repeat="cmd in availableCommands | filter:showCommand">
+                    <li ng-repeat="cmd in availableCommands">
                         <a href="#" title="{{cmd.help}}" ng-click="activateCommand(cmd)"><span class="ico-cmd {{cmd.css}}"></span> {{cmd.displayName}}</a>
                     </li>
                 </ul>
@@ -41,7 +41,7 @@
                 <div class="col-sm-9" ng-switch="arg.targetType">
                     <select ng-switch-when="ooi" id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" required="required" class="form-control"></select>
                     <select ng-switch-when="option" id="pcArg{{i}}" ng-options="c for c in arg.options" ng-model="pendingCommand.data[i]" required="required" class="form-control"></select>
-                    <input type="number" min="1" ng-switch-when="number" ng-value="pendingCommand.data[i]" id="pcArg{{i}}" required="required" class="form-control">
+                    <input type="number" min="{{pendingCommand.minimum}}" max="{{pendingCommand.maximum}}" ng-switch-when="number" ng-value="pendingCommand.data[i]" id="pcArg{{i}}" required="required" class="form-control">
                     <div ng-switch-when="point" class="form-inline">
                         <div>
                             <abbr title="Latitude">Lat.</abbr>/<abbr title="Longitude">Lon.</abbr>
