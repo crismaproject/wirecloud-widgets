@@ -17,22 +17,21 @@
 
 <div ng-controller="OoiCommandCtrl">
 
-    <div ng-hide="pendingCommand">
-        <div class="btn-group">
-            <button ng-repeat="cmd in availableCommands | filter:showCommand" ng-disabled="pendingCommand"
-                    ng-click="activateCommand(cmd)" ng-mouseover="showHelpFor(cmd)"
-                    type="button" class="btn btn-default btn-sm btn-cmd {{cmd.css}}"
-                    title="{{cmd.help}}">{{cmd.displayName}}</button>
-        </div>
-
-        <div ng-show="mouseOverCommand">
-            <strong>{{mouseOverCommand.displayName}}:</strong>
-            {{mouseOverCommand.help}}
-        </div>
-    </div>
-    <fieldset ng-show="pendingCommand">
-        <legend>{{pendingCommand.displayName}}</legend>
-
+    <fieldset>
+        <legend>
+            <div class="btn-group">
+                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                    <span class="ico-cmd {{pendingCommand.css}}"></span>
+                    <span>{{pendingCommand.displayName || 'Commands'}}</span>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="cmd in availableCommands | filter:showCommand">
+                        <a href="#" title="{{cmd.help}}" ng-click="activateCommand(cmd)"><span class="ico-cmd {{cmd.css}}"></span> {{cmd.displayName}}</a>
+                    </li>
+                </ul>
+            </div>
+        </legend>
         <div class="container-fluid container-args">
             <div ng-repeat="(i, arg) in pendingCommand.arguments" class="row-fluid">
                 <div class="col-sm-3">
@@ -68,7 +67,7 @@
 
             <div style="text-align: right">
                 <button type="button" class="btn btn-danger" ng-click="cancelCommand()">Cancel</button>
-                <button type="button" class="btn btn-primary" ng-click="executePendingCommand()" ng-disabled="!canExecutePendingCommand()">Execute</button>
+                <button type="button" class="btn btn-primary" ng-click="executePendingCommand()" ng-disabled="!canExecutePendingCommand()">Add</button>
             </div>
         </div>
     </fieldset>
