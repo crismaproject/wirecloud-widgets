@@ -19,7 +19,6 @@ an **o**perator or a **w**idget.
 ### Primary widgets and operators
 
 * (w) **./indicators/** — this widget displays indicators from the OOI-WSR.
-* (o) **./merger/** — a simple operator that merges two JSON arrays into one (useful for combining data sources).
 * (w) **./ooi_command/** — widget to issue commands to OOIs.
 * (w) **./ooi_gis_map/** — a map widget using [OpenLayers](http://www.openlayers.org/) and
       [OpenStreetMap](http://www.openstreetmap.org/) to display a map with WFS data
@@ -44,6 +43,8 @@ production environment.
 ### Misc.
 
 * (w) **./empty/** — contains an absolutely empty widget that can be used as a starting template.
+* (o) **./merger/** — a simple operator that merges two JSON arrays into one (useful for combining data sources);
+      no longer used or updated for the time being.
 
 ### Documentations
 
