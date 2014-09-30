@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="wsrApiDoc">
 <head>
     <title>WSR API Overview</title>
     <link href="https://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
@@ -11,39 +11,23 @@
     </style>
     <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
     <script src="https://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
     <script src="wsrapi.js" type="text/javascript"></script>
     <script type="text/javascript">
-        (function(){
-            var inspectThis = WorldStateRepository.prototype;
-            var properties = [];
-            for (var key in inspectThis)
-                if (typeof inspectThis[key] === 'function')
-                    properties.push(key);
+        angular.module('wsrApiDoc', [])
+                .controller('WsrApiDocCtrl', function ($scope) {
+                    var inspectThis = WorldStateRepository.prototype;
+                    var properties = [];
+                    for (var key in inspectThis)
+                        if (typeof inspectThis[key] === 'function')
+                            properties.push(key);
 
-            $(function() {
-                var tooltipsFor = [ 'delete', 'get', 'insert', 'list', 'update' ];
-                var $ul = $('ul#wsrApiMethods');
-                properties.sort().forEach(function(i, v) {
-                    var generatedEntry = $('<code></code>').text(i);
-                    $ul.append($('<li></li>').append(generatedEntry));
-
-                    var tooltip = null;
-                    for (var j = 0; j < tooltipsFor.length && !tooltip; j++)
-                        if (i.indexOf(tooltipsFor[j]) == 0)
-                            tooltip = $('#help-for-' + tooltipsFor[j]).html();
-
-                    if (tooltip)
-                        $(generatedEntry).tooltip({
-                            title: tooltip,
-                            html: true
-                        });
+                    $scope.wsrApiFunctions = properties.sort();
                 });
-            });
-        })();
     </script>
 </head>
 <body>
-<div class="container">
+<div class="container" ng-controller="WsrApiDocCtrl">
     <fieldset>
         <legend>Usage</legend>
         <p>
@@ -92,8 +76,11 @@
             Any methods <em>not</em> listed above are either internal helper methods and/or have documentation in their
             JavaScript source code as they are likely not automatically generated but implemented by hand.
         </p>
-        <ul class="list-unstyled" id="wsrApiMethods"></ul>
     </fieldset>
+
+    <ul class="list-unstyled">
+        <li ng-repeat="c in wsrApiFunctions"><code>{{c}}</code></li>
+    </ul>
 </div>
 </body>
 </html>
