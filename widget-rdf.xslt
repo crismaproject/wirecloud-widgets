@@ -14,7 +14,7 @@
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title><xsl:value-of select="wire:Operator/wire:displayName|wire:Widget/wire:displayName" /></title>
-        <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
         <style type="text/css">
           .container { background-color: #fff; border: 1px solid #ccc; margin-top: 1em; border-radius: 5px }
           body { background-color: #eee }
