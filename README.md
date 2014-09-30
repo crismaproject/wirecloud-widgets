@@ -22,7 +22,7 @@ an **o**perator or a **w**idget.
 * (w) **./indicators/** — this widget displays indicators from the OOI-WSR.
 * (w) **./ooi_command/** — widget to issue commands to OOIs.
 * (w) **./ooi_gis_map/** — a map widget using [OpenLayers](http://www.openlayers.org/) and
-      [OpenStreetMap](http://www.openstreetmap.org/) to display a map with WFS data
+      [OpenStreetMap](http://www.openstreetmap.org/) to display geospatial data.
 * (w) **./ooi_info/** — OOI properties viewer.
 * (w) **./ooi_table/** — OOI table (with synchronized OOI selection mechanic).
 * (o) **./tabswitch/** — Operator to programmatically switch to a predefined tab.
@@ -62,27 +62,21 @@ There are two ways to build these widgets:
 * **If you have ruby/rake:** use `rake all`. It will build any widgets in subdirectories containing a `.bundle` file.
     There are also rake tasks to bundle widgets individually; for instance, to build the *ooi_gis_map* directory, use
     `rake bundle[ooi_gis_map]`. For this to work, you need to have the following gems installed (`gem install …`):
-    * `rubyzip`,
-    * `nokogiri`,
-    * `mechanize`,
-    * `rest_client`,
-    * `json`
-
-    You might be able to work around these dependencies if you fiddle with the `Rakefile`.
+    `rubyzip`, `nokogiri`, `mechanize`, `rest_client`, and `json`.
 
 * **Build it manually:** use any compression tool to create ZIP files for each of the widgets you are interested in so
     that the *config.xml* file is in the root directory of the archive. If you want to, exclude Markdown files.
-    By convention, you should then change the extension from `.zip` to `.wgt`.
+    By convention, it is advisable to change the archive's extension from `.zip` to `.wgt`.
 
     If you want to contribute other ways of building/bundling widgets (or documentation), feel free to do so and send me
     a push request.
 
 ## Branches
 
-* **master** — recommended latest version (currently pointing at v0.6)
-* **v0.5** — currently somewhat stable version; receives maintenance updates where applicable.
-* **v0.6** — this is some sort of staging area for the *next* version and most commits are likely to not work
-    completely.
+* **master** — latest recommended version (currently pointing at more reliable versions of v0.7)
+* **v0.5** and **v0.6** — currently somewhat stable versions; receive maintenance updates where applicable.
+* **v0.7** — this is some sort of staging area for the *next* version and does not necessarily have production-grade 
+              reliability.
 
 ## Rake tasks
 
@@ -109,13 +103,13 @@ Versions 0.6 and upwards are beginning to incorporate a shared World State Repos
 allows for streamlined handling of RESTful operations with the external World State Repository, including (but not
 limited to) CRUD operations of entities, world states, simulation data, etc. To use it, one only needs to load
 `wsrapi.js` and create a new instance of the `WorldStateRepository` JavaScript class. Note that this API implementation
-relies on jQuery for AJAX operations and deferred functionalities; it is necessary to load jQuery 2.x first.
+relies on jQuery for XHR operations and deferred functionalities; it is necessary to load [jQuery](jquery.com) first.
 
 A full list of operations is provided in `wsrapi-documentation.htm`. This file automatically inspects `wsrapi.js` and
 lists all instance methods discovered through reflection of the class.
 
-There are no plans to create an angular module out of this yet, but it should be a simple matter of registering
-an instance of the class.
+There are plans to create an [angular](https://angularjs.org/) service for this in the near future; in the meantime it
+should suffice to register an instance of the class with angular.
 
 **Important:**
 If a widget or operator uses the WSR-API, it should exist as *your_widget_name/js/wsrapi.js*. This has the benefit that
