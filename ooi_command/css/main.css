@@ -20,3 +20,22 @@
 }
 
 .container-args * { margin-top: 1ex; }
+
+
+
+/* VALIDATION STYLES */
+input.ng-invalid.ng-dirty,
+select.ng-invalid.ng-dirty {
+    border-color: rgb(250, 144, 125);
+    -webkit-box-shadow: 0 0 7px 0 rgba(250, 144, 125, 0.5);
+    -moz-box-shadow:    0 0 7px 0 rgba(250, 144, 125, 0.5);
+    box-shadow:         0 0 7px 0 rgba(250, 144, 125, 0.5);
+}
+
+input.ng-valid.ng-dirty,
+select.ng-valid.ng-dirty {
+    border-color: rgb(126, 228, 113);
+    -webkit-box-shadow: 0 0 7px 0 rgba(126, 228, 113, 0.5);
+    -moz-box-shadow:    0 0 7px 0 rgba(126, 228, 113, 0.5);
+    box-shadow:         0 0 7px 0 rgba(126, 228, 113, 0.5);
+}
