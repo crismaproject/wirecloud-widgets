@@ -9,7 +9,8 @@ of the Mashup platform could be limited.
 You can find a working and up-to-date Wirecloud testbed here, courtesy of [FI-Ware](http://www.fi-ware.org/):
 [mashup.lab.fi-ware.org](https://mashup.lab.fi-ware.org).
 
-Also note that these components are currently under **early and active development** — they might or might not work yet.
+Also note that these components are currently under **early and active development** — they might or might not work
+yet.
 
 ## Content
 
@@ -19,7 +20,6 @@ an **o**perator or a **w**idget.
 ### Primary widgets and operators
 
 * (w) **./indicators/** — this widget displays indicators from the OOI-WSR.
-* (o) **./merger/** — a simple operator that merges two JSON arrays into one (useful for combining data sources).
 * (w) **./ooi_command/** — widget to issue commands to OOIs.
 * (w) **./ooi_gis_map/** — a map widget using [OpenLayers](http://www.openlayers.org/) and
       [OpenStreetMap](http://www.openstreetmap.org/) to display a map with WFS data
@@ -44,6 +44,10 @@ production environment.
 ### Misc.
 
 * (w) **./empty/** — contains an absolutely empty widget that can be used as a starting template.
+* (o) **./merger/** — a simple operator that merges two JSON arrays into one (useful for combining data sources);
+      no longer used or updated for the time being.
+* (o) **./pubsub_receiver/** — a operator connecting to pubsub endpoints using NGSI. (Still under heavy development
+      and very limited in its usefulness right now.)
 
 ### Documentations
 

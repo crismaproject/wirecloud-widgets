@@ -1,21 +1,41 @@
-.btn-cmd {
-    background-position: 4px center;
-    background-repeat: no-repeat;
-}
-
 .restrict-height {
     max-height: 240px;
     overflow-y: auto;
 }
 
+.ico-cmd { width: 12px; height: 12px }
+
 /* command icons */
-.ico-cmd-treat { background-image: url("../img/ico-cmd-treat.svg"); padding-left: 22px }
-.ico-cmd-goto { background-image: url("../img/ico-cmd-goto.svg"); padding-left: 22px }
-.ico-cmd-move { background-image: url("../img/ico-cmd-move.svg"); padding-left: 22px }
+.ico-cmd-treat {
+    padding-left: 22px;
+    background: url("../img/ico-cmd-treat.svg") no-repeat 2px center;
+}
+.ico-cmd-goto {
+    padding-left: 22px;
+    background: url("../img/ico-cmd-goto.svg") no-repeat 2px center;
+}
+.ico-cmd-move {
+    padding-left: 22px;
+    background: url("../img/ico-cmd-move.svg") no-repeat 2px center;
+}
 
-/* entity type colors */
-.text-entity-type-7 { color: #b84763 }
-.text-entity-type-14 { color: #6747b8 }
+.container-args * { margin-top: 1ex; }
 
-.container-args * { margin-bottom: 1ex; }
-.container-args:first-child { margin-bottom: 0; }
+
+
+/* VALIDATION STYLES */
+input.ng-invalid.ng-dirty,
+select.ng-invalid.ng-dirty {
+    border-color: rgb(250, 144, 125);
+    -webkit-box-shadow: 0 0 7px 0 rgba(250, 144, 125, 0.5);
+    -moz-box-shadow:    0 0 7px 0 rgba(250, 144, 125, 0.5);
+    box-shadow:         0 0 7px 0 rgba(250, 144, 125, 0.5);
+}
+
+input.ng-valid.ng-dirty,
+select.ng-valid.ng-dirty {
+    border-color: rgb(126, 228, 113);
+    -webkit-box-shadow: 0 0 7px 0 rgba(126, 228, 113, 0.5);
+    -moz-box-shadow:    0 0 7px 0 rgba(126, 228, 113, 0.5);
+    box-shadow:         0 0 7px 0 rgba(126, 228, 113, 0.5);
+}
