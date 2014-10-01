@@ -16,16 +16,12 @@
 
 <table ng-repeat="ooi in oois | filter:hasProperties | orderBy:'entityName'" class="table table-condensed table-hover table-bordered type-{{ooi.entityTypeId}}">
     <caption>{{ooi.entityName}} <span class="text-muted">({{ooiTypeNames[ooi.entityTypeId]}})</span></caption>
-    <thead>
-    <tr>
-        <th style="width: 50%">Property</th>
-        <th style="width: 50%">Value</th>
-    </tr>
-    </thead>
     <tbody>
     <tr ng-repeat="prop in ooi.entityInstancesProperties | filter:hasValues" class="prop prop-{{prop.entityTypePropertyId}}">
-        <td class="key">{{ooiPropertyNames[prop.entityTypePropertyId]}}</td>
-        <td class="value">{{prettify.toString(prop.entityPropertyValue, ooi.entityTypeId, prop.entityTypePropertyId)}}</td>
+        <th class="key">{{ooiPropertyNames[prop.entityTypePropertyId]}}</th>
+        <td class="value" title="{{prettify.toTitle(prop.entityPropertyValue, ooi.entityTypeId, prop.entityTypePropertyId)}}">
+            {{prettify.toString(prop.entityPropertyValue, ooi.entityTypeId, prop.entityTypePropertyId)}}
+        </td>
     </tr>
     </tbody>
 </table>

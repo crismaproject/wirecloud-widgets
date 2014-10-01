@@ -3,7 +3,8 @@ angular.module('ooiInfo.prettify', [])
         var Rule = function () {
             this.entityIds = [];
             this.propertyIds = [];
-            this.callback = null;
+            this.toStringCallback = null;
+            this.titleCallback = null;
         };
 
         /**
@@ -22,7 +23,11 @@ angular.module('ooiInfo.prettify', [])
          * @return {*}
          */
         Rule.prototype.toString = function (propertyValue, entityTypeId, propertyId) {
-            return this.callback.call(this, propertyValue, entityTypeId, propertyId);
+            return this.toStringCallback.call(this, propertyValue, entityTypeId, propertyId);
+        };
+
+        Rule.prototype.toTitle = function (propertyValue, entityTypeId, propertyId) {
+            return this.titleCallback.call(this, propertyValue, entityTypeId, propertyId);
         };
 
         /**
@@ -41,7 +46,9 @@ angular.module('ooiInfo.prettify', [])
          * @param {Function} callback
          * @return {Rule}
          */
-        Rule.prototype.thenDo = function (callback) { this.callback = callback; return this; };
+        Rule.prototype.thenDo = function (callback) { this.toStringCallback = callback; return this; };
+
+        Rule.prototype.useTitle = function (callback) { this.titleCallback = callback; return this; }
 
         var Prettifier = function () {
             this.rules = [];
@@ -64,9 +71,16 @@ angular.module('ooiInfo.prettify', [])
          */
         Prettifier.prototype.toString = function (propertyValue, entityTypeId, propertyId) {
             for (var i = 0; i < this.rules.length; i++)
-                if (this.rules[i].isApplicable(entityTypeId, propertyId))
+                if (this.rules[i].isApplicable(entityTypeId, propertyId) && this.rules[i].toStringCallback != null)
                     return this.rules[i].toString(propertyValue, entityTypeId, propertyId);
             return propertyValue;
+        };
+
+        Prettifier.prototype.toTitle = function (propertyValue, entityTypeId, propertyId) {
+            for (var i = 0; i < this.rules.length; i++)
+                if (this.rules[i].isApplicable(entityTypeId, propertyId) && this.rules[i].titleCallback != null)
+                    return this.rules[i].toTitle(propertyValue, entityTypeId, propertyId);
+            return null;
         };
 
         return new Prettifier();
