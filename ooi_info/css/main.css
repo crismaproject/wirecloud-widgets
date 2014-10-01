@@ -1,15 +1,30 @@
 .prop-21 .value:after,
 .prop-22 .value:after {
-    padding-left: .8ex;
+    padding-left: .6ex;
     content: 'km/h';
-    font-size: 80%
+    font-size: 85%
 }
 
 .prop-30 .value:after,
 .prop-40 .value:after,
 .prop-42 .value:after,
 .prop-49 .value:after {
-    padding-left: .8ex;
+    padding-left: .6ex;
     content: '%';
-    font-size: 80%
+    font-size: 85%
+}
+
+a[data-toggle="collapse"]:hover {
+    text-decoration: none;
+}
+
+a[data-toggle="collapse"]:before {
+    font-family: 'Glyphicons Halflings';
+    content: '\e113';
+    padding-right: 1ex;
+}
+a.collapsed[data-toggle="collapse"]:before {
+    font-family: 'Glyphicons Halflings';
+    content: '\e114';
+    padding-right: 1ex;
 }
