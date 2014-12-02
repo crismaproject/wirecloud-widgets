@@ -1,4 +1,4 @@
-require 'zip/zip'
+require 'zip'
 require 'nokogiri'
 require_relative 'catalog'
 require_relative 'wirecloud'
@@ -20,7 +20,7 @@ task :bundle, [:what, :suffix] do |_, args|
     File.delete(archive) if File.exists?(archive)
     puts "Bundling #{project} as #{archive}..."
 
-    Zip::ZipFile.open(archive, Zip::ZipFile::CREATE) do |z|
+    Zip::File.open(archive, Zip::File::CREATE) do |z|
       Dir[File.join(project, '**', '**')].each do |file|
         z.add(file.sub("#{project}/", ''), file) unless /[a-z]+\.md/i =~ file
       end
