@@ -36,11 +36,15 @@ angular.module('worldStatePickerApp', ['ngResource'])
                     }
                     console.log([wiringName, data]);
                 }
+            },
+
+            proxyFor: function (url) {
+                return typeof (MashupPlatform) === 'undefined' ? url : MashupPlatform.http.buildProxyURL(url);
             }
         }
     })
     .factory('icmm', ['$http', '$resource', 'wirecloud', function ($http, $resource, wirecloud) {
-        var icmmUri = wirecloud.getPreference('icmm');
+        var icmmUri = wirecloud.proxyFor(wirecloud.getPreference('icmm'));
         var icmmWsUri = icmmUri + '/CRISMA.worldstates?filter=ooiRepositorySimulationId%3A:simulationId';
         return $resource(icmmWsUri, { simulationId: '@id' }, {
             query: {
