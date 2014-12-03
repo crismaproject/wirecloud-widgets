@@ -13,7 +13,7 @@
     <wire:displayName>Merger</wire:displayName>
     <dcterms:description>This operator concatenates two JSON arrays.</dcterms:description>
     <dcterms:creator rdf:resource="http://creatoruri/"/>
-    <usdl-core:versionInfo>0.6.0.0</usdl-core:versionInfo>
+    <usdl-core:versionInfo>0.8.0.0</usdl-core:versionInfo>
     <wire:hasImageUri rdf:resource="img/catalogue.png"/>
     <usdl-core:utilizedResource rdf:resource="js/main.js"/>
     <foaf:page rdf:resource="http://conwet.fi.upm.es/docs/display/wirecloud"/>

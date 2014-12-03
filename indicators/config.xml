@@ -5,7 +5,7 @@
     <Vendor>AIT</Vendor>
     <Name>indicator_charts</Name>
     <DisplayName>Indicators</DisplayName>
-    <Version>0.6.1.2</Version>
+    <Version>0.8.0.0</Version>
     <Author>Manuel Warum</Author>
     <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
     <Description>Displays bar charts</Description>
