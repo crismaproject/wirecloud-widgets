@@ -28,11 +28,15 @@ angular.module('icmmWorldStatePickerApp', ['ngResource', 'angularBootstrapNavTre
                     }
                     console.log([wiringName, data]);
                 }
-            }
+            },
+
+			proxyFor: function (url) {
+				return typeof (MashupPlatform) === 'undefined' ? url : MashupPlatform.http.buildProxyURL(url);
+			}
         }
     })
     .factory('icmm', ['$http', '$resource', 'wirecloud', function ($http, $resource, wirecloud) {
-        var icmmUri = wirecloud.getPreference('icmm');
+		var icmmUri = wirecloud.proxyFor(wirecloud.getPreference('icmm'));
 		if (!icmmUri) {
             throw 'No ICMM API URI configured!';
         } else {
