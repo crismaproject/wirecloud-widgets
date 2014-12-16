@@ -3,7 +3,7 @@ require 'nokogiri'
 require_relative 'catalog'
 require_relative 'wirecloud'
 
-BOOTSTRAP_URI = 'http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css'
+BOOTSTRAP_URI = 'http://netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css'
 XSLT_XML_FILE = 'widget.xslt'
 XSLT_RDF_FILE = 'widget-rdf.xslt'
 DOC_FILE = 'documentation.htm'
