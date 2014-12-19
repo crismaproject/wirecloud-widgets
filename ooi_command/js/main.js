@@ -21,6 +21,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             return $scope.commandableEntityTypes.indexOf(ooi.entityTypeId) != -1;
         };
 
+        // TODO: evaluate why this function is currenly no longer used and if it should be
         $scope.showCommand = function(command) {
             if (!command.hasOwnProperty('entityTypeId'))
                 return true;
@@ -45,6 +46,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             return accept;
         };
 
+        // TODO: check command's entityTypeId to see if that's actually allowed and/or pre-fill arguments from selection
         $scope.activateCommand = function(command) {
             $scope.pendingCommand = $.extend(true, {
                 candidates: [],
@@ -124,11 +126,10 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             if (command.hasOwnProperty('log'))
                 inject(command, 'log');
             if (command.hasOwnProperty('apply'))
-                for (var i = 0; i < oois.length; i++)
-                    if (!command.apply(command, data, oois[i], $scope.allObjects)) {
-                        console.log('Command cancellation requested by command.apply()');
-                        return;
-                    }
+                if (!command.apply(command, data, oois, $scope.allObjects)) {
+                    console.log('Command cancellation requested by command.apply()');
+                    return;
+                }
             if (command.hasOwnProperty('spawnArea')) {
                 var area = $.extend(true, {
                     'entityId': -($scope.areaSequenceId++),
@@ -146,7 +147,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             });
 
             var commandObj = {
-                affected: oois,
+                affected: command.hasOwnProperty('affected') ? command.affected : oois,
                 command: {
                     id: command.id,
                     log: command.log,

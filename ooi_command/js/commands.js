@@ -1,43 +1,160 @@
 angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
         {
-            id: 'dispatch-from-station',
-            css: 'ico-cmd-treat',
-            displayName: 'Move ambulances',
-            help: 'This will dispatch a number of ambulances to the scene to perform an action.',
-            log: 'Dispatching #{data[1]} from #{data[1]} to #{data[2]}, then #{data[3]}',
+            id: 'v2-dispatch',
+            css: 'ico-cmd-move',
+            displayName: 'Dispatch',
+            help: 'Dispatch vehicles to the selected Area',
+            log: 'Dispatching #{data[0].entityName} to #{data[1].entityName}',
+
+            entityTypeId: 7,
 
             arguments: [
-                {
-                    displayName: 'From',
-                    targetType: 'option',
-                    options: [ 'Closest to scene' ],
-                    getOptions: function (oois) {
-                        return [ 'Closest to scene' ]
-                            .concat(oois
-                                .filter(function (x) { return x.entityTypeId == 8 })
-                                .map(function (x) { return x.entityName })
-                        );
-                    }
-                },
-                {
-                    displayName: 'How many',
-                    targetType: 'number',
-                    minimum: 1,
-                    maximum: function (oois) {
-                        return oois.filter(function (x) { return x.entityTypeId == 7; }).length;
-                    }
-                },
-                {
-                    displayName: 'Send to',
-                    targetType: 'ooi',
-                    targetRestrictedTo: 14
-                },
-                {
-                    displayName: 'Then',
-                    targetType: 'option',
-                    options: [ 'do nothing', 'rescue', 'treat' ]
-                }
-            ]
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
+                { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: 14 }
+            ],
+
+            apply: function (command, data) {
+                command.affected = [ data[0] ];
+                command.setProperties = {
+                    1000: JSON.stringify({
+                        'Command-Type': 'Dispatch',
+                        'Command-To-OOI-Identifier': data[1].entityId
+                    })
+                };
+
+                return command;
+            }
+        },
+
+        {
+            id: 'v2-rescue',
+            css: 'ico-cmd-move',
+            displayName: 'Rescue',
+            help: 'Dispatch vehicle in order to rescue Patients from the one area to another within the incident area',
+            log: 'Rescue patients from #{data[1].entityName} to #{data[2].entityName} using #{data[0].entityName}',
+
+            entityTypeId: 7,
+
+            arguments: [
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
+                { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: 11 },
+                { displayName: 'Rescue to', targetType: 'ooi', targetRestrictedTo: 14 },
+                { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
+                { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]}
+            ],
+
+            apply: function (command, data) {
+                command.affected = [ data[0] ];
+                command.setProperties = {
+                    1000: JSON.stringify({
+                        'Command-Type': 'Rescue',
+                        'Command-To-OOI-Identifier': data[2].entityId,
+                        'Command-From-OOI-Identifier': data[1].entityId,
+                        'Command-Parameters': {
+                            'Auto-Evacuate': data[3],
+                            'Auto-Evacuate-OOI-Identifier': null,
+                            'Delay-Upon-Arrival': 0,
+                            'Repeat-Command': data[4]
+                        }
+                    })
+                };
+
+                return command;
+            }
+        },
+
+        {
+            id: 'v2-treat',
+            css: 'ico-cmd-move',
+            displayName: 'Treat',
+            help: 'Dispatch vehicle in order to treat patients at the specified Treatment-Area',
+            log: 'Treating patients at #{data[1].entityName} using #{data[0].entityName}',
+
+            entityTypeId: 7,
+
+            arguments: [
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
+                { displayName: 'Treat at', targetType: 'ooi', targetRestrictedTo: 14 },
+                { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
+                { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]},
+                { displayName: 'Pre-Triage', targetType: 'option', options: [ 'No', 'Yes' ]},
+                { displayName: 'Triage', targetType: 'option', options: [ 'No', 'Yes' ]}
+            ],
+
+            apply: function (command, data) {
+                command.affected = [ data[0] ];
+                command.setProperties = {
+                    1000: JSON.stringify({
+                        'Command-Type': 'Treat',
+                        'Command-To-OOI-Identifier': data[1].entityId,
+                        'Command-Parameters': {
+                            'Auto-Evacuate': data[2],
+                            'Auto-Evacuate-OOI-Identifier': null,
+                            'Repeat-Command': data[3],
+                            'Perform-Pre-Triage': data[4],
+                            'Perform-Triage': data[5]
+                        }
+                    })
+                };
+
+                return command;
+            }
+        },
+
+        {
+            id: 'v2-evacuate',
+            css: 'ico-cmd-move',
+            displayName: 'Evacuate',
+            help: 'Evacuate patients from Treatment-Area or danger zone or advanced medical post to Hospital',
+            log: '',
+
+            arguments: [
+                { displayName: 'Evacuate from', targetType: 'ooi', isTargetAllowed: function (ooi) {
+                    return ooi.entityTypeId == 11 || ooi.entityTypeId == 14;
+                } },
+                { displayName: 'Evacuate to', targetType: 'ooi', targetRestrictedTo: 8},
+                { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]}
+            ],
+
+            apply: function (command, data) {
+                command.affected = [ data[0] ];
+                command.setProperties = {
+                    1000: JSON.stringify({
+                        'Command-Type': 'Evacuate',
+                        'Command-From-OOI-Identifier': data[0].entityId,
+                        'Command-To-OOI-Identifier': data[1].entityId,
+                        'Command-Parameters': {
+                            'Repeat-Command': data[2]
+                        }
+                    })
+                };
+
+                return command;
+            }
+        },
+
+        {
+            id: 'v2-refill',
+            css: 'ico-cmd-move',
+            displayName: 'Refill',
+            help: 'Command resource (vehicle) to refill it’s resources',
+            log: '',
+
+            arguments: [
+                { displayName: 'Refill at', targetType: 'ooi', targetRestrictedTo: 8}
+            ],
+
+            apply: function (command, data) {
+                command.affected = [ data[0] ];
+                command.setProperties = {
+                    1000: JSON.stringify({
+                        'Command-Type': 'Refill',
+                        'Command-To-OOI-Identifier': data[1].entityId
+                    })
+                };
+
+                return command;
+            }
         }
     ]);
