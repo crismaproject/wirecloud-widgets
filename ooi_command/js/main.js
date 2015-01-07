@@ -21,16 +21,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             return $scope.commandableEntityTypes.indexOf(ooi.entityTypeId) != -1;
         };
 
-        // TODO: evaluate why this function is currently no longer used and if it should be
-        $scope.showCommand = function(command) {
-            if (!command.hasOwnProperty('entityTypeId'))
-                return true;
-            for (var i = 0; i < $scope.oois.length; i++)
-                if($scope.oois[i].entityTypeId == command.entityTypeId)
-                    return true;
-            return false;
-        };
-
         $scope.showHelpFor = function(command) {
             $scope.mouseOverCommand = command;
         };
@@ -46,7 +36,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             return accept;
         };
 
-        // TODO: check command's entityTypeId to see if that's actually allowed and/or pre-fill arguments from selection
         $scope.activateCommand = function(command) {
             $scope.pendingCommand = $.extend(true, {
                 candidates: [],
@@ -69,11 +58,17 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             if (command.hasOwnProperty('arguments'))
                 for (var i = 0; i < $scope.pendingCommand.arguments.length; i++) {
                     var argument = $scope.pendingCommand.arguments[i];
-                    if (argument.targetType == 'ooi')
+                    if (argument.targetType == 'ooi') {
                         $scope.pendingCommand.candidates[i] = $scope.allObjects.filter(function (x) {
                             return $scope.acceptsArgument(argument, x);
                         });
-                    else if (argument.targetType == 'number') {
+                        for (var j = 0; $scope.pendingCommand.data[i] == null && j < $scope.pendingCommand.candidates[i].length; j++) {
+                            for (var k = 0; $scope.pendingCommand.data[i] == null && k < $scope.oois.length; k++) {
+                                if ($scope.pendingCommand.candidates[i][j].entityId == $scope.oois[k].entityId)
+                                    $scope.pendingCommand.data[i] = $scope.pendingCommand.candidates[i][j];
+                            }
+                        }
+                    } else if (argument.targetType == 'number') {
                         $scope.pendingCommand.minimum = $scope.getInt(argument.minimum, 1);
                         $scope.pendingCommand.maximum = $scope.getInt(argument.maximum);
                     }
@@ -130,17 +125,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                     console.log('Command cancellation requested by command.apply()');
                     return;
                 }
-            if (command.hasOwnProperty('spawnArea')) {
-                var area = $.extend(true, {
-                    'entityId': -($scope.areaSequenceId++),
-                    'entityTypeId': 14,
-                    'entityInstancesGeometry': [
-                        { 'geometry': {'geometry': {'coordinateSystemId': 4326, 'wellKnownText': 'POINT(' + data.lat + ' ' + data.lon + ')'}}}
-                    ]
-                }, (command.spawnArea));
-                command.createOOI = area;
-                wirecloud.send('areasCreated', [area]);
-            }
 
             oois = oois.map(function (ooi) {
                 return ooi.hasOwnProperty('entityId') ? ooi.entityId : ooi;
@@ -152,8 +136,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                     id: command.id,
                     log: command.log,
                     setGeometry: command.setGeometry,
-                    setProperties: command.setProperties,
-                    spawnArea: command.spawnArea
+                    setProperties: command.setProperties
                 },
                 data: data
             };
@@ -178,17 +161,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             for (var c in commandable)
                 $scope.commandableEntityTypes.push(parseInt(c));
         });
-
-        $scope.assignCoordinatesFromOOItoPoint = function(argumentId, ooi) {
-            var wktString = ooi.entityInstancesGeometry[0].geometry.geometry.wellKnownText;
-            var wkt = new Wkt.Wkt();
-            wkt.read(wktString);
-            $scope.pendingCommand.data[argumentId] = {
-                lat: wkt.components[0]['x'], // TODO
-                lon: wkt.components[0]['y'], // TODO
-                ooi: ooi
-            };
-        };
 
         /****************************************************************
          * WIRECLOUD BINDINGS                                           *
