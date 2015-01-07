@@ -21,7 +21,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             return $scope.commandableEntityTypes.indexOf(ooi.entityTypeId) != -1;
         };
 
-        // TODO: evaluate why this function is currenly no longer used and if it should be
+        // TODO: evaluate why this function is currently no longer used and if it should be
         $scope.showCommand = function(command) {
             if (!command.hasOwnProperty('entityTypeId'))
                 return true;
@@ -126,7 +126,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             if (command.hasOwnProperty('log'))
                 inject(command, 'log');
             if (command.hasOwnProperty('apply'))
-                if (!command.apply(command, data, oois, $scope.allObjects)) {
+                if (!(command = command.apply(command, data, oois, $scope.allObjects))) {
                     console.log('Command cancellation requested by command.apply()');
                     return;
                 }

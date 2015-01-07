@@ -107,7 +107,7 @@ angular.module('ooiCommand.commands', [])
             css: 'ico-cmd-move',
             displayName: 'Evacuate',
             help: 'Evacuate patients from Treatment-Area or danger zone or advanced medical post to Hospital',
-            log: '',
+            log: 'Evacuate patients from Treatment-Area or danger zone or advanced medical post to Hospital',
 
             arguments: [
                 { displayName: 'Evacuate from', targetType: 'ooi', isTargetAllowed: function (ooi) {
@@ -138,8 +138,8 @@ angular.module('ooiCommand.commands', [])
             id: 'v2-refill',
             css: 'ico-cmd-move',
             displayName: 'Refill',
-            help: 'Command resource (vehicle) to refill it’s resources',
-            log: '',
+            help: 'Command resource (vehicle) to refill its resources',
+            log: 'Command resource (vehicle) to refill its resources',
 
             arguments: [
                 { displayName: 'Refill at', targetType: 'ooi', targetRestrictedTo: 8}
