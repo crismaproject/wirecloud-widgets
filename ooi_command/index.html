@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="ooiCommand">
+<html ng-app="ooiCommand" lang="en">
 <head>
     <title>Object of Interest commands</title>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
@@ -22,12 +22,13 @@
             <div class="btn-group">
                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                     <span class="ico-cmd {{pendingCommand.css}}"></span>
-                    <span>{{pendingCommand.displayName || 'Commands'}}</span>
+                    <span>{{pendingCommand.displayName || 'Select command here'}}</span>
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li ng-repeat="cmd in availableCommands">
-                        <a href="#" title="{{cmd.help}}" ng-click="activateCommand(cmd)"><span class="ico-cmd {{cmd.css}}"></span> {{cmd.displayName}}</a>
+                    <li ng-repeat="cmd in availableCommands" ng-click="activateCommand(cmd)">
+                        <div class="ico-cmd {{cmd.css}}">{{cmd.displayName}}</div>
+                        <p class="ico-help">{{cmd.help}}</p>
                     </li>
                 </ul>
             </div>
@@ -47,24 +48,6 @@
                             <span class="help-block small">
                                 min. {{pendingCommand.minimum}}, max. {{pendingCommand.maximum}}
                             </span>
-                        </div>
-                        <div ng-switch-when="point" class="form-inline">
-                            <div>
-                                <abbr title="Latitude">Lat.</abbr>/<abbr title="Longitude">Lon.</abbr>
-
-                                <input type="number" min="-180" max="180" value="0" step="0.0001" class="form-control" ng-model="pendingCommand.data[i].lat" required="required">
-                                <input type="number" min="-90" max="90" value="0" step="0.0001" class="form-control" ng-model="pendingCommand.data[i].lon" required="required">
-
-                                <div class="btn-group" ng-show="pendingCommand.candidates[i].length">
-                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                            title="Select the position of any area on the map">
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li ng-repeat="ooi in pendingCommand.candidates[i]"><a href="#" data-entity-id="{{ooi.entityId}}" ng-click="assignCoordinatesFromOOItoPoint(i, ooi)">{{ooi.entityName}}</a></li>
-                                    </ul>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

@@ -138,8 +138,8 @@ angular.module('ooiCommand.commands', [])
             id: 'v2-refill',
             css: 'ico-cmd-move',
             displayName: 'Refill',
-            help: 'Command resource (vehicle) to refill its resources',
-            log: 'Command resource (vehicle) to refill its resources',
+            help: 'Command resource vehicle to refill its resources',
+            log: 'Command resource vehicle to refill its resources',
 
             arguments: [
                 { displayName: 'Refill at', targetType: 'ooi', targetRestrictedTo: 8}

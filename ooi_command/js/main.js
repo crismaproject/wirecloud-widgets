@@ -55,24 +55,31 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 })
             }, command);
 
-            if (command.hasOwnProperty('arguments'))
-                for (var i = 0; i < $scope.pendingCommand.arguments.length; i++) {
-                    var argument = $scope.pendingCommand.arguments[i];
-                    if (argument.targetType == 'ooi') {
-                        $scope.pendingCommand.candidates[i] = $scope.allObjects.filter(function (x) {
-                            return $scope.acceptsArgument(argument, x);
-                        });
-                        for (var j = 0; $scope.pendingCommand.data[i] == null && j < $scope.pendingCommand.candidates[i].length; j++) {
-                            for (var k = 0; $scope.pendingCommand.data[i] == null && k < $scope.oois.length; k++) {
-                                if ($scope.pendingCommand.candidates[i][j].entityId == $scope.oois[k].entityId)
-                                    $scope.pendingCommand.data[i] = $scope.pendingCommand.candidates[i][j];
-                            }
+            $scope.assignCommandArguments();
+        };
+
+        $scope.assignCommandArguments = function() {
+            if (!$scope.pendingCommand || !$scope.pendingCommand.hasOwnProperty('arguments')) return;
+
+            for (var i = 0; i < $scope.pendingCommand.arguments.length; i++) {
+                if ($scope.pendingCommand.data[i]) continue;
+
+                var argument = $scope.pendingCommand.arguments[i];
+                if (argument.targetType == 'ooi') {
+                    $scope.pendingCommand.candidates[i] = $scope.allObjects.filter(function (x) {
+                        return $scope.acceptsArgument(argument, x);
+                    });
+                    for (var j = 0; $scope.pendingCommand.data[i] == null && j < $scope.pendingCommand.candidates[i].length; j++) {
+                        for (var k = 0; $scope.pendingCommand.data[i] == null && k < $scope.oois.length; k++) {
+                            if ($scope.pendingCommand.candidates[i][j].entityId == $scope.oois[k].entityId)
+                                $scope.pendingCommand.data[i] = $scope.pendingCommand.candidates[i][j];
                         }
-                    } else if (argument.targetType == 'number') {
-                        $scope.pendingCommand.minimum = $scope.getInt(argument.minimum, 1);
-                        $scope.pendingCommand.maximum = $scope.getInt(argument.maximum);
                     }
+                } else if (argument.targetType == 'number') {
+                    $scope.pendingCommand.minimum = $scope.getInt(argument.minimum, 1);
+                    $scope.pendingCommand.maximum = $scope.getInt(argument.maximum);
                 }
+            }
         };
 
         $scope.cancelCommand = function() {
@@ -215,25 +222,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
         function itemsAdded(oois) {
             if (!oois || !oois.length) return;
-
-            /* Iff new OOIs have been selected and there's a command pending, try to assign newly selected OOIs to
-             * any data slots that still require a value. The assumption here is that the user selected the OOI with
-             * the intent to fill a slot.
-             */
-            if ($scope.pendingCommand) {
-                var commandArgumentCount = $scope.pendingCommand.arguments.length;
-                for (var i = 0; i < commandArgumentCount; i++)
-                    if (!$scope.pendingCommand.data[i]) // argument slot for pending command is still unset
-                        for (var j = 0; j < oois.length; j++) {
-                            if ($scope.acceptsArgument($scope.pendingCommand.arguments[i], oois[j])) {
-                                var index = $scope.pendingCommand.candidates[i].indexOfWhere(function (x) { return x.entityId == oois[j].entityId; });
-                                if (index != -1) {
-                                    $scope.pendingCommand.data[i] = $scope.pendingCommand.candidates[i][index];
-                                    break;
-                                }
-                            }
-                        }
-            }
+            $scope.assignCommandArguments();
         }
 
         function itemsRemoved(oois) {
