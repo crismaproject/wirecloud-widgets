@@ -138,7 +138,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             });
 
             var commandObj = {
-                affected: command.hasOwnProperty('affected') ? command.affected : oois,
+                affected: shallowMap(command.hasOwnProperty('affected') ? command.affected : oois, 'entityId'),
                 command: {
                     id: command.id,
                     log: command.log,
@@ -226,5 +226,16 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         }
 
         function itemsRemoved(oois) {
+        }
+
+        /****************************************************************
+         * HELPER FUNCTIONS                                             *
+         ****************************************************************/
+        function shallowMap(array, property) {
+            if (array == null || !$.isArray(array)) return array;
+            for (var i = 0; i < array.length; i++)
+                if (array[i].hasOwnProperty(property))
+                    array[i] = array[i][property];
+            return array;
         }
     }]);
