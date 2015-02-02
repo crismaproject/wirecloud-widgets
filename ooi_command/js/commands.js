@@ -115,6 +115,7 @@ angular.module('ooiCommand.commands', [])
             log: 'Evacuate patients from Treatment-Area or danger zone or advanced medical post to Hospital',
 
             arguments: [
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
                 { displayName: 'Evacuate from', targetType: 'ooi', isTargetAllowed: function (ooi) {
                     return ooi.entityTypeId == 11 || ooi.entityTypeId == 14;
                 } },
@@ -127,10 +128,10 @@ angular.module('ooiCommand.commands', [])
                 command.setProperties = {
                     1000: JSON.stringify({
                         'Command-Type': 'Evacuate',
-                        'Command-From-OOI-Identifier': data[0].entityId,
-                        'Command-To-OOI-Identifier': data[1].entityId,
+                        'Command-From-OOI-Identifier': data[1].entityId,
+                        'Command-To-OOI-Identifier': data[2].entityId,
                         'Command-Parameters': {
-                            'Repeat-Command': data[2]
+                            'Repeat-Command': data[3]
                         }
                     })
                 };
