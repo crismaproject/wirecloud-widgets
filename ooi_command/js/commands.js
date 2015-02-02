@@ -148,6 +148,7 @@ angular.module('ooiCommand.commands', [])
             log: 'Command resource vehicle to refill its resources',
 
             arguments: [
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
                 { displayName: 'Refill at', targetType: 'ooi', targetRestrictedTo: 8}
             ],
 

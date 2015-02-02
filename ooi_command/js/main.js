@@ -8,6 +8,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         $scope.pendingCommand = null;
         $scope.mouseOverCommand = null;
         $scope.areaSequenceId = 1;
+        $scope.useSlimCommands = wirecloud.getPreference('useSlimCommands', false);
 
         $scope.prettyOOIType = function(entityTypeId) {
             return $scope.ooiTypes.hasOwnProperty(entityTypeId) ? $scope.ooiTypes[entityTypeId].entityTypeName : 'Type #' + entityTypeId;
@@ -145,7 +146,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                     setGeometry: command.setGeometry,
                     setProperties: command.setProperties
                 },
-                data: data
+                data: $scope.useSlimCommands ? null : data
             };
 
             wirecloud.send('command', commandObj);

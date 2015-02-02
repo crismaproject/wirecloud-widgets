@@ -1,37 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Template xmlns="http://wirecloud.conwet.fi.upm.es/ns/template#">
-  <Catalog.ResourceDescription>
-    <Vendor>AIT</Vendor>
-    <Name>ooi_command</Name>
-    <DisplayName>OOI Commands</DisplayName>
-    <Version>0.8.0.4</Version>
-    <Author>Manuel Warum</Author>
-    <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
-    <Description>
-      This widget allows the user to issue commands to one or more objects of interests.
-      These commands can either be basic (without parameters), or take certain data as input (eg. locations or
-      other objects of interest).
-      In addition, it is possible to define global commands that do not require an object of interest as an actor.
-      Commands are able to alter the properties of objects of interests or create entirely new objects of interests.
-    </Description>
-    <ImageURI>img/catalogue.png</ImageURI>
-    <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
-    <WikiURI>http://127.0.0.1/index.htm</WikiURI>
-  </Catalog.ResourceDescription>
+    <Catalog.ResourceDescription>
+        <Vendor>AIT</Vendor>
+        <Name>ooi_command</Name>
+        <DisplayName>OOI Commands</DisplayName>
+        <Version>0.8.0.5</Version>
+        <Author>Manuel Warum</Author>
+        <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
+        <Description>
+            This widget allows the user to issue commands to one or more objects of interests.
+            These commands can either be basic (without parameters), or take certain data as input (eg. locations or
+            other objects of interest).
+            In addition, it is possible to define global commands that do not require an object of interest as an actor.
+            Commands are able to alter the properties of objects of interests or create entirely new objects of interests.
+        </Description>
+        <ImageURI>img/catalogue.png</ImageURI>
+        <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
+        <WikiURI>http://127.0.0.1/index.htm</WikiURI>
+    </Catalog.ResourceDescription>
 
-  <Platform.Wiring>
-    <InputEndpoint name="oois" type="text" label="Commandable OOIs" description="" friendcode="oois" />
-    <InputEndpoint name="oois_all" type="text" label="World State OOIs" description="" friendcode="oois" />
-    <InputEndpoint name="ooiTypes" type="text" label="OOI types" description="" friendcode="ooi-types" />
-    <InputEndpoint name="point" type="text" label="Coordinates" description="" friendcode="geo-lonlat" />
+    <Platform.Preferences>
+        <Preference name="useSlimCommands" type="boolean" description="Trims the command objects sent through the command outputendpoint to reduce overhead" label="Reduce overhead" default="false" />
+    </Platform.Preferences>
 
-    <OutputEndpoint name="command" type="text" label="Command" description="Commands" friendcode="command" />
-  </Platform.Wiring>
+    <Platform.Wiring>
+        <InputEndpoint name="oois" type="text" label="Commandable OOIs" description="" friendcode="oois" />
+        <InputEndpoint name="oois_all" type="text" label="World State OOIs" description="" friendcode="oois" />
+        <InputEndpoint name="ooiTypes" type="text" label="OOI types" description="" friendcode="ooi-types" />
+        <InputEndpoint name="point" type="text" label="Coordinates" description="" friendcode="geo-lonlat" />
 
-  <Platform.Link>
-    <XHTML href="index.html"/>
-  </Platform.Link>
+        <OutputEndpoint name="command" type="text" label="Command" description="Commands" friendcode="command" />
+    </Platform.Wiring>
 
-  <Platform.Rendering width="6" height="12"/>
+    <Platform.Link>
+        <XHTML href="index.html"/>
+    </Platform.Link>
+
+    <Platform.Rendering width="6" height="12"/>
 </Template>
