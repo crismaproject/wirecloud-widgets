@@ -41,18 +41,21 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             $scope.pendingCommand = $.extend(true, {
                 candidates: [],
                 data: command.arguments.map(function(x) {
-                    switch(x.targetType) {
-                        case 'point':
-                            return { lat:0, lon:0 };
-                        case 'number':
-                            return 1;
-                        case 'option':
-                            if (x.hasOwnProperty('getOptions') && typeof(x.getOptions) === 'function')
-                                x.options = x.getOptions($scope.allObjects);
-                            return x.hasOwnProperty('options') && x.options.length > 0 ? x.options[0] : null;
-                        default:
-                            return null;
-                    }
+                    if (x.hasOwnProperty('defaultValue'))
+                        return x['defaultValue'];
+                    else
+                        switch(x.targetType) {
+                            case 'point':
+                                return { lat:0, lon:0 };
+                            case 'number':
+                                return 1;
+                            case 'option':
+                                if (x.hasOwnProperty('getOptions') && typeof(x.getOptions) === 'function')
+                                    x.options = x.getOptions($scope.allObjects);
+                                return x.hasOwnProperty('options') && x.options.length > 0 ? x.options[0] : null;
+                            default:
+                                return null;
+                        }
                 })
             }, command);
 

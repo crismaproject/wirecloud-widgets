@@ -45,7 +45,7 @@ angular.module('ooiCommand.commands', [])
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Automatic evac to', targetType: 'ooi', targetRestrictedTo: 8 },
                 { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]},
-                { displayName: 'Delay upon arrival (sec)', targetType: 'number', minimum: 0, maximum: 5400 }
+                { displayName: 'Delay upon arrival (sec)', targetType: 'number', minimum: 0, maximum: 5400, defaultValue: 0 }
             ],
 
             apply: function (command, data) {
