@@ -93,7 +93,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         $scope.canExecutePendingCommand = function() {
             if (!$scope.pendingCommand) return false;
             for (var i = 0; i < $scope.pendingCommand.data.length; i++)
-                if (!$scope.pendingCommand.data[i]) return false;
+                if ($scope.pendingCommand.data[i] === '' || $scope.pendingCommand.data[i] === null) return false; // TODO: verify that this actually disallows invalid form data but still accepts stuff like 0s in number inputs
             return true;
         };
 
