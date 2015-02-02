@@ -19,7 +19,9 @@ angular.module('ooiCommand.commands', [])
                 command.setProperties = {
                     1000: JSON.stringify({
                         'Command-Type': 'Dispatch',
-                        'Command-To-OOI-Identifier': data[1].entityId
+                        'Command-From-OOI-Identifier': '',
+                        'Command-To-OOI-Identifier': data[1].entityId,
+                        'Command-Parameters': ''
                     })
                 };
 
@@ -41,7 +43,9 @@ angular.module('ooiCommand.commands', [])
                 { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: 11 },
                 { displayName: 'Rescue to', targetType: 'ooi', targetRestrictedTo: 14 },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
-                { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]}
+                { displayName: 'Automatic evac to', targetType: 'ooi', targetRestrictedTo: 8 },
+                { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]},
+                { displayName: 'Delay upon arrival (sec)', targetType: 'number', minimum: 0, maximum: 5400 }
             ],
 
             apply: function (command, data) {
@@ -53,9 +57,9 @@ angular.module('ooiCommand.commands', [])
                         'Command-From-OOI-Identifier': data[1].entityId,
                         'Command-Parameters': {
                             'Auto-Evacuate': data[3],
-                            'Auto-Evacuate-OOI-Identifier': null,
-                            'Delay-Upon-Arrival': 0,
-                            'Repeat-Command': data[4]
+                            'Auto-Evacuate-OOI-Identifier': data[4] ? data[4].entityId : '',
+                            'Delay-Upon-Arrival': data[6],
+                            'Repeat-Command': data[5]
                         }
                     })
                 };
@@ -87,6 +91,7 @@ angular.module('ooiCommand.commands', [])
                 command.setProperties = {
                     1000: JSON.stringify({
                         'Command-Type': 'Treat',
+                        'Command-From-OOI-Identifier': '',
                         'Command-To-OOI-Identifier': data[1].entityId,
                         'Command-Parameters': {
                             'Auto-Evacuate': data[2],
@@ -150,7 +155,9 @@ angular.module('ooiCommand.commands', [])
                 command.setProperties = {
                     1000: JSON.stringify({
                         'Command-Type': 'Refill',
-                        'Command-To-OOI-Identifier': data[1].entityId
+                        'Command-From-OOI-Identifier': '',
+                        'Command-To-OOI-Identifier': data[1].entityId,
+                        'Command-Parameters': ''
                     })
                 };
 
