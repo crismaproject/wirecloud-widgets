@@ -60,7 +60,8 @@
         'other': '{} commands have been issued:'}"></ng-pluralize>
 
         <ul>
-            <li ng-repeat="command in commandQueue | filter:commandHasDisplayableText">
+            <li ng-repeat="command in commandQueue">
+                <button type="button" class="btn btn-danger" ng-click="removeCommand($index)"><span class="glyphicon glyphicon-remove"></span></button>
                 <strong ng-if="command.affected && command.affected.length">{{prettyOOINames(command.affected)}}:</strong>
                 {{command.command.log}}
             </li>

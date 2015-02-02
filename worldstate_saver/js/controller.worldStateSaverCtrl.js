@@ -45,6 +45,10 @@ angular
             $scope.$apply();
         });
 
+        $scope.removeCommand = function (index) {
+            $scope.commandQueue.splice(index, 1);
+        };
+
         $scope.finish = function () {
             $scope.status = [];
             $scope.busy = true;
