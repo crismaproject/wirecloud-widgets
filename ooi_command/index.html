@@ -44,9 +44,9 @@
                         <select ng-switch-when="ooi" id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" required="required" class="form-control"></select>
                         <select ng-switch-when="option" id="pcArg{{i}}" ng-options="c for c in arg.options" ng-model="pendingCommand.data[i]" required="required" class="form-control"></select>
                         <div ng-switch-when="number">
-                            <input type="number" min="{{pendingCommand.minimum}}" max="{{pendingCommand.maximum}}" ng-model="pendingCommand.data[i]" id="pcArg{{i}}" required="required" class="form-control">
+                            <input type="number" min="{{arg.minimum}}" max="{{arg.maximum}}" ng-model="pendingCommand.data[i]" id="pcArg{{i}}" required="required" class="form-control">
                             <span class="help-block small">
-                                min. {{pendingCommand.minimum}}, max. {{pendingCommand.maximum}}
+                                min. {{arg.minimum}}, max. {{arg.maximum}}
                             </span>
                         </div>
                     </div>
