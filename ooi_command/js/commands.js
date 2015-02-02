@@ -40,7 +40,7 @@ angular.module('ooiCommand.commands', [])
 
             arguments: [
                 { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
-                { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: 11 },
+                { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: 14 }, // TODO: needs to be of area type INCIDENT
                 { displayName: 'Rescue to', targetType: 'ooi', targetRestrictedTo: 14 },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Automatic evac to', targetType: 'ooi', targetRestrictedTo: 8 },
@@ -95,7 +95,7 @@ angular.module('ooiCommand.commands', [])
                         'Command-To-OOI-Identifier': data[1].entityId,
                         'Command-Parameters': {
                             'Auto-Evacuate': data[2],
-                            'Auto-Evacuate-OOI-Identifier': null,
+                            'Auto-Evacuate-OOI-Identifier': '',
                             'Repeat-Command': data[3],
                             'Perform-Pre-Triage': data[4],
                             'Perform-Triage': data[5]
