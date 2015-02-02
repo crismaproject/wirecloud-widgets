@@ -165,5 +165,36 @@ angular.module('ooiCommand.commands', [])
 
                 return command;
             }
+        },
+
+        {
+            id: 'v2-build-area',
+            css: 'ico-cmd-move',
+            displayName: 'Build Area',
+            help: 'Builds a specific area type at a specified location consuming time and resources (human resources, equipment, vehicles)',
+            log: 'Area will be built at the specified location',
+
+            arguments: [
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
+                { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: 14},
+                { displayName: 'Area location', targetType: 'point' }
+            ],
+
+            apply: function (command, data) {
+                command.affected = [ data[0] ];
+                command.setGeometry = data[2]; // TODO: verify correctness
+                command.setProperties = {
+                    1000: JSON.stringify({
+                        'Command-Type': 'BuildArea',
+                        'Command-From-OOI-Identifier': '',
+                        'Command-To-OOI-Identifier': '',
+                        'Command-Parameters': {
+                            'Area-Identifier': data[1].entityId
+                        }
+                    })
+                };
+
+                return command;
+            }
         }
     ]);

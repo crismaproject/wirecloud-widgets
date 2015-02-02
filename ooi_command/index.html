@@ -49,6 +49,12 @@
                                 min. {{arg.minimum}}, max. {{arg.maximum}}
                             </span>
                         </div>
+                        <div ng-switch-when="point" class="form-inline">
+                            <div>
+                                <abbr title="Latitude">Lat.</abbr> <input type="number" min="-180" max="180" value="0" step="0.00001" class="form-control" ng-value="pendingCommand.data[i].lat" required="required">
+                                <abbr title="Longitude">Lon.</abbr> <input type="number" min="-90" max="90" value="0" step="0.00001" class="form-control" ng-value="pendingCommand.data[i].lon" required="required">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
