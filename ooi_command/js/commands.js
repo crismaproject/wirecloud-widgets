@@ -119,7 +119,9 @@ angular.module('ooiCommand.commands', [])
                 { displayName: 'Evacuate from', targetType: 'ooi', isTargetAllowed: function (ooi) {
                     return ooi.entityTypeId == 11 || ooi.entityTypeId == 14;
                 } },
-                { displayName: 'Evacuate to', targetType: 'ooi', targetRestrictedTo: 8},
+                { displayName: 'Evacuate to', targetType: 'ooi', isTargetAllowed: function (ooi) {
+                    return ooi.entityTypeId == 9 || ooi.entityTypeId == 14;
+                } },
                 { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]}
             ],
 
