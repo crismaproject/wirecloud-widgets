@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html ng-app="ooiSummary" lang="en">
+<head>
+    <title>Object of Interest commands</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <script src="//code.jquery.com/jquery-2.1.3.min.js" type="text/javascript"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.28/angular.min.js" type="text/javascript"></script>
+    <script src="js/main.js" type="text/javascript"></script>
+    <script src="js/wirecloud.js" type="text/javascript"></script>
+</head>
+<body>
+
+<div class="container-fluid" ng-controller="OoiSummaryCtrl">
+    <div class="row">
+        <div class="col-sm-6">
+            <table class="table table-condensed table-bordered">
+                <caption>Patient status</caption>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Green</th>
+                    <th>Yellow</th>
+                    <th>Red</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="area in areas">
+                    <th>{{area.name}}</th>
+                    <td>{{area.green}}</td>
+                    <td>{{area.yellow}}</td>
+                    <td>{{area.red}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-sm-6">
+            <table class="table table-condensed table-bordered">
+                <caption>Resource status</caption>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th colspan="2">At station</th>
+                    <th colspan="3">On site</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th>Ready</th>
+                    <th>Reloading</th>
+                    <th>Treatment</th>
+                    <th>Rescue</th>
+                    <th>Evacuation</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="station in stations">
+                    <th>{{station.name}}</th>
+                    <td>{{station.ready}}</td>
+                    <td>{{station.reloading}}</td>
+                    <td>{{station.treatment}}</td>
+                    <td>{{station.rescue}}</td>
+                    <td>{{station.evacuation}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
