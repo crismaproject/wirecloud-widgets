@@ -55,7 +55,9 @@ angular.module('ooiCommand.commands', [])
                 { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area }, // TODO: needs to be of area type INCIDENT
                 { displayName: 'Rescue to', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
-                { displayName: 'Automatic evac to', targetType: 'ooi', targetRestrictedTo: OoiTypeId.RescueStation },
+                { displayName: 'Automatic evac to', targetType: 'ooi', isTargetAllowed: function (ooi) {
+                    return ooi.entityTypeId == OoiTypeId.Hospital || ooi.entityTypeId == OoiTypeId.Area;
+                } },
                 { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Delay upon arrival (sec)', targetType: 'number', minimum: 0, maximum: 5400, defaultValue: 0 }
             ],
