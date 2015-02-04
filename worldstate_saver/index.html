@@ -61,7 +61,7 @@
 
         <ul>
             <li ng-repeat="command in commandQueue">
-                <button type="button" class="btn btn-danger" ng-click="removeCommand($index)"><span class="glyphicon glyphicon-remove"></span></button>
+                <button type="button" class="btn btn-xs btn-danger" ng-click="removeCommand($index)"><span class="glyphicon glyphicon-remove"></span></button>
                 <strong ng-if="command.affected && command.affected.length">{{prettyOOINames(command.affected)}}:</strong>
                 {{command.command.log}}
             </li>
