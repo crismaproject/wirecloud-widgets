@@ -112,13 +112,16 @@ WPS.prototype.executeProcess = function (processId, args) {
     var argStr = '';
     for (var key in args) {
         if (argStr.length > 0) argStr += ';';
-        argStr += encodeURIComponent(key) + '=' + encodeURIComponent(args[key]);
+        //argStr += encodeURIComponent(key) + '=' + encodeURIComponent(args[key]);
+        argStr += key + '=' + args[key];
     }
-    argStr = encodeURIComponent(argStr);
+    //argStr = encodeURIComponent(argStr);
     $.get(this.baseUri + '?service=WPS&request=Execute&version=1.0.0&identifier=' + processId + '&datainputs=' + argStr).done(function (response) {
-        if ($('ProcessFailed', response).length)
-            deferred.rejectWith($this, [response]);
-        else {
+        if ($('ProcessFailed', response).length) {
+            //deferred.rejectWith($this, [response]);
+            var returnMessage = $('ExceptionText', response) ? $('ExceptionText', response).text() : 'Generic error';
+            deferred.rejectWith($this, [returnMessage]);
+        } else {
             var returnValue = { };
             $('Output', response).each(function (index, output) {
                 var $output = $(output);

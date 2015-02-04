@@ -33,7 +33,7 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
                                                     .then(function() {
                                                         deferred.notify({status: 'Agent model has been invoked', data: worldState, progress: 5});
                                                         deferred.resolve(worldState);
-                                                    }, function () { deferred.reject('Failed to invoke Agent Model'); });
+                                                    }, function (error) { deferred.reject(error); });
                                             }, function () { deferred.reject('Failed to create world state in ICMM'); });
                                     }, function () { deferred.reject('Failed to update OOI properties'); });
                             }, function () { deferred.reject('Failed to create new OOIs'); });
