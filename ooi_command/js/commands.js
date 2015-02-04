@@ -1,3 +1,15 @@
+var OoiTypeId = OoiTypeId || {
+        Vehicle: 7,
+        RescueStation: 8,
+        Hospital: 9,
+        Patient: 10,
+        IndicatorResults: 12,
+        SimulationSetup: 13,
+        Area: 14,
+        Plume: 15,
+        Injury: 20
+    };
+
 angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
         {
@@ -7,11 +19,11 @@ angular.module('ooiCommand.commands', [])
             help: 'Dispatch vehicles to the selected Area',
             log: 'Dispatching #{data[0].entityName} to #{data[1].entityName}',
 
-            entityTypeId: 7,
+            entityTypeId: OoiTypeId.Vehicle,
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
-                { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: 14 }
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
+                { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area }
             ],
 
             apply: function (command, data) {
@@ -39,11 +51,11 @@ angular.module('ooiCommand.commands', [])
             entityTypeId: 7,
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
-                { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: 14 }, // TODO: needs to be of area type INCIDENT
-                { displayName: 'Rescue to', targetType: 'ooi', targetRestrictedTo: 14 },
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
+                { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area }, // TODO: needs to be of area type INCIDENT
+                { displayName: 'Rescue to', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
-                { displayName: 'Automatic evac to', targetType: 'ooi', targetRestrictedTo: 8 },
+                { displayName: 'Automatic evac to', targetType: 'ooi', targetRestrictedTo: OoiTypeId.RescueStation },
                 { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Delay upon arrival (sec)', targetType: 'number', minimum: 0, maximum: 5400, defaultValue: 0 }
             ],
@@ -58,7 +70,7 @@ angular.module('ooiCommand.commands', [])
                         'Command-Parameters': {
                             'Auto-Evacuate': data[3],
                             'Auto-Evacuate-OOI-Identifier': data[4] ? data[4].entityId : '',
-                            'Delay-Upon-Arrival': data[6],
+                            'Delay-Upon-Arrival-Seconds': data[6],
                             'Repeat-Command': data[5]
                         }
                     })
@@ -78,8 +90,8 @@ angular.module('ooiCommand.commands', [])
             entityTypeId: 7,
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
-                { displayName: 'Treat at', targetType: 'ooi', targetRestrictedTo: 14 },
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
+                { displayName: 'Treat at', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Pre-Triage', targetType: 'option', options: [ 'No', 'Yes' ]},
@@ -115,12 +127,12 @@ angular.module('ooiCommand.commands', [])
             log: 'Evacuate patients from Treatment-Area or danger zone or advanced medical post to Hospital',
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
                 { displayName: 'Evacuate from', targetType: 'ooi', isTargetAllowed: function (ooi) {
-                    return ooi.entityTypeId == 11 || ooi.entityTypeId == 14;
+                    return ooi.entityTypeId == 11 || ooi.entityTypeId == OoiTypeId.Area;
                 } },
                 { displayName: 'Evacuate to', targetType: 'ooi', isTargetAllowed: function (ooi) {
-                    return ooi.entityTypeId == 9 || ooi.entityTypeId == 14;
+                    return ooi.entityTypeId == OoiTypeId.Hospital || ooi.entityTypeId == OoiTypeId.Area;
                 } },
                 { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]}
             ],
@@ -150,8 +162,8 @@ angular.module('ooiCommand.commands', [])
             log: 'Command resource vehicle to refill its resources',
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
-                { displayName: 'Refill at', targetType: 'ooi', targetRestrictedTo: 8}
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
+                { displayName: 'Refill at', targetType: 'ooi', targetRestrictedTo: OoiTypeId.RescueStation }
             ],
 
             apply: function (command, data) {
@@ -177,8 +189,8 @@ angular.module('ooiCommand.commands', [])
             log: 'Area will be built at the specified location',
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: 7 },
-                { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: 14},
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
+                { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Area location', targetType: 'point' }
             ],
 
