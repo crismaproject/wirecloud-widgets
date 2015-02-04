@@ -1,1 +1,9 @@
 table { font-size: 80% }
+
+thead .green { background-color: rgb(149, 228, 122) }
+thead .yellow { background-color: rgb(251, 255, 150) }
+thead .red { background-color: rgb(228, 106, 100) }
+
+.green { background-color: rgb(194, 250, 178) }
+.yellow { background-color: rgb(254, 255, 191) }
+.red { background-color: rgb(250, 152, 150) }

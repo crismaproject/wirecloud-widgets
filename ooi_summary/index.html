@@ -20,17 +20,17 @@
                 <thead>
                 <tr>
                     <th></th>
-                    <th>Green</th>
-                    <th>Yellow</th>
-                    <th>Red</th>
+                    <th class="green">Green</th>
+                    <th class="yellow">Yellow</th>
+                    <th class="red">Red</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="area in areas">
                     <th>{{area.name}}</th>
-                    <td>{{area.green}}</td>
-                    <td>{{area.yellow}}</td>
-                    <td>{{area.red}}</td>
+                    <td class="green">{{area.green}}</td>
+                    <td class="yellow">{{area.yellow}}</td>
+                    <td class="red">{{area.red}}</td>
                 </tr>
                 </tbody>
             </table>
@@ -68,6 +68,8 @@
         </div>
     </div>
 </div>
+
+<small>This is a dummy. Any numbers shown here are not real.</small>
 
 </body>
 </html>
