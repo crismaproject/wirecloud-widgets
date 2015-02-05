@@ -1,6 +1,7 @@
 angular.module('ooiInfo', ['ooiInfo.wirecloud', 'ooiInfo.prettify'])
     .controller('OoiInfoCtrl', ['$scope', 'wirecloud', 'prettify', function($scope, wirecloud, prettify) {
         $scope.oois = [];
+        $scope.ooiNames = {};
         $scope.ooiTypeNames = { };
         $scope.ooiPropertyNames = { };
 
@@ -13,20 +14,30 @@ angular.module('ooiInfo', ['ooiInfo.wirecloud', 'ooiInfo.prettify'])
 
         $scope.prettify = prettify;
 
-        $scope.prettify.rule() // TODO: verify! seems to fail for the Vehicle-Rescue-Station property of Ambulances
+        $scope.prettify.rule()
             .forProperty(45)
             .forProperty(311)
             .forProperty(313)
             .thenDo(function (ooiId) {
                 if (!ooiId) return null;
-                var ooi = $scope.oois.find(function (x) { return x.entityId == ooiId; });
-                return ooi ? ooi.entityName : null;
+                return $scope.ooiNames.hasOwnProperty(ooiId) ? $scope.ooiNames[ooiId] : 'Entity #' + ooiId;
             })
             .useTitle(function (ooiId) {
                 return 'OOI ID: ' + ooiId.toString();
             });
 
-        wirecloud.on('oois', function (oois) {
+        wirecloud.on('oois_all', function (oois) {
+            if (typeof oois === 'string')
+                oois = JSON.parse(oois);
+
+            var names = {};
+            for (var i = 0; i < oois.length; i++)
+                names[oois[i].entityId] = oois[i].entityName;
+
+            $scope.ooiNames = names;
+        });
+
+        wirecloud.on('oois_show', function (oois) {
             if (typeof oois === 'string')
                 oois = JSON.parse(oois);
 
