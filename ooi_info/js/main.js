@@ -13,7 +13,7 @@ angular.module('ooiInfo', ['ooiInfo.wirecloud', 'ooiInfo.prettify'])
 
         $scope.prettify = prettify;
 
-        $scope.prettify.rule()
+        $scope.prettify.rule() // TODO: verify! seems to fail for the Vehicle-Rescue-Station property of Ambulances
             .forProperty(45)
             .forProperty(311)
             .forProperty(313)
