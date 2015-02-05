@@ -1,7 +1,15 @@
-/*global MashupPlatform*/
+/*global MashupPlatform,NGSI*/
+
+if (typeof(MashupPlatform) === 'undefined')
+    throw 'MashupPlatform not found!';
+else if (typeof(NGSI) === 'undefined')
+    throw 'NGSI not installed!';
 
 var ngsiUri = MashupPlatform.prefs.get('ngsi_uri');
-var ngsiConnectionOptions = { ngsi_proxy_url: MashupPlatform.prefs.get('ngsi_proxy_uri') };
+var ngsiConnectionOptions = {
+    ngsi_proxy_url: MashupPlatform.prefs.get('ngsi_proxy_uri'),
+    use_user_fiware_token: true
+};
 var entityScope = MashupPlatform.prefs.get('entity_scope');
 
 MashupPlatform.prefs.registerCallback(function () {
@@ -25,18 +33,18 @@ MashupPlatform.wiring.registerCallback('query_request', function (token) {
     });
 });
 
-//var duration = 'PT15M'; // FIXME: increase limit, e.g. 'PT2H'
-//var throttling = 'PT10S';
-//var notifyConditions = [{
-//    type: 'ONCHANGE',
-//    condValues: ['dataslot_OOI-worldstate-ref']
-//}];
+var duration = 'PT15M'; // FIXME: increase limit, e.g. 'PT2H'
+var throttling = 'PT10S';
+var notifyConditions = [{
+    type: 'ONCHANGE',
+    condValues: ['dataslot_OOI-worldstate-ref']
+}];
 
 // The following will FAIL without having a NGSI proxy to begin with:
-//ngsiConnection.createSubscription(entityList, attributeList, duration, throttling, notifyConditions, {
-//    flat: true,
-//    onNotify: function (data) {
-//        console.log('NOTIFY');
-//        console.log(data);
-//    }
-//});
+ngsiConnection.createSubscription(entityList, attributeList, duration, throttling, notifyConditions, {
+    flat: true,
+    onNotify: function (data) {
+        console.log('NOTIFY');
+        console.log(data);
+    }
+});

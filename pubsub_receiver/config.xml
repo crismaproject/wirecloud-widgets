@@ -13,7 +13,7 @@
         <wire:displayName>PubSub receiver</wire:displayName>
         <dcterms:description>This operator receives signals from a PubSub publisher.</dcterms:description>
         <dcterms:creator rdf:resource="http://creatoruri/"/>
-        <usdl-core:versionInfo>0.1.0.6</usdl-core:versionInfo>
+        <usdl-core:versionInfo>0.1.0.7</usdl-core:versionInfo>
         <wire:hasImageUri rdf:resource="img/catalogue.png"/>
         <usdl-core:utilizedResource rdf:resource="js/main.js"/>
         <foaf:page rdf:resource="http://conwet.fi.upm.es/docs/display/wirecloud"/>
@@ -38,7 +38,6 @@
                 <wire:type>text</wire:type>
                 <dcterms:description>URL of the NGSI endpoint</dcterms:description>
                 <rdfs:label>NGSI URI</rdfs:label>
-                <wire:default></wire:default>
             </wire:PlatformPreference>
         </wire:hasPlatformPreference>
 
@@ -49,7 +48,6 @@
                 <wire:type>text</wire:type>
                 <dcterms:description>URL of the NGSI proxy</dcterms:description>
                 <rdfs:label>NGSI Proxy</rdfs:label>
-                <wire:default></wire:default>
             </wire:PlatformPreference>
         </wire:hasPlatformPreference>
 
@@ -79,11 +77,7 @@
                         <wire:friendcode>any</wire:friendcode>
                     </wire:InputEndpoint>
                 </wire:hasInputEndpoint>
-            </wire:PlatformWiring>
-        </wire:hasPlatformWiring>
 
-        <wire:hasPlatformWiring>
-            <wire:PlatformWiring rdf:ID="wiring">
                 <wire:hasOutputEndpoint>
                     <wire:OutputEndpoint rdf:ID="output_1">
                         <dcterms:title>signal</dcterms:title>
