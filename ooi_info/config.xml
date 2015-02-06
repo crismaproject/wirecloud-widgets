@@ -5,7 +5,7 @@
         <Vendor>AIT</Vendor>
         <Name>ooi_info</Name>
         <DisplayName>OOI Info</DisplayName>
-        <Version>0.8.0.1</Version>
+        <Version>0.8.1.0</Version>
         <Author>Manuel Warum</Author>
         <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
         <Description>Command Objects of Interests</Description>
@@ -16,6 +16,10 @@
         <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
         <WikiURI>http://127.0.0.1/index.htm</WikiURI>
     </Catalog.ResourceDescription>
+
+    <Platform.Preferences>
+        <Preference name="show_ids" type="boolean" description="Show the IDs of properties instead of resolved names" label="Show IDs" default="false"/>
+    </Platform.Preferences>
 
     <Platform.Wiring>
         <InputEndpoint name="oois_show" type="text" label="Show these OOIs" description="" friendcode="oois" />

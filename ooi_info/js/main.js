@@ -14,17 +14,18 @@ angular.module('ooiInfo', ['ooiInfo.wirecloud', 'ooiInfo.prettify'])
 
         $scope.prettify = prettify;
 
-        $scope.prettify.rule()
-            .forProperty(45)
-            .forProperty(311)
-            .forProperty(313)
-            .thenDo(function (ooiId) {
-                if (!ooiId) return null;
-                return $scope.ooiNames.hasOwnProperty(ooiId) ? $scope.ooiNames[ooiId] : 'Entity #' + ooiId;
-            })
-            .useTitle(function (ooiId) {
-                return 'OOI ID: ' + ooiId.toString();
-            });
+        if (!wirecloud.getPreference('show_ids', false))
+            $scope.prettify.rule()
+                .forProperty(45)
+                .forProperty(311)
+                .forProperty(313)
+                .thenDo(function (ooiId) {
+                    if (!ooiId) return null;
+                    return $scope.ooiNames.hasOwnProperty(ooiId) ? $scope.ooiNames[ooiId] : 'Entity #' + ooiId;
+                })
+                .useTitle(function (ooiId) {
+                    return 'OOI ID: ' + ooiId.toString();
+                });
 
         wirecloud.on('oois_all', function (oois) {
             if (typeof oois === 'string')
