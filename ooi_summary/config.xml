@@ -5,7 +5,7 @@
         <Vendor>AIT</Vendor>
         <Name>ooi_summary</Name>
         <DisplayName>OOI Summary</DisplayName>
-        <Version>0.8.0.0</Version>
+        <Version>0.8.1.0</Version>
         <Author>Manuel Warum</Author>
         <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
         <Description>
@@ -24,10 +24,6 @@
 
     <Platform.Wiring>
         <InputEndpoint name="oois" type="text" label="OOIs" description="All objects of interest" friendcode="oois" />
-        <!--
-          <InputEndpoint name="data_in" type="text" label="Data" friendcode="data"/>
-          <OutputEndpoint name="data_out" type="text" label="Data" friendcode="data"/>
-        -->
     </Platform.Wiring>
 
     <Platform.Link>

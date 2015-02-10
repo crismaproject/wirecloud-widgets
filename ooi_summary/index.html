@@ -41,27 +41,14 @@
                 <caption>Resource status</caption>
                 <thead>
                 <tr>
-                    <th></th>
-                    <th colspan="2">At station</th>
-                    <th colspan="3">On site</th>
-                </tr>
-                <tr>
-                    <th></th>
-                    <th>Ready</th>
-                    <th>Reloading</th>
-                    <th>Treatment</th>
-                    <th>Rescue</th>
-                    <th>Evacuation</th>
+                    <th>Station</th>
+                    <td ng-repeat="resourceState in resourceStates">{{resourceState}}</td>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="station in stations">
                     <th>{{station.name}}</th>
-                    <td>{{station.ready}}</td>
-                    <td>{{station.reloading}}</td>
-                    <td>{{station.treatment}}</td>
-                    <td>{{station.rescue}}</td>
-                    <td>{{station.evacuation}}</td>
+                    <td ng-repeat="resourceState in resourceStates">{{station[resourceState]}}</td>
                 </tr>
                 </tbody>
             </table>

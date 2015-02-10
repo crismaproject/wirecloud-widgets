@@ -6,6 +6,7 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
         $scope.stations = [
             //{ name: 'Station 1', ready: 2, reloading: 0, treatment: 2, rescue: 1, evacuation: 8 }
         ];
+        $scope.resourceStates = [ ];
 
         /****************************************************************
          * WIRECLOUD BINDINGS                                           *
@@ -18,17 +19,49 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
             });
 
             countPatientStatus(oois, nameMap);
-
-            $scope.stations = oois
-                .filter(function (x) { return x.entityTypeId == 8 })
-                .map(function (x) { return { name: x.entityName, ready: 1, reloading: 2, treatment: 3, rescue: 4, evacuation: 5 } });
+            countResourceUsage(oois, nameMap);
 
             $scope.$apply();
         });
 
         function countResourceUsage(oois, ooiNameMap) {
             var stationResourceMap = {}; // map station ID -> resource status
-            // TODO: pending server-side implementation
+            var states = { 'Idle': true }; // list of possible Display-States
+
+            oois
+                .filter(function (x) { return x.entityTypeId == 7 })
+                .forEach(function (x) {
+                    var state = null;
+                    var station = null;
+                    x.entityInstancesProperties.forEach(function (y) {
+                        switch (y.entityTypePropertyId) {
+                            case 327:// ambulance prop 327 is current state
+                                state = y.entityPropertyValue;
+                                break;
+                            case 313:// ambulance prop ID 313 is rescue station
+                                station = parseInt(y.entityPropertyValue);
+                                break;
+                        }
+                    });
+                    state = state || 'Idle';
+                    station = station || 0;
+
+                    states[state] = true;
+                    if (!stationResourceMap.hasOwnProperty(station))
+                        stationResourceMap[station] = {  };
+                    if (!stationResourceMap[station].hasOwnProperty(state))
+                        stationResourceMap[station][state] = 1;
+                    else
+                        stationResourceMap[station][state]++;
+                });
+
+            $scope.resourceStates = Object.keys(states);
+            $scope.stations = [ ];
+            for (var stationId in stationResourceMap)
+                $scope.stations.push($.extend({name: ooiNameMap[stationId]}, stationResourceMap[stationId]));
+
+            console.log($scope.resourceStates);
+            console.log($scope.stations);
         }
 
         function countPatientStatus(oois, ooiNameMap) {
@@ -65,5 +98,7 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
                 areas.push({name: ooiNameMap[areaId], green: value.green, yellow: value.yellow, red: value.red});
             }
             $scope.areas = areas;
+
+            console.log($scope.areas);
         }
     }]);
