@@ -236,6 +236,9 @@ angular.module('worldStatePickerApp', ['ngResource'])
         });
 
         wirecloud.on('load_worldstate', function (icmmWorldState) {
+            if (typeof(icmmWorldState) === 'string')
+                icmmWorldState = JSON.parse(icmmWorldState);
+
             var ooiwsrWorldStateId = getOOIWSRWorldStateIdForICMMWorldState(icmmWorldState);
             ooiwsr.getWorldState(ooiwsrWorldStateId)
                 .done(function (worldState) {
