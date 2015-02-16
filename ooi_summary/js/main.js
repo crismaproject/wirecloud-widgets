@@ -59,9 +59,6 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
             $scope.stations = [ ];
             for (var stationId in stationResourceMap)
                 $scope.stations.push($.extend({name: ooiNameMap[stationId]}, stationResourceMap[stationId]));
-
-            console.log($scope.resourceStates);
-            console.log($scope.stations);
         }
 
         function countPatientStatus(oois, ooiNameMap) {
@@ -98,7 +95,5 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
                 areas.push({name: ooiNameMap[areaId], green: value.green, yellow: value.yellow, red: value.red});
             }
             $scope.areas = areas;
-
-            console.log($scope.areas);
         }
     }]);
