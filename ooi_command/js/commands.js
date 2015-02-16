@@ -95,6 +95,9 @@ angular.module('ooiCommand.commands', [])
                 { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
                 { displayName: 'Treat at', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
+                { displayName: 'Automatic evac to', targetType: 'ooi', isTargetAllowed: function (ooi) {
+                    return ooi.entityTypeId == OoiTypeId.Hospital || ooi.entityTypeId == OoiTypeId.Area;
+                } },
                 { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Pre-Triage', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Triage', targetType: 'option', options: [ 'No', 'Yes' ]}
@@ -109,10 +112,10 @@ angular.module('ooiCommand.commands', [])
                         'Command-To-OOI-Identifier': data[1].entityId,
                         'Command-Parameters': {
                             'Auto-Evacuate': data[2],
-                            'Auto-Evacuate-OOI-Identifier': '',
-                            'Repeat-Command': data[3],
-                            'Perform-Pre-Triage': data[4],
-                            'Perform-Triage': data[5]
+                            'Auto-Evacuate-OOI-Identifier': data[3] ? data[3].entityId : '',
+                            'Repeat-Command': data[4],
+                            'Perform-Pre-Triage': data[5],
+                            'Perform-Triage': data[6]
                         }
                     })
                 };
