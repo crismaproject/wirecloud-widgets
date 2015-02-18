@@ -10,6 +10,20 @@ var OoiTypeId = OoiTypeId || {
         Injury: 20
     };
 
+function ooiProperty(ooi, propertyId) {
+    if (!ooi.hasOwnProperty('entityInstancesProperties')) return null;
+    for (var i = 0; i < ooi.entityInstancesProperties.length; i++) {
+        var property = ooi.entityInstancesProperties[i];
+        if (property.hasOwnProperty('entityTypePropertyId') && property.entityTypePropertyId == propertyId)
+            return property;
+    }
+    return null;
+}
+
+function vehicleIsAvailable (ooi) {
+    return parseInt(ooiProperty(ooi, 312) || -1) === 0;
+}
+
 angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
         {
@@ -22,7 +36,8 @@ angular.module('ooiCommand.commands', [])
             entityTypeId: OoiTypeId.Vehicle,
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
+                isTargetAllowed: vehicleIsAvailable },
                 { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area }
             ],
 
@@ -51,7 +66,8 @@ angular.module('ooiCommand.commands', [])
             entityTypeId: 7,
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
+                    isTargetAllowed: vehicleIsAvailable },
                 { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area }, // TODO: needs to be of area type INCIDENT
                 { displayName: 'Rescue to', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
@@ -92,7 +108,8 @@ angular.module('ooiCommand.commands', [])
             entityTypeId: 7,
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
+                    isTargetAllowed: vehicleIsAvailable },
                 { displayName: 'Treat at', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Automatic evac to', targetType: 'ooi', isTargetAllowed: function (ooi) {
@@ -132,7 +149,8 @@ angular.module('ooiCommand.commands', [])
             log: 'Evacuate patients from Treatment-Area or danger zone or advanced medical post to Hospital',
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
+                    isTargetAllowed: vehicleIsAvailable },
                 { displayName: 'Evacuate from', targetType: 'ooi', isTargetAllowed: function (ooi) {
                     return ooi.entityTypeId == 11 || ooi.entityTypeId == OoiTypeId.Area;
                 } },
@@ -167,7 +185,8 @@ angular.module('ooiCommand.commands', [])
             log: 'Command resource vehicle to refill its resources',
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
+                    isTargetAllowed: vehicleIsAvailable },
                 { displayName: 'Refill at', targetType: 'ooi', targetRestrictedTo: OoiTypeId.RescueStation }
             ],
 
@@ -194,7 +213,8 @@ angular.module('ooiCommand.commands', [])
             log: 'Area will be built at the specified location',
 
             arguments: [
-                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle },
+                { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
+                    isTargetAllowed: vehicleIsAvailable },
                 { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Area location', targetType: 'point' }
             ],
