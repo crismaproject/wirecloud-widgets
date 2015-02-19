@@ -22,7 +22,7 @@ function ooiProperty(ooi, propertyId) {
 
 function vehicleIsAvailable (ooi) {
     var property = ooiProperty(ooi, 312);
-    return property ? parseInt(property.entityPropertyValue) === 0 : true;
+    return property ? parseInt(property.entityPropertyValue) !== -1 : true;
 }
 
 angular.module('ooiCommand.commands', [])
