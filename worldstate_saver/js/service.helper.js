@@ -128,10 +128,14 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
                     for (var j = 0; j < command.affected.length; j++) {
                         var affectedId = ooiMappings[command.affected[j]];
                         var changes = command.command.setGeometry;
+                        var newValue = changes.hasOwnProperty('lat') && changes.hasOwnProperty('lon')
+                            ? 'POINT ('+changes.lat+' '+changes.lon+')'
+                            : changes;
+
                         oois[affectedId].geometry = {
                             geometry: {
                                 coordinateSystemId: 4326,
-                                wellKnownText: 'POINT ('+changes.lat+' '+changes.lon+')'
+                                wellKnownText: newValue
                             }
                         }
                     }
