@@ -8,6 +8,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         $scope.pendingCommand = null;
         $scope.mouseOverCommand = null;
         $scope.areaSequenceId = 1;
+        $scope.awaitingGeometryForArgument = -1;
         $scope.useSlimCommands = wirecloud.getPreference('useSlimCommands', false);
 
         $scope.prettyOOIType = function(entityTypeId) {
@@ -206,13 +207,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             if (!$scope.pendingCommand) return;
 
             data = typeof data === 'string' ? JSON.parse(data) : data;
-            //if ($scope.pendingCommand.targetType === 'point')
-            //    $scope.executePendingCommandWith(data);
-            //else if ($scope.pendingCommand.targetType === 'ooi' && data.hasOwnProperty('ooi') &&
-            //    (!$scope.pendingCommand.hasOwnProperty('isTargetAllowed') || $scope.pendingCommand.isTargetAllowed(data.ooi)) &&
-            //    (!$scope.pendingCommand.hasOwnProperty('targetRestrictedTo') || $scope.pendingCommand.targetRestrictedTo == data.ooi.entityTypeId))
-            //    $scope.executePendingCommandWith(data.ooi);
-
             for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
                 if ($scope.pendingCommand.arguments[i].targetType == 'point') {
                     $scope.pendingCommand.data[i] = {lat: data.lat, lon: data.lon};
@@ -220,6 +214,23 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                     break;
                 }
         });
+
+        wirecloud.on('geometry', function(data) {
+            if (!$scope.pendingCommand || $scope.awaitingGeometryForArgument == -1) return;
+
+            for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
+                if ($scope.pendingCommand.arguments[i].targetType == 'geometry') {
+                    $scope.pendingCommand.data[i] = data;
+                    $scope.awaitingGeometryForArgument = -1;
+                    $scope.$apply();
+                    break;
+                }
+        });
+
+        $scope.requestMapDraw = function(requestedForArgumentIndex) {
+            wirecloud.send('mapmode', 'edit');
+            $scope.awaitingGeometryForArgument = requestedForArgumentIndex;
+        };
 
         /****************************************************************
          * BROWSER EVENT BINDINGS                                       *

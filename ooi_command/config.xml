@@ -29,8 +29,10 @@
         <InputEndpoint name="oois_all" type="text" label="World State OOIs" description="" friendcode="oois" />
         <InputEndpoint name="ooiTypes" type="text" label="OOI types" description="" friendcode="ooi-types" />
         <InputEndpoint name="point" type="text" label="Coordinates" description="" friendcode="geo-lonlat" />
+        <InputEndpoint name="geometry" type="text" label="Geometry" description="" friendcode="wkt" />
 
         <OutputEndpoint name="command" type="text" label="Command" description="Commands" friendcode="command" />
+        <OutputEndpoint name="mapmode" type="text" label="Map mode" description="" friendcode="mapmode" />
     </Platform.Wiring>
 
     <Platform.Link>
