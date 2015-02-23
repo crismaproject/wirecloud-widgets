@@ -37,7 +37,8 @@ function OpenLayersFacade(container) {
             moveend: mapEvent,
             zoomend: mapEvent,
             click: mapClickEvent
-        }
+        },
+        displayProjection: new OpenLayers.Projection("EPSG:4326")
     });
 
     entityTypes
@@ -65,6 +66,14 @@ function OpenLayersFacade(container) {
     map.addControl(selectControl);
     selectControl.activate();
 
+    var drawPolyControl = new OpenLayers.Control.DrawFeature(geometryLayer, OpenLayers.Handler.Polygon);
+    map.addControl(drawPolyControl);
+    drawPolyControl.deactivate();
+    drawPolyControl.events.register('featureadded', drawPolyControl, function(f) {
+        var feature = f.feature;
+        feature.geometry.transform(mapProjection(), EPSG_4326_PROJECTION);
+        fireEvent('polygonDrawn', new OpenLayers.Format.WKT().write(feature));
+    });
 
     var switcherControl = new OpenLayers.Control.LayerSwitcher();
     map.addControl(switcherControl);
@@ -94,6 +103,20 @@ function OpenLayersFacade(container) {
         var poly = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(points)]);
         var vector = new OpenLayers.Feature.Vector(poly, ooi);
         geometryLayer.addFeatures(vector);
+    };
+
+    this.setMode = function (mode) {
+        switch (mode) {
+            case 'edit':
+                selectControl.deactivate();
+                drawPolyControl.activate();
+                break;
+
+            default:
+                selectControl.activate();
+                drawPolyControl.deactivate();
+                break;
+        }
     };
 
     /**

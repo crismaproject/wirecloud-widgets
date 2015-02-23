@@ -32,7 +32,15 @@ if (typeof MashupPlatform === 'undefined') {
     $('#map')
         .bind('mapFocusChanged', logEvent)
         .bind('mapClicked', logEvent)
-        .bind('featureAdded', logEvent);
+        .bind('featureAdded', logEvent)
+        .bind('polygonDrawn', logEvent);
+
+    $(function () {
+        var bounds = new OpenLayers.Bounds();
+        bounds.extend(new OpenLayers.LonLat(-1284142, 7696291));
+        bounds.extend(new OpenLayers.LonLat(4087240, 3684875));
+        map.map.zoomToExtent(bounds, false);
+    });
 } else if (typeof map === 'undefined') {
     console.warn('"map" variable is not defined.');
 } else {
@@ -77,6 +85,10 @@ if (typeof MashupPlatform === 'undefined') {
         }
     });
 
+    MashupPlatform.wiring.registerCallback('mapmode', function (data) {
+        map.setMode(data);
+    });
+
     $(function () {
         $('#map')
             .bind('mapFocusChanged', function (event) {
@@ -100,6 +112,10 @@ if (typeof MashupPlatform === 'undefined') {
 
                 // this is primarily used to synchronize selected OOIs between widgets that support this behavior
                 MashupPlatform.wiring.pushEvent('oois_selected_out', JSON.stringify(selected));
+            })
+            .bind('polygonDrawn', function (event) {
+                MashupPlatform.wiring.pushEvent('drawing', JSON.stringify(event.originalEvent.detail));
+                map.setMode('view');
             });
     });
 
