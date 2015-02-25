@@ -89,20 +89,44 @@ function OpenLayersFacade(container) {
      * @param {*?} ooi the OOI represented by this circle.
      */
     this.createArea = function (lat, lon, ooi) {
-        var center = new OpenLayers.Geometry.Point(lon, lat).transform(EPSG_4326_PROJECTION, mapProjection());
-        var radius = 150; // NOTE: This is an arbitrary constant; describes size of the circle to be drawn
-        var steps = 26;   // NOTE: This is an arbitrary constant; describes amount of points along the circumference
-        var stept = 2 * Math.PI / steps;
-        var points = [ ];
-        for (var i = 0; i < steps; i++)
-            points[i] = new OpenLayers.Geometry.Point(
+        var shape = this.createShapeFor(ooi, lon, lat, true);
+        var vector = new OpenLayers.Feature.Vector(shape, ooi);
+        geometryLayer.addFeatures(vector);
+    };
+
+    this.createShapeFor = function (ooi, lon, lat, allowWKT) {
+        var drawShape = null;
+        if (allowWKT && ooi.hasOwnProperty('entityInstancesProperties'))
+            for (var i = 0; i < ooi.entityInstancesProperties.length; i++)
+                if (ooi.entityInstancesProperties[i].entityTypePropertyId == 544) {
+                    drawShape = ooi.entityInstancesProperties[i].entityPropertyValue;
+                    break;
+                }
+
+        if (drawShape) {
+            try {
+                var shape = new OpenLayers.Format.WKT().read(drawShape);
+                shape.transform(EPSG_4326_PROJECTION, mapProjection());
+                return shape;
+            } catch(e) {
+                console.error('There was a problem interpreting the following WKT string: ' + drawShape);
+                console.error('The problem was: ' + e.message);
+                return this.createShapeFor(ooi, lon, lat, false);
+            }
+        } else {
+            var center = new OpenLayers.Geometry.Point(lon, lat).transform(EPSG_4326_PROJECTION, mapProjection());
+            var radius = 150; // NOTE: This is an arbitrary constant; describes size of the circle to be drawn
+            var steps = 24;   // NOTE: This is an arbitrary constant; describes amount of points along the circumference
+            var stept = 2 * Math.PI / steps;
+            var points = [ ];
+            for (var i = 0; i < steps; i++)
+                points[i] = new OpenLayers.Geometry.Point(
                     center.x + radius * Math.cos(stept * i),
                     center.y + radius * Math.sin(stept * i)
-            );
+                );
 
-        var poly = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(points)]);
-        var vector = new OpenLayers.Feature.Vector(poly, ooi);
-        geometryLayer.addFeatures(vector);
+            return new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(points)]);
+        }
     };
 
     this.setMode = function (mode) {
