@@ -74,7 +74,7 @@ angular.module('ooiCommand.commands', [])
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Automatic evac to', targetType: 'ooi', isTargetAllowed: function (ooi) {
                     return ooi.entityTypeId == OoiTypeId.Hospital || ooi.entityTypeId == OoiTypeId.Area;
-                } },
+                }, optional: true },
                 { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Delay upon arrival (sec)', targetType: 'number', minimum: 0, maximum: 5400, defaultValue: 0 }
             ],
@@ -96,6 +96,10 @@ angular.module('ooiCommand.commands', [])
                 };
 
                 return command;
+            },
+
+            validate: function (args) {
+                return args[2] == 'No' || args[3];
             }
         },
 
@@ -115,7 +119,7 @@ angular.module('ooiCommand.commands', [])
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Automatic evac to', targetType: 'ooi', isTargetAllowed: function (ooi) {
                     return ooi.entityTypeId == OoiTypeId.Hospital || ooi.entityTypeId == OoiTypeId.Area;
-                } },
+                }, optional: true },
                 { displayName: 'Repeat', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Pre-Triage', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Triage', targetType: 'option', options: [ 'No', 'Yes' ]}
@@ -139,6 +143,10 @@ angular.module('ooiCommand.commands', [])
                 };
 
                 return command;
+            },
+
+            validate: function (args) {
+                return args[2] == 'No' || args[3];
             }
         },
 
@@ -217,7 +225,8 @@ angular.module('ooiCommand.commands', [])
                 { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
                     isTargetAllowed: vehicleIsAvailable },
                 { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
-                { displayName: 'Area location', targetType: 'point' }
+                { displayName: 'Area center', targetType: 'point' },
+                { displayName: 'Shape', targetType: 'geometry', optional: true }
             ],
 
             apply: function (command, data) {
