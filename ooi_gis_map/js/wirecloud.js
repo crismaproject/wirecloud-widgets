@@ -2,6 +2,7 @@
 
 var entitiesLookupTable = {};
 var selected = [];
+var restrictedTo = null;
 
 /** @const */
 var bboxExpression = /^(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+)$/;
@@ -10,8 +11,10 @@ function setOOIs(entities) {
     entitiesLookupTable = { };
     for (var i = 0; i < entities.length; i++) {
         var entity = entities[i];
-        if (entity.hasOwnProperty('entityId') && entity.entityId >= 0)
+        if (entity.hasOwnProperty('entityId') && entity.entityId >= 0) {
             entitiesLookupTable[entity.entityId] = entity;
+            if (restrictedTo != null && (!restrictedTo.hasOwnProperty(entity.entityId) || !restrictedTo[entity.entityId])) continue;
+        }
 
         if (entity.hasOwnProperty('entityInstancesGeometry') && entity.entityInstancesGeometry.length > 0)
             map.createOOI(entity);
@@ -53,6 +56,19 @@ if (typeof MashupPlatform === 'undefined') {
                 parseFloat(bboxMatch[3]),
                 parseFloat(bboxMatch[4])
             );
+
+        var restrictedToString = MashupPlatform.prefs.get('only_show');
+        if (restrictedToString) {
+            try {
+                restrictedTo = {};
+                restrictedToString.split(',').forEach(function (x) {
+                    restrictedTo[parseInt(x)] = true;
+                });
+            } catch (e) {
+                console.error('Failed to interpret type restriction setting; showing all. Setting was: ' + restrictedToString);
+                restrictedTo = null;
+            }
+        }
     };
 
     MashupPlatform.prefs.registerCallback(applyPreferences);

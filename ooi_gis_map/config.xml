@@ -5,7 +5,7 @@
         <Vendor>AIT</Vendor>
         <Name>ooi_gis_map</Name>
         <DisplayName>OOI GIS Map</DisplayName>
-        <Version>0.8.1.2</Version>
+        <Version>0.8.1.3</Version>
         <Author>Manuel Warum</Author>
         <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
         <Description>
@@ -22,6 +22,9 @@
 
     <Platform.Preferences>
         <Preference name="bbox" type="text" description="Bounding box" label="Bounding Box"/>
+        <Preference name="only_show" type="text"
+                    description="A comma-separated list of entity type IDs. If set, only OOIs with that entityTypeId will be shown"
+                    label="Only show types" default=""/>
     </Platform.Preferences>
 
     <Platform.Wiring>
