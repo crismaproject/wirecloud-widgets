@@ -307,15 +307,15 @@ function applyShapeStyle(vector, ooi) {
 
         switch (areaType) {
             case "Danger-Zone":
-                vector.style = $.extend({}, vector.style, { fillColor: '#C76864', strokeColor: '#A05E5A' });
+                vector.style = $.extend({}, vector.style, { fillColor: '#C76864', strokeColor: '#A05E5A', fillOpacity: .4 });
                 break;
 
             case "Incident":
-                vector.style = $.extend({}, vector.style, { fillColor: '#C3C764', strokeColor: '#8C7962' });
+                vector.style = $.extend({}, vector.style, { fillColor: '#C3C764', strokeColor: '#8C7962', fillOpacity: .4 });
                 break;
 
             case "Treatment":
-                vector.style = $.extend({}, vector.style, { fillColor: '#69A96B', strokeColor: '#5AA05E' });
+                vector.style = $.extend({}, vector.style, { fillColor: '#69A96B', strokeColor: '#5AA05E', fillOpacity: .4 });
                 break;
         }
     }
