@@ -86,11 +86,12 @@ function OpenLayersFacade(container) {
      * Creates a new circular area on the map.
      * @param {float} lat the circle's center latitude.
      * @param {float} lon the circle's center longitude.
-     * @param {*?} ooi the OOI represented by this circle.
+     * @param {*} ooi the OOI represented by this circle.
      */
     this.createArea = function (lat, lon, ooi) {
         var shape = this.createShapeFor(ooi, lon, lat, true);
         var vector = new OpenLayers.Feature.Vector(shape, ooi);
+        applyShapeStyle(vector, ooi);
         geometryLayer.addFeatures(vector);
     };
 
@@ -106,8 +107,10 @@ function OpenLayersFacade(container) {
         if (drawShape) {
             try {
                 var shape = new OpenLayers.Format.WKT().read(drawShape);
-                shape.transform(EPSG_4326_PROJECTION, mapProjection());
-                return shape;
+                if (shape.geometry instanceof OpenLayers.Geometry.Point)
+                    return this.createShapeFor(ooi, lon, lat, false);
+                shape.geometry.transform(EPSG_4326_PROJECTION, mapProjection());
+                return shape.geometry;
             } catch(e) {
                 console.error('There was a problem interpreting the following WKT string: ' + drawShape);
                 console.error('The problem was: ' + e.message);
@@ -177,7 +180,13 @@ function OpenLayersFacade(container) {
         var maxExtent = new OpenLayers.Bounds();
         map.layers
             .filter(function(x) { return x instanceof OpenLayers.Layer.Vector && x.features.length; })
-            .forEach(function(x) { maxExtent.extend(x.getDataExtent()); });
+            .forEach(function(x) {
+                try {
+                    maxExtent.extend(x.getDataExtent());
+                } catch(e) {
+                    console.log('Skipped one layer for maxExtent calculations.');
+                }
+            });
         var size = maxExtent.getSize();
         if (size.h > 0 && size.w > 0) {
             map.zoomToExtent(maxExtent);
@@ -196,9 +205,11 @@ function OpenLayersFacade(container) {
         var wkt = new OpenLayers.Format.WKT(ooi);
         var wktData = ooi.entityInstancesGeometry[0].geometry.geometry.wellKnownText;
         var vector = wkt.read(wktData);
-        if (ooi.entityTypeId == 14 && vector.geometry instanceof OpenLayers.Geometry.Point)
-            this.createArea.call(this, vector.geometry.x, vector.geometry.y, ooi);
-        else {
+        if (ooi.entityTypeId == 14 && vector.geometry instanceof OpenLayers.Geometry.Point) {
+            var x = vector.geometry.hasOwnProperty('x') ? vector.geometry.x : 0;
+            var y = vector.geometry.hasOwnProperty('y') ? vector.geometry.y : 0;
+            this.createArea.call(this, x, y, ooi);
+        } else {
             var actualVector = new OpenLayers.Feature.Vector(
                 latLon(vector.geometry.x, vector.geometry.y),
                 ooi,
@@ -284,4 +295,28 @@ function OpenLayersFacade(container) {
 function graphicFor(entityTypeId) {
     var entry = entityTypes.find(function (x) { return entityTypeId == x.id; });
     return entry ? entry['img'] : 'img/ooi.png';
+}
+
+function applyShapeStyle(vector, ooi) {
+    if (ooi.entityTypeId == 14 && ooi.hasOwnProperty('entityInstancesProperties')) {
+        var properties = ooi.entityInstancesProperties;
+        var areaType = "";
+        for (var i = 0; i < properties.length && areaType == ""; i++)
+            if (properties[i].entityTypePropertyId == 54 && properties[i].hasOwnProperty('entityPropertyValue'))
+                areaType = properties[i].entityPropertyValue;
+
+        switch (areaType) {
+            case "Danger-Zone":
+                vector.style = $.extend({}, vector.style, { fillColor: '#C76864', strokeColor: '#A05E5A' });
+                break;
+
+            case "Incident":
+                vector.style = $.extend({}, vector.style, { fillColor: '#C3C764', strokeColor: '#8C7962' });
+                break;
+
+            case "Treatment":
+                vector.style = $.extend({}, vector.style, { fillColor: '#69A96B', strokeColor: '#5AA05E' });
+                break;
+        }
+    }
 }
