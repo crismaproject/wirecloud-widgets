@@ -14,10 +14,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="ico-cmd-goto.svg"
+   sodipodi:docname="ico-cmd-build.svg"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
-   inkscape:export-filename="C:\work\wirecloud\ooi_command\img\ico-cmd-goto.png">
+   inkscape:export-filename="C:\work\wirecloud\ooi_command\img\ico-cmd-build.png">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="71.103812"
-     inkscape:cy="-42.937421"
+     inkscape:zoom="5.656854"
+     inkscape:cx="-29.013188"
+     inkscape:cy="4.4796854"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -60,34 +60,10 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-0.64506973,-1039.2992)">
-    <g
-       id="g2988">
-      <g
-         transform="translate(-4.4883207,2.0562184)"
-         id="g3808">
-        <path
-           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
-           d="m 8.6672505,1043.3608 3.1732105,-0.2966 -1.140909,3.2982"
-           id="path3791"
-           inkscape:connector-curvature="0"
-           sodipodi:nodetypes="ccc" />
-      </g>
-      <path
-         sodipodi:nodetypes="cc"
-         inkscape:connector-curvature="0"
-         id="path2986"
-         d="m 6.884254,1045.502 -5.4316649,4.7567"
-         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    </g>
     <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 11.119089,1048.4487 0,-8.6842"
-       id="path2993"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:#aa0000;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 10.474019,0.81887399 0,3.18198051 -5.126524,-1.6351844 z"
-       id="path3763"
+       style="fill:#ffe680;stroke:#aa8800;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1"
+       d="M 1.3125001,5.6249997 4.9062502,0.9374995 10.25,3.5312496 10.5625,9.8124999 4.4375002,11.28125 z"
+       id="path2984"
        inkscape:connector-curvature="0"
        transform="translate(0.64506973,1039.2992)" />
   </g>

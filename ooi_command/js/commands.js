@@ -1,3 +1,4 @@
+/* This exists for code readability purposes */
 var OoiTypeId = OoiTypeId || {
         Vehicle: 7,
         RescueStation: 8,
@@ -25,11 +26,12 @@ function vehicleIsAvailable (ooi) {
     return property ? parseInt(property.entityPropertyValue) !== -1 : true;
 }
 
+
 angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
         {
             id: 'v2-dispatch',
-            css: 'ico-cmd-move',
+            css: 'ico-cmd-goto',
             displayName: 'Dispatch',
             help: 'Dispatch vehicles to the selected Area',
             log: 'Dispatching #{data[0].entityName} to #{data[1].entityName}',
@@ -59,7 +61,7 @@ angular.module('ooiCommand.commands', [])
 
         {
             id: 'v2-rescue',
-            css: 'ico-cmd-move',
+            css: 'ico-cmd-pickup',
             displayName: 'Rescue',
             help: 'Dispatch vehicle in order to rescue Patients from the one area to another within the incident area',
             log: 'Rescue patients from #{data[1].entityName} to #{data[2].entityName} using #{data[0].entityName}',
@@ -69,7 +71,7 @@ angular.module('ooiCommand.commands', [])
             arguments: [
                 { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
                     isTargetAllowed: vehicleIsAvailable, multiple: true },
-                { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area }, // TODO: needs to be of area type INCIDENT
+                { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area }, // TODO: needs to be of area type INCIDENT?
                 { displayName: 'Rescue to', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Automatic evac to', targetType: 'ooi', isTargetAllowed: function (ooi) {
@@ -105,7 +107,7 @@ angular.module('ooiCommand.commands', [])
 
         {
             id: 'v2-treat',
-            css: 'ico-cmd-move',
+            css: 'ico-cmd-treat',
             displayName: 'Treat',
             help: 'Dispatch vehicle in order to treat patients at the specified Treatment-Area',
             log: 'Treating patients at #{data[1].entityName} using #{data[0].entityName}',
@@ -152,7 +154,7 @@ angular.module('ooiCommand.commands', [])
 
         {
             id: 'v2-evacuate',
-            css: 'ico-cmd-move',
+            css: 'ico-cmd-pickup',
             displayName: 'Evacuate',
             help: 'Evacuate patients from Treatment-Area or danger zone or advanced medical post to Hospital',
             log: 'Evacuate patients from Treatment-Area or danger zone or advanced medical post to Hospital',
@@ -188,7 +190,7 @@ angular.module('ooiCommand.commands', [])
 
         {
             id: 'v2-refill',
-            css: 'ico-cmd-move',
+            css: 'ico-cmd-treat',
             displayName: 'Refill',
             help: 'Command resource vehicle to refill its resources',
             log: 'Command resource vehicle to refill its resources',
@@ -216,7 +218,7 @@ angular.module('ooiCommand.commands', [])
 
         {
             id: 'v2-build-area',
-            css: 'ico-cmd-move',
+            css: 'ico-cmd-build',
             displayName: 'Build Area',
             help: 'Builds a specific area type at a specified location consuming time and resources (human resources, equipment, vehicles)',
             log: 'Area will be built at the specified location',
@@ -231,7 +233,7 @@ angular.module('ooiCommand.commands', [])
 
             apply: function (command, data) {
                 command.affected = data[0];
-                command.setGeometry = data[2]; // TODO: verify correctness
+                command.setGeometry = data[2];
                 command.setProperties = {
                     1000: JSON.stringify({
                         'Command-Type': 'BuildArea',

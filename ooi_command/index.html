@@ -45,7 +45,7 @@
                             <select ng-if="arg.multiple" id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control" multiple></select>
                             <select ng-if="!arg.multiple" id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control"></select>
                             <span class="help-block small" ng-if="arg.multiple">
-                                Hold <kbd>CTRL</kbd> to select more than one.
+                                Hold <kbd>CTRL</kbd> to select more than one, or <kbd>SHIFT</kbd> to select a range.
                             </span>
                         </div>
                         <select ng-switch-when="option" id="pcArg{{i}}" ng-options="c for c in arg.options" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control"></select>

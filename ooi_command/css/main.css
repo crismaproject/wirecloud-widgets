@@ -16,17 +16,21 @@
 }
 
 /* command icons */
-.ico-cmd-treat {
-    padding-left: 22px;
-    background: url("../img/ico-cmd-treat.svg") no-repeat 2px center;
-}
 .ico-cmd-goto {
     padding-left: 22px;
-    background: url("../img/ico-cmd-goto.svg") no-repeat 2px center;
+    background: url("../img/ico-cmd-goto.png") no-repeat 2px center;
 }
-.ico-cmd-move {
+.ico-cmd-treat {
     padding-left: 22px;
-    background: url("../img/ico-cmd-move.svg") no-repeat 2px center;
+    background: url("../img/ico-cmd-treat.png") no-repeat 2px center;
+}
+.ico-cmd-pickup {
+    padding-left: 22px;
+    background: url("../img/ico-cmd-pickup.png") no-repeat 2px center;
+}
+.ico-cmd-build {
+    padding-left: 22px;
+    background: url("../img/ico-cmd-build.png") no-repeat 2px center;
 }
 
 .btn-waiting {

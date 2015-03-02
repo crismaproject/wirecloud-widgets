@@ -16,8 +16,7 @@
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="ico-cmd-goto.svg"
    inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90"
-   inkscape:export-filename="C:\work\wirecloud\ooi_command\img\ico-cmd-goto.png">
+   inkscape:export-ydpi="90">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="71.103812"
-     inkscape:cy="-42.937421"
+     inkscape:zoom="1"
+     inkscape:cx="-199.36906"
+     inkscape:cy="-47.081492"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -61,34 +60,26 @@
      id="layer1"
      transform="translate(-0.64506973,-1039.2992)">
     <g
-       id="g2988">
-      <g
-         transform="translate(-4.4883207,2.0562184)"
-         id="g3808">
-        <path
-           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
-           d="m 8.6672505,1043.3608 3.1732105,-0.2966 -1.140909,3.2982"
-           id="path3791"
-           inkscape:connector-curvature="0"
-           sodipodi:nodetypes="ccc" />
-      </g>
+       id="g3808"
+       transform="translate(-0.23832067,-2.1937816)">
       <path
-         sodipodi:nodetypes="cc"
+         sodipodi:nodetypes="ccc"
          inkscape:connector-curvature="0"
-         id="path2986"
-         d="m 6.884254,1045.502 -5.4316649,4.7567"
+         id="path3791"
+         d="m 8.6672505,1043.3608 3.1732105,-0.2966 -1.140909,3.2982"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="ccc"
+         inkscape:connector-curvature="0"
+         id="path3806"
+         d="m 1.2075698,1044.2367 c 3.9861022,-0.1136 4.7942924,3.3374 5.5312502,4.9062 0.7369578,-1.3687 1.5027254,-3.9945 4.6875,-5.4375"
          style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     </g>
     <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 11.119089,1048.4487 0,-8.6842"
-       id="path2993"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:#aa0000;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 10.474019,0.81887399 0,3.18198051 -5.126524,-1.6351844 z"
-       id="path3763"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       d="m 1.6953224,1050.6209 1.3648348,-2.2981 8.5346598,0 -1.288791,2.2981 z"
+       id="path3812"
        inkscape:connector-curvature="0"
-       transform="translate(0.64506973,1039.2992)" />
+       sodipodi:nodetypes="ccccc" />
   </g>
 </svg>
