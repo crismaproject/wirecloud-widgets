@@ -33,7 +33,7 @@
                 </ul>
             </div>
         </legend>
-        <div class="container-fluid container-args">
+        <div class="container-fluid">
             <form>
                 <div ng-repeat="(i, arg) in pendingCommand.arguments" class="row-fluid">
                     <div class="col-sm-3">
@@ -41,7 +41,13 @@
                     </div>
 
                     <div class="col-sm-9" ng-switch="arg.targetType">
-                        <select ng-switch-when="ooi" id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control"></select>
+                        <div ng-switch-when="ooi">
+                            <select ng-if="arg.multiple" id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control" multiple></select>
+                            <select ng-if="!arg.multiple" id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control"></select>
+                            <span class="help-block small" ng-if="arg.multiple">
+                                Hold <kbd>CTRL</kbd> to select more than one.
+                            </span>
+                        </div>
                         <select ng-switch-when="option" id="pcArg{{i}}" ng-options="c for c in arg.options" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control"></select>
                         <div ng-switch-when="number">
                             <input type="number" min="{{arg.minimum}}" max="{{arg.maximum}}" ng-model="pendingCommand.data[i]" id="pcArg{{i}}" ng-required="!arg.optional" class="form-control">
@@ -69,9 +75,7 @@
                     </div>
                 </div>
 
-                <hr />
-
-                <div style="text-align: right">
+                <div>
                     <button type="button" class="btn btn-danger" ng-click="cancelCommand()">Cancel</button>
                     <button type="button" class="btn btn-primary" ng-click="executePendingCommand()" ng-disabled="!canExecutePendingCommand() || form.$invalid">Add</button>
                 </div>

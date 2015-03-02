@@ -38,12 +38,12 @@ angular.module('ooiCommand.commands', [])
 
             arguments: [
                 { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
-                isTargetAllowed: vehicleIsAvailable },
+                isTargetAllowed: vehicleIsAvailable, multiple: true },
                 { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area }
             ],
 
             apply: function (command, data) {
-                command.affected = [ data[0] ];
+                command.affected = data[0];
                 command.setProperties = {
                     1000: JSON.stringify({
                         'Command-Type': 'Dispatch',
@@ -68,7 +68,7 @@ angular.module('ooiCommand.commands', [])
 
             arguments: [
                 { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
-                    isTargetAllowed: vehicleIsAvailable },
+                    isTargetAllowed: vehicleIsAvailable, multiple: true },
                 { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area }, // TODO: needs to be of area type INCIDENT
                 { displayName: 'Rescue to', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
@@ -80,7 +80,7 @@ angular.module('ooiCommand.commands', [])
             ],
 
             apply: function (command, data) {
-                command.affected = [ data[0] ];
+                command.affected = data[0];
                 command.setProperties = {
                     1000: JSON.stringify({
                         'Command-Type': 'Rescue',
@@ -114,7 +114,7 @@ angular.module('ooiCommand.commands', [])
 
             arguments: [
                 { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
-                    isTargetAllowed: vehicleIsAvailable },
+                    isTargetAllowed: vehicleIsAvailable, multiple: true },
                 { displayName: 'Treat at', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Automatic evac to', targetType: 'ooi', isTargetAllowed: function (ooi) {
@@ -126,7 +126,7 @@ angular.module('ooiCommand.commands', [])
             ],
 
             apply: function (command, data) {
-                command.affected = [ data[0] ];
+                command.affected = data[0];
                 command.setProperties = {
                     1000: JSON.stringify({
                         'Command-Type': 'Treat',
@@ -159,7 +159,7 @@ angular.module('ooiCommand.commands', [])
 
             arguments: [
                 { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
-                    isTargetAllowed: vehicleIsAvailable },
+                    isTargetAllowed: vehicleIsAvailable, multiple: true },
                 { displayName: 'Evacuate from', targetType: 'ooi', isTargetAllowed: function (ooi) {
                     return ooi.entityTypeId == 11 || ooi.entityTypeId == OoiTypeId.Area;
                 } },
@@ -170,7 +170,7 @@ angular.module('ooiCommand.commands', [])
             ],
 
             apply: function (command, data) {
-                command.affected = [ data[0] ];
+                command.affected = data[0];
                 command.setProperties = {
                     1000: JSON.stringify({
                         'Command-Type': 'Evacuate',
@@ -195,12 +195,12 @@ angular.module('ooiCommand.commands', [])
 
             arguments: [
                 { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
-                    isTargetAllowed: vehicleIsAvailable },
+                    isTargetAllowed: vehicleIsAvailable, multiple: true },
                 { displayName: 'Refill at', targetType: 'ooi', targetRestrictedTo: OoiTypeId.RescueStation }
             ],
 
             apply: function (command, data) {
-                command.affected = [ data[0] ];
+                command.affected = data[0];
                 command.setProperties = {
                     1000: JSON.stringify({
                         'Command-Type': 'Refill',
@@ -223,14 +223,14 @@ angular.module('ooiCommand.commands', [])
 
             arguments: [
                 { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
-                    isTargetAllowed: vehicleIsAvailable },
+                    isTargetAllowed: vehicleIsAvailable, multiple: true },
                 { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Area center', targetType: 'point' },
                 { displayName: 'Shape', targetType: 'geometry', optional: true }
             ],
 
             apply: function (command, data) {
-                command.affected = [ data[0] ];
+                command.affected = data[0];
                 command.setGeometry = data[2]; // TODO: verify correctness
                 command.setProperties = {
                     1000: JSON.stringify({
