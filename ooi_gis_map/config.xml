@@ -5,7 +5,7 @@
         <Vendor>AIT</Vendor>
         <Name>ooi_gis_map</Name>
         <DisplayName>OOI GIS Map</DisplayName>
-        <Version>0.8.1.3</Version>
+        <Version>0.8.1.4</Version>
         <Author>Manuel Warum</Author>
         <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
         <Description>
@@ -25,6 +25,7 @@
         <Preference name="only_show" type="text"
                     description="A comma-separated list of entity type IDs. If set, only OOIs with that entityTypeId will be shown"
                     label="Only show types" default=""/>
+        <Preference name="geometryCentroid" type="boolean" description="If true, any geometry sent over the 'drawing' endpoint will be accompanied by a centroid point sent over 'clicked'." label="Centroid" default="true" />
     </Platform.Preferences>
 
     <Platform.Wiring>

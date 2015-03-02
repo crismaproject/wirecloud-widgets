@@ -3,6 +3,7 @@
 var entitiesLookupTable = {};
 var selected = [];
 var restrictedTo = null;
+var dispatchCentroid = true;
 
 /** @const */
 var bboxExpression = /^(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+)$/;
@@ -69,6 +70,8 @@ if (typeof MashupPlatform === 'undefined') {
                 restrictedTo = null;
             }
         }
+
+        dispatchCentroid = MashupPlatform.prefs.get('geometryCentroid');
     };
 
     MashupPlatform.prefs.registerCallback(applyPreferences);

@@ -73,6 +73,11 @@ function OpenLayersFacade(container) {
         var feature = f.feature;
         feature.geometry.transform(mapProjection(), EPSG_4326_PROJECTION);
         fireEvent('polygonDrawn', new OpenLayers.Format.WKT().write(feature));
+        if (window.hasOwnProperty('dispatchCentroid') && dispatchCentroid) {
+            var centroid = feature.geometry.getCentroid();
+            var coordData = { 'lat': centroid.y, 'lon': centroid.x };
+            fireEvent('mapClicked', coordData);
+        }
     });
 
     var switcherControl = new OpenLayers.Control.LayerSwitcher();
