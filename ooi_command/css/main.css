@@ -30,7 +30,12 @@
 }
 
 .container-args * { margin-top: 1ex; }
-
+.btn-waiting {
+    border-color: rgb(250, 198, 135);
+    -webkit-box-shadow: 0 0 7px 0 rgba(250, 198, 135, 0.5);
+    -moz-box-shadow:    0 0 7px 0 rgba(250, 198, 135, 0.5);
+    box-shadow:         0 0 7px 0 rgba(250, 198, 135, 0.5);
+}
 
 
 /* VALIDATION STYLES */

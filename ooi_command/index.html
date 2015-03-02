@@ -56,11 +56,12 @@
                             </div>
                         </div>
                         <div ng-switch-when="geometry">
-                            <input type="text" readonly="readonly" class="form-control" ng-model="pendingCommand.data[i]" id="pcArg{{i}}" ng-required="!arg.optional">
-                            <span class="help-block small" ng-click="requestMapDraw(i)">
-                                <span ng-if="awaitingGeometryForArgument == -1">Click here to draw on the map.</span>
-                                <span ng-if="awaitingGeometryForArgument != -1">Draw a polygon on the map.</span>
-                            </span>
+                            <input type="hidden" ng-model="pendingCommand.data[i]" id="pcArg{{i}}" ng-required="!arg.optional">
+                            <button type="button" class="btn btn-default" ng-enabled="awaitingGeometryForArgument == -1" ng-click="requestMapDraw(i)"
+                                    ng-class="{ 'btn-success': pendingCommand.data[i], 'btn-waiting': (awaitingGeometryForArgument != -1) }">
+                                Draw on map
+                                <small ng-if="pendingCommand.data[i]" class="glyphicon glyphicon-ok"></small>
+                            </button>
                         </div>
                         <div ng-switch-default class="text-danger">
                             <code>{{arg.targetType}}</code> is an unsupported argument type. Please correct the error in <code>js/commands.js</code>.
