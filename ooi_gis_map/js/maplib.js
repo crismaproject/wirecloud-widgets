@@ -71,6 +71,19 @@ function OpenLayersFacade(container) {
     drawPolyControl.deactivate();
     drawPolyControl.events.register('featureadded', drawPolyControl, function(f) {
         var feature = f.feature;
+
+        if (map.hasOwnProperty('modeContext') && map.modeContext.hasOwnProperty('entityId')) {
+            var updateEntityId = map.modeContext.entityId;
+            for (var i = 0; i < geometryLayer.features.length; i++) {
+                var existingFeature = geometryLayer.features[i];
+                if (existingFeature.data.hasOwnProperty('entityId') && existingFeature.data.entityId == updateEntityId) {
+                    existingFeature.geometry = feature.geometry.clone();
+                    geometryLayer.redraw();
+                    break;
+                }
+            }
+        }
+
         feature.geometry.transform(mapProjection(), EPSG_4326_PROJECTION);
         fireEvent('polygonDrawn', new OpenLayers.Format.WKT().write(feature));
         if (window.hasOwnProperty('dispatchCentroid') && dispatchCentroid) {
@@ -138,6 +151,11 @@ function OpenLayersFacade(container) {
     };
 
     this.setMode = function (mode) {
+        if (typeof(mode) === 'object' && mode.hasOwnProperty('context')) {
+            map.modeContext = mode.context;
+            mode = mode.hasOwnProperty('mode') ? mode.mode : 'view';
+        }
+
         switch (mode) {
             case 'edit':
                 selectControl.deactivate();

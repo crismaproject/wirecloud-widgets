@@ -232,7 +232,11 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         });
 
         $scope.requestMapDraw = function(requestedForArgumentIndex) {
-            wirecloud.send('mapmode', 'edit');
+            var arg = $scope.pendingCommand.arguments[requestedForArgumentIndex];
+            var data = { mode: 'edit' };
+            if (arg.hasOwnProperty('context'))
+                data.context = typeof (arg.context) === 'function' ? arg.context($scope.pendingCommand) : arg.context;
+            wirecloud.send('mapmode', data);
             $scope.awaitingGeometryForArgument = requestedForArgumentIndex;
         };
 

@@ -228,7 +228,7 @@ angular.module('ooiCommand.commands', [])
                     isTargetAllowed: vehicleIsAvailable, multiple: true },
                 { displayName: 'Area', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Area center', targetType: 'point' },
-                { displayName: 'Shape', targetType: 'geometry', optional: true }
+                { displayName: 'Shape', targetType: 'geometry', optional: true, context: function (command) { return command.data[1]; } }
             ],
 
             apply: function (command, data) {
