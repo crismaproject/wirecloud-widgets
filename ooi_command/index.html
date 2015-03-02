@@ -38,15 +38,13 @@
                 <div ng-repeat="(i, arg) in pendingCommand.arguments" class="row-fluid">
                     <div class="col-sm-3">
                         <label for="pcArg{{i}}">{{arg.displayName || 'Target'}}:</label>
+                        <small ng-if="arg.multiple" class="text-muted"><br>Hold <kbd>CTRL</kbd> to select more than one, or <kbd>SHIFT</kbd> to select a range.</small>
                     </div>
 
                     <div class="col-sm-9" ng-switch="arg.targetType">
                         <div ng-switch-when="ooi">
                             <select ng-if="arg.multiple" id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control" multiple></select>
                             <select ng-if="!arg.multiple" id="pcArg{{i}}" ng-options="c.entityName for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control"></select>
-                            <span class="help-block small" ng-if="arg.multiple">
-                                Hold <kbd>CTRL</kbd> to select more than one, or <kbd>SHIFT</kbd> to select a range.
-                            </span>
                         </div>
                         <select ng-switch-when="option" id="pcArg{{i}}" ng-options="c for c in arg.options" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control"></select>
                         <div ng-switch-when="number">
@@ -71,6 +69,14 @@
                         </div>
                         <div ng-switch-default class="text-danger">
                             <code>{{arg.targetType}}</code> is an unsupported argument type. Please correct the error in <code>js/commands.js</code>.
+                        </div>
+
+                        <div class="help-block" ng-if="arg.actions">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-xs" ng-repeat="action in arg.actions" ng-click="action.invoke(pendingCommand)">
+                                    {{action.label}}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
