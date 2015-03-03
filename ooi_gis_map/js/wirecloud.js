@@ -105,7 +105,7 @@ if (typeof MashupPlatform === 'undefined') {
     });
 
     MashupPlatform.wiring.registerCallback('mapmode', function (data) {
-        map.setMode(data);
+        map.setMode(JSON.parse(data));
     });
 
     $(function () {
