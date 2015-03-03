@@ -161,6 +161,12 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             if ($scope.resetCommands) $scope.pendingCommand = null;
         };
 
+        $scope.getEntityDisplayName = function (ooi, command, argument) {
+            return argument != null && argument.hasOwnProperty('display') && typeof (argument.display) === 'function' ?
+                argument.display(ooi, command, $scope) :
+                $scope.prettyOOI(ooi);
+        };
+
         $scope.getInt = function (value, fallback) {
             return typeof value === 'function' ? value($scope.allObjects) : value ? value : fallback;
         };
