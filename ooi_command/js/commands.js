@@ -34,7 +34,7 @@ angular.module('ooiCommand.commands', [])
             css: 'ico-cmd-goto',
             displayName: 'Dispatch',
             help: 'Dispatch vehicles to the selected Area',
-            log: 'Dispatching #{data[0].entityName} to #{data[1].entityName}',
+            log: 'Dispatching to #{data[1].entityName}',
 
             entityTypeId: OoiTypeId.Vehicle,
 
@@ -64,7 +64,7 @@ angular.module('ooiCommand.commands', [])
             css: 'ico-cmd-pickup',
             displayName: 'Rescue',
             help: 'Dispatch vehicle in order to rescue Patients from the one area to another within the incident area',
-            log: 'Rescue patients from #{data[1].entityName} to #{data[2].entityName} using #{data[0].entityName}',
+            log: 'Rescue patients from #{data[1].entityName} to #{data[2].entityName}',
 
             entityTypeId: 7,
 
@@ -110,7 +110,7 @@ angular.module('ooiCommand.commands', [])
             css: 'ico-cmd-treat',
             displayName: 'Treat',
             help: 'Dispatch vehicle in order to treat patients at the specified Treatment-Area',
-            log: 'Treating patients at #{data[1].entityName} using #{data[0].entityName}',
+            log: 'Treating patients at #{data[1].entityName}',
 
             entityTypeId: 7,
 
