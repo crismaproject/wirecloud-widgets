@@ -342,4 +342,6 @@ function applyShapeStyle(vector, ooi) {
                 break;
         }
     }
+	
+	vector.style = $.extend(vector.style, { title: ooi.entityName });
 }
