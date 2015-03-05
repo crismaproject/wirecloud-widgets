@@ -73,6 +73,12 @@ angular.module('worldStatePickerApp', ['ngResource'])
         $scope.showAll = true;
         $scope.isRefreshingSimulations = false;
         $scope.isRefreshingWorldstates = false;
+        $scope.lastInterval = null;
+        try {
+            $scope.pollInterval = parseInt(wirecloud.getPreference('polling', 0)) * 1000;
+        } catch(e) {
+            $scope.pollInterval = 0;
+        }
 
         // NOTE: simulation data is not reliably set until the ICMM has properly integrated simulation data
 
@@ -117,6 +123,23 @@ angular.module('worldStatePickerApp', ['ngResource'])
                 });
         };
 
+        function worldStateLoaded() {
+            if ($scope.lastInterval != null) {
+                clearInterval($scope.lastInterval);
+                $scope.lastInterval = null;
+            }
+            if ($scope.pollInterval <= 0) return;
+
+            var currentSim = $scope.selectedSimulation;
+
+            $scope.lastInterval = window.setInterval(function () {
+                $scope.refreshWorldStates(currentSim.simulationId, function (list) {
+                    var last = list[list.length - 1];
+                    return last.id > $scope.loaded.id ? last : null;
+                });
+            }, $scope.pollInterval);
+        }
+
         $scope.refreshWorldStates = function (simulationId, autoload) {
             $scope.isRefreshingWorldstates = true;
             icmm.query({simulationId: simulationId})
@@ -127,8 +150,15 @@ angular.module('worldStatePickerApp', ['ngResource'])
                         if (list.length > 1)
                             $('#worldStateInput').focus();
 
-                        if (autoload)
+                        if (typeof (autoload) === 'boolean' && autoload === true)
                             $scope.loadWorldState();
+                        else if (typeof (autoload) === 'function') {
+                            var loadThis = autoload(list);
+                            if (loadThis) {
+                                $scope.selectedWorldState = loadThis;
+                                $scope.loadWorldState();
+                            }
+                        }
 
                         $scope.isRefreshingWorldstates = false;
                     }
@@ -162,6 +192,8 @@ angular.module('worldStatePickerApp', ['ngResource'])
                         $('#loadedContainer').modal('show');
                     };
                     $progressBar.addClass('progress-bar-success');
+
+                    worldStateLoaded();
                 }
                 var progress = { width: (progressCurrent / progressMax) * 100 + '%' };
 

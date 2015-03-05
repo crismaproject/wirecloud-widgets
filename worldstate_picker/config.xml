@@ -5,7 +5,7 @@
         <Vendor>AIT</Vendor>
         <Name>worldstate_picker</Name>
         <DisplayName>World State Picker</DisplayName>
-        <Version>0.8.0.1</Version>
+        <Version>0.8.1.0</Version>
         <Author>Manuel Warum</Author>
         <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
         <Description>
@@ -21,6 +21,7 @@
     <Platform.Preferences>
         <Preference name="ooiwsr" type="text" description="URI to the OOI-WSR API" label="OOI-WSR API URI"/>
         <Preference name="icmm" type="text" description="URI to the ICMM API" label="ICMM API URI"/>
+        <Preference name="polling" type="text" description="Time in seconds between polling for new world states. Use 0 or less to disable." label="Poll interval" default="0"/>
     </Platform.Preferences>
 
     <Platform.Wiring>
