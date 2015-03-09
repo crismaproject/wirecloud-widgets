@@ -68,6 +68,7 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
                 .forEach(function (x) {
                     var areaId = null;
                     var life = null;
+                    var isExposed = true;
                     x.entityInstancesProperties.forEach(function (y) {
                         switch (y.entityTypePropertyId) {
                             case 42:// patient prop ID 42 is life%
@@ -76,17 +77,26 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
                             case 45:// patient prop ID 45 is place id
                                 areaId = parseInt(y.entityPropertyValue);
                                 break;
+                            case 476:// prop id 476: Patient-Is-Exposed
+                                isExposed = y.entityPropertyValue;
+                                break;
                         }
                     });
 
-                    if (!areaPatientsMap.hasOwnProperty(areaId))
-                        areaPatientsMap[areaId] = { green: 0, yellow: 0, red: 0 };
-                    if (life <= 33)
-                        areaPatientsMap[areaId]['red']++;
-                    else if (life <= 66)
-                        areaPatientsMap[areaId]['yellow']++;
-                    else
-                        areaPatientsMap[areaId]['green']++;
+                    if (!isExposed || isExposed === 'false' || isExposed === 'False') {
+                        if (!areaPatientsMap.hasOwnProperty(areaId))
+                            areaPatientsMap[areaId] = {
+                                green: 0,
+                                yellow: 0,
+                                red: 0
+                            };
+                        if (life <= 33)
+                            areaPatientsMap[areaId]['red']++;
+                        else if (life <= 66)
+                            areaPatientsMap[areaId]['yellow']++;
+                        else
+                            areaPatientsMap[areaId]['green']++;
+                    }
                 });
 
             var areas = [];
