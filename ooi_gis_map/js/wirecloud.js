@@ -12,10 +12,20 @@ function setOOIs(entities) {
     entitiesLookupTable = { };
     for (var i = 0; i < entities.length; i++) {
         var entity = entities[i];
+        var typeInfo = null;
+        for (var j = 0; typeInfo == null && j < entityTypes.length; j++)
+            if (entityTypes[j].id == entity.entityTypeId)
+                typeInfo = entityTypes[j];
+
         if (entity.hasOwnProperty('entityId') && entity.entityId >= 0) {
             entitiesLookupTable[entity.entityId] = entity;
             if (restrictedTo != null && (!restrictedTo.hasOwnProperty(entity.entityId) || !restrictedTo[entity.entityId])) continue;
         }
+
+        if (typeInfo != null &&
+            typeInfo.hasOwnProperty('hideIf') &&
+            typeInfo.hideIf(entity))
+            continue;
 
         if (entity.hasOwnProperty('entityInstancesGeometry') && entity.entityInstancesGeometry.length > 0)
             map.createOOI(entity);
