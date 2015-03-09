@@ -83,7 +83,7 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
                         }
                     });
 
-                    if (!isExposed || isExposed === 'false' || isExposed === 'False') {
+                    if (isExposed !== 'false' && isExposed !== 'False') {
                         if (!areaPatientsMap.hasOwnProperty(areaId))
                             areaPatientsMap[areaId] = {
                                 green: 0,
