@@ -40,7 +40,7 @@ angular.module('worldStateInfoApp', [])
         $scope.readonly = wirecloud.getPreference('readonly', false);
 
         $scope.prettyWorldStateName = function (worldState) {
-            return worldState.name + ' (#' + worldState.id + ')';
+            return worldState.name + ' (' + worldState.simulatedTime + ', #' + worldState.id + ')';
         };
 
         $scope.goToWorldState = function () {
