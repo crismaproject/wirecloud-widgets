@@ -9,6 +9,7 @@ var dispatchCentroid = true;
 var bboxExpression = /^(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+)$/;
 
 function setOOIs(entities) {
+    map.clear();
     entitiesLookupTable = { };
     for (var i = 0; i < entities.length; i++) {
         var entity = entities[i];

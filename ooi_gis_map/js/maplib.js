@@ -217,6 +217,11 @@ function OpenLayersFacade(container) {
         } else return false;
     };
 
+    this.clear = function () {
+        geometryLayer.removeAllFeatures();
+        ooiLayer.removeAllFeatures();
+    };
+
     /**
      * Creates a new OOI on the map, depicted as an icon.
      * @param {object} ooi the OOI to display.
