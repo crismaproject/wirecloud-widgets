@@ -13,20 +13,19 @@
 
 <div class="container-fluid" ng-show="activeSimulation">
     <div class="row-fluid">
-        <div class="col-xs-5" data-sim-id="{{activeSimulation.simulationId}}">
+        <div class="col-sm-5" data-sim-id="{{activeSimulation.simulationId}}">
             <strong>Simulation:</strong>
             {{activeSimulation.description}}
         </div>
 
-        <div class="col-xs-6">
-            <select class="form-control" ng-options="prettyWorldStateName(ws) for ws in allWorldStates" ng-model="activeWorldState" ng-required ng-disabled="readonly"></select>
-        </div>
-
-        <div class="col-xs-1" ng-hide="readonly">
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary" title="Go to designated world state" ng-click="goToWorldState()">
-                    <span class="glyphicon glyphicon-fast-backward"></span>
-                </button>
+        <div class="col-sm-7">
+            <div class="input-group">
+                <select class="form-control" ng-options="prettyWorldStateName(ws) for ws in allWorldStates" ng-model="activeWorldState" ng-required ng-disabled="readonly"></select>
+                <span class="input-group-btn" ng-hide="readonly">
+                    <button type="button" class="btn btn-primary" title="Go to designated world state" ng-click="goToWorldState()">
+                        <span class="glyphicon glyphicon-fast-backward"></span>
+                    </button>
+                    </span>
             </div>
         </div>
     </div>
