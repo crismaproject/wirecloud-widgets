@@ -45,8 +45,15 @@ angular.module('worldStatePickerApp', ['ngResource'])
     })
     .factory('icmm', ['$http', '$resource', 'wirecloud', function ($http, $resource, wirecloud) {
         var icmmUri = wirecloud.proxyFor(wirecloud.getPreference('icmm'));
-        var icmmWsUri = icmmUri + '/CRISMA.worldstates?filter=ooiRepositorySimulationId%3A:simulationId';
-        return $resource(icmmWsUri, { simulationId: '@id' }, {
+        var icmmWsUri = icmmUri + '/CRISMA.worldstates/:worldStateId';
+        return $resource(icmmWsUri, { 'worldStateId': '@id' }, {
+            get: {
+                params: {
+                    level: 2,
+                    fields: 'id,ooiRepositorySimulationId,name,description,created,simulatedTime,childworldstates,categories,worldstatedata,actualaccessinfo',
+                    deduplicate: true
+                }
+            },
             query: {
                 method: 'GET',
                 isArray: true,
@@ -80,8 +87,6 @@ angular.module('worldStatePickerApp', ['ngResource'])
             $scope.pollInterval = 0;
         }
 
-        // NOTE: simulation data is not reliably set until the ICMM has properly integrated simulation data
-
         $scope.simulationList = [];
         $scope.selectedSimulation = null;
 
@@ -98,9 +103,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
             if (worldState.simulatedTime) meta.push(new Date(worldState.simulatedTime).toLocaleString());
             if (worldState.description) meta.push(noHtml(worldState.description));
 
-            return meta.length ?
-                worldState.name + ' (' + meta.join('; ') + ')' :
-                worldState.name;
+            return meta.length ? worldState.name + ' (' + meta.join('; ') + ')' : worldState.name;
         };
         $scope.showWorldState = function (worldState) {
             return $scope.showAll || !worldState.hasOwnProperty('childworldstates') || !worldState.childworldstates.length;
@@ -110,6 +113,10 @@ angular.module('worldStatePickerApp', ['ngResource'])
         };
 
         $scope.reset = function () {
+            if ($scope.lastInterval != null) {
+                clearInterval($scope.lastInterval);
+                $scope.lastInterval = null;
+            }
             var originalSimulation = $scope.selectedSimulation;
             var originalWorldState = $scope.selectedWorldState;
 
@@ -130,19 +137,35 @@ angular.module('worldStatePickerApp', ['ngResource'])
             }
             if ($scope.pollInterval <= 0) return;
 
-            var currentSim = $scope.selectedSimulation;
+            var simulationId = $scope.selectedSimulation.simulationId;
+            var observedChildren = { };
+            for (var i = 0; i < $scope.loaded.childworldstates.length; i++)
+                observedChildren[$scope.loaded.childworldstates[i].id] = true;
 
             $scope.lastInterval = window.setInterval(function () {
-                $scope.refreshWorldStates(currentSim.simulationId, function (list) {
-                    var last = list[list.length - 1];
-                    return last.id > $scope.loaded.id ? last : null;
+                icmm.get({worldStateId: $scope.loaded.id}, function(worldState) {
+                    var newChildren = worldState.childworldstates.filter(function (x) {
+                        return !observedChildren.hasOwnProperty(x.id);
+                    });
+
+                    if (newChildren.length != 0) {
+                        clearInterval($scope.lastInterval);
+                        $scope.lastInterval = null;
+
+                        var loadThisOne = newChildren[newChildren.length - 1].id;
+                        $scope.refreshWorldStates(simulationId, function (list) {
+                            for (var i = 0; i < list.length; i++)
+                                if (list[i].id == loadThisOne) return list[i];
+                            return null;
+                        });
+                    }
                 });
             }, $scope.pollInterval);
         }
 
         $scope.refreshWorldStates = function (simulationId, autoload) {
             $scope.isRefreshingWorldstates = true;
-            icmm.query({simulationId: simulationId})
+            icmm.query({filter: 'ooiRepositorySimulationId:' + simulationId})
                 .$promise.then(function (list) {
                     $scope.worldStateList = list;
                     if (list.length) {
