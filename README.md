@@ -24,6 +24,7 @@ an **o**perator or a **w**idget.
 * (w) **./ooi_gis_map/** — a map widget using [OpenLayers](http://www.openlayers.org/) and
       [OpenStreetMap](http://www.openstreetmap.org/) to display geospatial data.
 * (w) **./ooi_info/** — OOI properties viewer.
+* (w) **./ooi_summary/** — application specific summary of resource states.
 * (w) **./ooi_table/** — OOI table (with synchronized OOI selection mechanic).
 * (o) **./tabswitch/** — Operator to programmatically switch to a predefined tab.
 * (o) **./url_params/** — a component that extracts URL query parameters.
@@ -48,6 +49,7 @@ production environment.
       no longer used or updated for the time being.
 * (o) **./pubsub_receiver/** — a operator connecting to pubsub endpoints using NGSI. (Still under heavy development
       and very limited in its usefulness right now.)
+* (w) **./static_note/** — displays a preconfigured message (useful for upcoming maintenance notifications).
 
 ### Documentations
 
