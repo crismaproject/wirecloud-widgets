@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Template xmlns="http://wirecloud.conwet.fi.upm.es/ns/template#">
+    <Catalog.ResourceDescription>
+        <Vendor>AIT</Vendor>
+        <Name>static_note</Name>
+        <DisplayName>Static Note</DisplayName>
+        <Version>1.0</Version>
+        <Author>Manuel Warum</Author>
+        <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
+        <Description>
+            Displays a preconfigured, static message.
+        </Description>
+        <ImageURI>img/catalogue.png</ImageURI>
+        <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
+        <WikiURI>https://mashup.lab.fi-ware.org/</WikiURI>
+    </Catalog.ResourceDescription>
+
+    <Platform.Preferences>
+        <Preference name="message" type="text" description="The message to show" label="Message" default="Set the message in the widget's settings."/>
+    </Platform.Preferences>
+
+    <Platform.Link>
+        <XHTML href="index.html"/>
+    </Platform.Link>
+
+    <Platform.Rendering width="6" height="12"/>
+</Template>
