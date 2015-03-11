@@ -218,8 +218,8 @@ function OpenLayersFacade(container) {
     };
 
     this.clear = function () {
-        geometryLayer.removeAllFeatures();
-        ooiLayer.removeAllFeatures();
+        for (var i = 1; i < map.layers.length; i++)
+            map.layers[i].removeAllFeatures();
     };
 
     /**
