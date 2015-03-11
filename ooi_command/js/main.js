@@ -228,6 +228,10 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         wirecloud.on('geometry', function(data) {
             if (!$scope.pendingCommand || $scope.awaitingGeometryForArgument == -1) return;
 
+            try {
+                data = JSON.parse(data);
+            } catch (e) {}
+
             for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
                 if ($scope.pendingCommand.arguments[i].targetType == 'geometry') {
                     $scope.pendingCommand.data[i] = data;

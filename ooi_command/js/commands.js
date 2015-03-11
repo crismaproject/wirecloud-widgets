@@ -247,7 +247,7 @@ angular.module('ooiCommand.commands', [])
             ],
 
             apply: function (command, data) {
-                command.affected = data[0];
+                command.affected = data[0].concat(data[1]);
                 command.setGeometry = data[2];
                 command.setProperties = {
                     544:  data[3],
