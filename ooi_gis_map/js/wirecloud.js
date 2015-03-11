@@ -20,7 +20,7 @@ function setOOIs(entities) {
 
         if (entity.hasOwnProperty('entityId') && entity.entityId >= 0) {
             entitiesLookupTable[entity.entityId] = entity;
-            if (restrictedTo != null && (!restrictedTo.hasOwnProperty(entity.entityId) || !restrictedTo[entity.entityId])) continue;
+            if (restrictedTo != null && (!restrictedTo.hasOwnProperty(entity.entityTypeId) || !restrictedTo[entity.entityTypeId])) continue;
         }
 
         if (typeInfo != null &&
