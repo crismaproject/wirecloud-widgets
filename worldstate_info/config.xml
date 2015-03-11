@@ -5,7 +5,7 @@
         <Vendor>AIT</Vendor>
         <Name>worldstate_info</Name>
         <DisplayName>World State Info</DisplayName>
-        <Version>0.8.0.1</Version>
+        <Version>0.8.2.0</Version>
         <Author>Manuel Warum</Author>
         <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
         <Description>
@@ -25,6 +25,7 @@
         <InputEndpoint name="worldstate" type="text" label="World State" friendcode="worldstate"/>
 
         <OutputEndpoint name="select_worldstate" type="text" label="Go to World State" friendcode="worldstate"/>
+        <OutputEndpoint name="signal" type="text" label="Signal" friendcode="signal"/>
     </Platform.Wiring>
 
     <Platform.Link>

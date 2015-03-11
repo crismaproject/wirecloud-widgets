@@ -47,6 +47,13 @@ angular.module('worldStateInfoApp', [])
             wirecloud.send('select_worldstate', $scope.activeWorldState);
         };
 
+        $scope.sendSignal = function (signal) {
+            if (typeof(signal) === 'undefined') return;
+            if (typeof(signal) !== 'string')
+                signal.toString();
+            wirecloud.send('signal', signal);
+        };
+
         wirecloud.on('simulation', function (simulation) {
             $scope.activeSimulation = JSON.parse(simulation);
             if ($scope.activeSimulation.hasOwnProperty('worldStates'))

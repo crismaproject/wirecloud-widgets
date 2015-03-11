@@ -163,9 +163,9 @@ angular.module('worldStatePickerApp', ['ngResource'])
             }, $scope.pollInterval);
         }
 
-        $scope.refreshWorldStates = function (simulationId, autoload) {
+        $scope.refreshWorldStates = function (simulationId, autoload, callback) {
             $scope.isRefreshingWorldstates = true;
-            icmm.query({filter: 'ooiRepositorySimulationId:' + simulationId})
+            return icmm.query({filter: 'ooiRepositorySimulationId:' + simulationId})
                 .$promise.then(function (list) {
                     $scope.worldStateList = list;
                     if (list.length) {
@@ -184,11 +184,14 @@ angular.module('worldStatePickerApp', ['ngResource'])
                         }
 
                         $scope.isRefreshingWorldstates = false;
+
+                        if (callback && typeof(callback) === 'function')
+                            callback(list);
                     }
                 });
         };
 
-        $scope.refreshSimulations = function () {
+        $scope.refreshSimulations = function (callback) {
             $scope.isRefreshingSimulations = true;
             return ooiwsr
                 .listSimulations()
@@ -196,8 +199,20 @@ angular.module('worldStatePickerApp', ['ngResource'])
                     $scope.simulationList = sims;
                     $scope.isRefreshingSimulations = false;
                     $scope.$apply();
+
+                    if (callback && typeof(callback) === 'function')
+                        callback(sims);
                 });
         };
+
+        function propagateSimulationInformation() {
+            var simulation = $.extend({
+                selectedWorldState: $scope.selectedWorldState,
+                worldStates: $scope.worldStateList
+            }, $scope.selectedSimulation);
+
+            wirecloud.send('simulation', simulation);
+        }
 
         $scope.loadWorldState = function () {
             var progressCurrent = 0, progressMax = 4;
@@ -227,12 +242,7 @@ angular.module('worldStatePickerApp', ['ngResource'])
             $progressBar.removeClass('progress-bar-success');
             $scope.loaded = $scope.selectedWorldState;
 
-            var simulation = $.extend({
-                selectedWorldState: $scope.selectedWorldState,
-                worldStates: $scope.worldStateList
-            }, $scope.selectedSimulation);
-
-            wirecloud.send('simulation', simulation);
+            propagateSimulationInformation();
             advanceProgress();
 
             var ooiwsrWorldStateId = getOOIWSRWorldStateIdForICMMWorldState($scope.selectedWorldState);
@@ -324,6 +334,21 @@ angular.module('worldStatePickerApp', ['ngResource'])
                     .fail(function () {
                         $scope.loaded = null;
                     });
+        });
+
+        wirecloud.on('signal', function (signal) {
+            switch (signal) {
+                case 'refresh':
+                    var simulationId = $scope.selectedSimulation.simulationId;
+                    $scope.refreshSimulations(function () {
+                        $scope.refreshWorldStates(simulationId, null, propagateSimulationInformation);
+                    });
+                    break;
+
+                default:
+                    console.warn('Unknown signal: ' + signal);
+                    break;
+            }
         });
     }]);
 
