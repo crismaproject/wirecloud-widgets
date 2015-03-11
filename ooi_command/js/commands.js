@@ -250,6 +250,7 @@ angular.module('ooiCommand.commands', [])
                 command.affected = data[0];
                 command.setGeometry = data[2];
                 command.setProperties = {
+                    544:  data[3],
                     1000: JSON.stringify({
                         'Command-Type': 'BuildArea',
                         'Command-From-OOI-Identifier': '',
