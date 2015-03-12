@@ -20,21 +20,18 @@
 <div style="text-align: center">
     <div>
         <button type="button" class="btn btn-primary" ng-click="finish()" ng-disabled="!worldState || busy">
-            <!-- TODO: verify label of button -->
-            <ng-pluralize count="commandQueue.length"
-                          when="{'0': 'Advance time',
-                                 '1': 'Process command',
-                             'other': 'Process commands'}"></ng-pluralize>
+            Process commands
             <span class="glyphicon glyphicon-forward"></span>
         </button>
     </div>
-
+    <!--
     <div>
         <label>
             <input id="autoAdvance" type="checkbox" ng-model="autoAdvance">
             Automatically advance to next world state when done?
         </label>
     </div>
+    -->
 </div>
 
 <ul>
