@@ -59,6 +59,7 @@ angular
                 function(createdWorldState) {
                     $scope.status.push('Operation complete.');
                     $scope.busy = false;
+                    $scope.commandQueue = [];
 
                     wirecloud.send('created_worldstate', createdWorldState);
                 },
