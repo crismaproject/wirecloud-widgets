@@ -13,9 +13,9 @@
 
 <div class="container-fluid" ng-show="activeSimulation">
     <div class="row-fluid">
-        <div class="col-sm-3" data-sim-id="{{activeSimulation.simulationId}}">
+        <div class="col-sm-3">
             <strong>Simulation:</strong>
-            {{activeSimulation.description}}
+            {{activeSimulation.description}} <span class="text-muted">({{activeSimulation.simulationId}})</span>
         </div>
 
         <div class="col-sm-9">
