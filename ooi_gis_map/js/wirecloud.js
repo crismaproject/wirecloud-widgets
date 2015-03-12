@@ -4,6 +4,7 @@ var entitiesLookupTable = {};
 var selected = [];
 var restrictedTo = null;
 var dispatchCentroid = true;
+var shouldAutoFocus = true;
 
 /** @const */
 var bboxExpression = /^(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+),(-?[\d\.]+)$/;
@@ -31,7 +32,11 @@ function setOOIs(entities) {
         if (entity.hasOwnProperty('entityInstancesGeometry') && entity.entityInstancesGeometry.length > 0)
             map.createOOI(entity);
     }
-    window.setTimeout(map.focusOnAll, 1500);
+
+    if (shouldAutoFocus) {
+        shouldAutoFocus = false; // do this only once
+        window.setTimeout(map.focusOnAll, 1500);
+    }
 }
 
 /*
