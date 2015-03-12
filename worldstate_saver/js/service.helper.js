@@ -86,7 +86,6 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
             /** @private */
             applyCommands: function (oois, commands) {
                 var ooiMappings = { };
-                var $self = this;
                 oois.forEach(function (x, i) {
                     ooiMappings[x.entityId] = i;
                     if (x.hasOwnProperty('_replacedByEntityId'))
@@ -132,12 +131,14 @@ angular.module('worldStateSaver.helper', ['worldStateSaver.ooiwsr', 'worldStateS
                             ? 'POINT ('+changes.lat+' '+changes.lon+')'
                             : changes;
 
-                        oois[affectedId].geometry = {
+                        oois[affectedId].entityInstancesGeometry = [{
                             geometry: {
-                                coordinateSystemId: 4326,
-                                wellKnownText: newValue
+                                geometry: {
+                                    coordinateSystemId: 4326,
+                                    wellKnownText: newValue
+                                }
                             }
-                        }
+                        }];
                     }
                 }
 
