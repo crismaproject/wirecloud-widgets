@@ -110,23 +110,23 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                     (!command.hasOwnProperty('isAvailable') || command.isAvailable(ooi));
             }) : [];
 
-            //var inject = function(root, key) {
-            //    if (root.hasOwnProperty(key))
-            //        root[key] = root[key].replace(/#\{(data(\.[a-zA-Z0-9_]+|\[[0-9]+\])*)\}/g, function (x,y) {
-            //            // TODO: evaluate potential security concerns. eval is usually bad. but it gets the job done.
-            //            try {
-            //                return eval(y);
-            //            } catch (e) {
-            //                console.error({
-            //                    message: 'Failed to properly inject data into the current pending command',
-            //                    command: $scope.pendingCommand,
-            //                    key: key,
-            //                    key_in: root
-            //                });
-            //            }
-            //        });
-            //    return root;
-            //};
+            var inject = function(root, key) {
+                if (root.hasOwnProperty(key))
+                    root[key] = root[key].replace(/#\{(data(\.[a-zA-Z0-9_]+|\[[0-9]+\])*)\}/g, function (x,y) {
+                        // TODO: evaluate potential security concerns. eval is usually bad. but it gets the job done.
+                        try {
+                            return eval(y);
+                        } catch (e) {
+                            console.error({
+                                message: 'Failed to properly inject data into the current pending command',
+                                command: $scope.pendingCommand,
+                                key: key,
+                                key_in: root
+                            });
+                        }
+                    });
+                return root;
+            };
 
             /** DEPRECATED AND SHOULD NO LONGER BE USED. ALL COMMANDS SHOULD NOW ASSIGN THIS IN THE APPLY FUNCTION
              *if (command.hasOwnProperty('setProperties'))
@@ -134,10 +134,10 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
              *        inject(command.setProperties, key);
              *if (command.hasOwnProperty('setGeometry'))
              *    for (var key in command.setGeometry)
-             *        inject(command.setGeometry, key);
-             *if (command.hasOwnProperty('log'))
-             *    inject(command, 'log');
-             */
+             *        inject(command.setGeometry, key); */
+            if (command.hasOwnProperty('log'))
+                inject(command, 'log');
+
             if (!command.hasOwnProperty('apply'))
                 throw 'Command ' + $scope.pendingCommand.id + ' does not have an apply(command, data, oois, allOOIs) function!';
 
