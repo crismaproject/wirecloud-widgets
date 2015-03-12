@@ -247,21 +247,26 @@ angular.module('ooiCommand.commands', [])
             ],
 
             apply: function (command, data) {
-                command.affected = data[0].concat(data[1]);
-                command.setGeometry = data[2];
-                command.setProperties = {
-                    544:  data[3],
-                    1000: JSON.stringify({
-                        'Command-Type': 'BuildArea',
-                        'Command-From-OOI-Identifier': '',
-                        'Command-To-OOI-Identifier': '',
-                        'Command-Parameters': {
-                            'Area-Identifier': data[1].entityId
-                        }
-                    })
-                };
+                var assignCommandToAmbulance = $.extend(true, {}, command, {
+                    affected: data[0],
+                    setProperties: {
+                        1000: JSON.stringify({
+                            'Command-Type': 'BuildArea',
+                            'Command-From-OOI-Identifier': '',
+                            'Command-To-OOI-Identifier': '',
+                            'Command-Parameters': { 'Area-Identifier': data[1].entityId }
+                        })
+                    }
+                });
 
-                return command;
+                var reshapeArea = $.extend(true, {}, command, {
+                    affected: [ data[1] ],
+                    setGeometry: data[2],
+                    setProperties: { 544: data[3] },
+                    log: 'Area is being relocated'
+                });
+
+                return [ assignCommandToAmbulance, reshapeArea ];
             }
         }
     ]);

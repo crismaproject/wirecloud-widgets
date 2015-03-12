@@ -5,7 +5,7 @@
         <Vendor>AIT</Vendor>
         <Name>ooi_command</Name>
         <DisplayName>OOI Commands</DisplayName>
-        <Version>0.8.2.3</Version>
+        <Version>0.8.3.0</Version>
         <Author>Manuel Warum</Author>
         <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
         <Description>
@@ -21,7 +21,7 @@
     </Catalog.ResourceDescription>
 
     <Platform.Preferences>
-        <Preference name="useSlimCommands" type="boolean" description="Trims the command objects sent through the command outputendpoint to reduce overhead" label="Reduce overhead" default="false" />
+        <Preference name="useSlimCommands" type="boolean" description="Trims the command objects sent through the command outputendpoint to reduce overhead" label="Reduce overhead" default="true" />
         <Preference name="resetCommands" type="boolean" description="When a command was issued, resets the UI to blank iff true" label="Reset command after execution" default="false" />
     </Platform.Preferences>
 

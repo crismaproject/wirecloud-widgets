@@ -110,54 +110,64 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                     (!command.hasOwnProperty('isAvailable') || command.isAvailable(ooi));
             }) : [];
 
-            var inject = function(root, key) {
-                if (root.hasOwnProperty(key))
-                    root[key] = root[key].replace(/#\{(data(\.[a-zA-Z0-9_]+|\[[0-9]+\])*)\}/g, function (x,y) {
-                        // TODO: evaluate potential security concerns. eval is usually bad. but it gets the job done.
-                        try {
-                            return eval(y);
-                        } catch (e) {
-                            console.error({
-                                message: 'Failed to properly inject data into the current pending command',
-                                command: $scope.pendingCommand,
-                                key: key,
-                                key_in: root
-                            });
-                        }
-                    });
-                return root;
-            };
+            //var inject = function(root, key) {
+            //    if (root.hasOwnProperty(key))
+            //        root[key] = root[key].replace(/#\{(data(\.[a-zA-Z0-9_]+|\[[0-9]+\])*)\}/g, function (x,y) {
+            //            // TODO: evaluate potential security concerns. eval is usually bad. but it gets the job done.
+            //            try {
+            //                return eval(y);
+            //            } catch (e) {
+            //                console.error({
+            //                    message: 'Failed to properly inject data into the current pending command',
+            //                    command: $scope.pendingCommand,
+            //                    key: key,
+            //                    key_in: root
+            //                });
+            //            }
+            //        });
+            //    return root;
+            //};
 
-            if (command.hasOwnProperty('setProperties'))
-                for (var key in command.setProperties)
-                    inject(command.setProperties, key);
-            if (command.hasOwnProperty('setGeometry'))
-                for (var key in command.setGeometry)
-                    inject(command.setGeometry, key);
-            if (command.hasOwnProperty('log'))
-                inject(command, 'log');
-            if (command.hasOwnProperty('apply'))
-                if (!(command = command.apply(command, data, oois, $scope.allObjects))) {
-                    console.log('Command cancellation requested by command.apply()');
-                    return;
-                }
+            /** DEPRECATED AND SHOULD NO LONGER BE USED. ALL COMMANDS SHOULD NOW ASSIGN THIS IN THE APPLY FUNCTION
+             *if (command.hasOwnProperty('setProperties'))
+             *    for (var key in command.setProperties)
+             *        inject(command.setProperties, key);
+             *if (command.hasOwnProperty('setGeometry'))
+             *    for (var key in command.setGeometry)
+             *        inject(command.setGeometry, key);
+             *if (command.hasOwnProperty('log'))
+             *    inject(command, 'log');
+             */
+            if (!command.hasOwnProperty('apply'))
+                throw 'Command ' + $scope.pendingCommand.id + ' does not have an apply(command, data, oois, allOOIs) function!';
+
+            if (!(command = command.apply(command, data, oois, $scope.allObjects))) {
+                console.log('Command cancellation requested by command.apply');
+                return;
+            }
+
+            if (!Array.isArray(command))
+                command = [ command ];
+            var commands = Array.isArray(command) ? command : [ command ];
 
             oois = oois.map(function (ooi) {
                 return ooi.hasOwnProperty('entityId') ? ooi.entityId : ooi;
             });
 
-            var commandObj = {
-                affected: shallowMap(command.hasOwnProperty('affected') ? command.affected : oois, 'entityId'),
-                command: {
-                    id: command.id,
-                    log: command.log,
-                    setGeometry: command.setGeometry,
-                    setProperties: command.setProperties
-                },
-                data: $scope.useSlimCommands ? null : data
-            };
-
-            wirecloud.send('command', commandObj);
+            for (var i = 0; i < commands.length; i++) {
+                command = commands[i];
+                var commandObj = {
+                    affected: shallowMap(command.hasOwnProperty('affected') ? command.affected : oois, 'entityId'),
+                    command: {
+                        id: command.id,
+                        log: command.log,
+                        setGeometry: command.setGeometry,
+                        setProperties: command.setProperties
+                    },
+                    data: $scope.useSlimCommands ? null : data
+                };
+                wirecloud.send('command', commandObj);
+            }
             if ($scope.resetCommands) $scope.pendingCommand = null;
         };
 
