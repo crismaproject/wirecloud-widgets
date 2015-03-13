@@ -262,7 +262,10 @@ angular.module('ooiCommand.commands', [])
                 var reshapeArea = $.extend(true, {}, command, {
                     affected: [ data[1] ],
                     setGeometry: data[2],
-                    setProperties: { 544: data[3] },
+                    setProperties: {
+                        544: data[3], // geometry-shape property
+                        546: 'false' // is-functional property
+                    },
                     log: 'Area is being relocated'
                 });
 
