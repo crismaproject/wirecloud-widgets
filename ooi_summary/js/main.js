@@ -90,9 +90,9 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
                                 yellow: 0,
                                 red: 0
                             };
-                        if (life <= 33)
+                        if (life <= 45)
                             areaPatientsMap[areaId]['red']++;
-                        else if (life <= 66)
+                        else if (life <= 70)
                             areaPatientsMap[areaId]['yellow']++;
                         else
                             areaPatientsMap[areaId]['green']++;
