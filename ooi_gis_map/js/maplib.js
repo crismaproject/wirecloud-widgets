@@ -296,7 +296,7 @@ function OpenLayersFacade(container) {
     function mapClickEvent(ev) {
         var opx = typeof ev.xy !== 'undefined' ? map.getLonLatFromViewPortPx(ev.xy) : ev.geometry.getCentroid();
         var clickCenter = opx.transform(mapProjection(), EPSG_4326_PROJECTION);
-        var coordData = { 'lat': clickCenter.lat || clickCenter.x, 'lon': clickCenter.lon || clickCenter.y };
+        var coordData = { 'lat': clickCenter.lat || clickCenter.y, 'lon': clickCenter.lon || clickCenter.x };
         if (arguments[1]) coordData = $.extend(arguments[1], coordData);
         fireEvent('mapClicked', coordData);
     }
