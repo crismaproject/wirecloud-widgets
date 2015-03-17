@@ -1,3 +1,6 @@
+.key { width: 40% }
+.value { width: 60%; }
+
 .prop-21 .value:after,
 .prop-22 .value:after {
     padding-left: .6ex;

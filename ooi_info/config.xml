@@ -5,12 +5,12 @@
         <Vendor>AIT</Vendor>
         <Name>ooi_info</Name>
         <DisplayName>OOI Info</DisplayName>
-        <Version>0.8.1.0</Version>
+        <Version>0.8.2.0</Version>
         <Author>Manuel Warum</Author>
         <Mail>Manuel.Warum.fl@ait.ac.at</Mail>
         <Description>Command Objects of Interests</Description>
         <Description>
-            This widget allows the user to inspect OOIs.
+            This widget allows the user to inspect OOI properties.
         </Description>
         <ImageURI>img/catalogue.png</ImageURI>
         <iPhoneImageURI>img/catalogue.png</iPhoneImageURI>
@@ -18,7 +18,8 @@
     </Catalog.ResourceDescription>
 
     <Platform.Preferences>
-        <Preference name="show_ids" type="boolean" description="Show the IDs of properties instead of resolved names" label="Show IDs" default="false"/>
+        <Preference name="show_ids" type="boolean" description="Show the IDs of properties instead of resolved names" label="Don't resolve IDs" default="false"/>
+        <Preference name="only_show" type="text" description="Only show properties having these IDs (comma-separated)" label="Only show these properties" default=""/>
     </Platform.Preferences>
 
     <Platform.Wiring>

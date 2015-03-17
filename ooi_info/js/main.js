@@ -4,12 +4,14 @@ angular.module('ooiInfo', ['ooiInfo.wirecloud', 'ooiInfo.prettify'])
         $scope.ooiNames = {};
         $scope.ooiTypeNames = { };
         $scope.ooiPropertyNames = { };
+        $scope.restrictedTo = [ ];
 
         $scope.hasProperties = function (ooi) {
             return ooi.entityInstancesProperties.length > 0;
         };
-        $scope.hasValues = function (prop) {
-            return typeof prop.entityPropertyValue !== 'string' || prop.entityPropertyValue.length;
+        $scope.shouldRenderProperty = function (prop) { // only render if
+            return (typeof prop.entityPropertyValue !== 'string' || prop.entityPropertyValue.length) && // property instance has a value AND
+                ($scope.restrictedTo.length === 0 || $scope.restrictedTo.binaryIndexOf(prop.entityTypePropertyId) !== -1); // property is in restrictedTo if restrictedTo is set
         };
 
         $scope.prettify = prettify;
@@ -26,6 +28,10 @@ angular.module('ooiInfo', ['ooiInfo.wirecloud', 'ooiInfo.prettify'])
                 .useTitle(function (ooiId) {
                     return 'OOI ID: ' + ooiId.toString();
                 });
+
+        var onlyShow = wirecloud.getPreference('only_show', '');
+        if (onlyShow)
+            $scope.restrictedTo = onlyShow.split(',').map(function (x) { return parseInt(x); }).sort();
 
         wirecloud.on('oois_all', function (oois) {
             if (typeof oois === 'string')

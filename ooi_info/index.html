@@ -17,10 +17,15 @@
 <table ng-repeat="ooi in oois | filter:hasProperties | orderBy:'entityName'" class="table table-condensed table-hover table-bordered type-{{ooi.entityTypeId}}" id="t{{ooi.entityId}}">
     <caption><a href="#b{{ooi.entityId}}" data-toggle="collapse">{{ooi.entityName}}</a> <span class="text-muted">({{ooiTypeNames[ooi.entityTypeId]}})</span></caption>
     <tbody id="b{{ooi.entityId}}" class="collapse in">
-    <tr ng-repeat="prop in ooi.entityInstancesProperties | filter:hasValues" class="prop prop-{{prop.entityTypePropertyId}}">
+    <tr ng-repeat="prop in filteredProps = (ooi.entityInstancesProperties | filter:shouldRenderProperty)" class="prop prop-{{prop.entityTypePropertyId}}">
         <th class="key">{{ooiPropertyNames[prop.entityTypePropertyId]}}</th>
         <td class="value" title="{{prettify.toTitle(prop.entityPropertyValue, ooi.entityTypeId, prop.entityTypePropertyId)}}">
             {{prettify.toString(prop.entityPropertyValue, ooi.entityTypeId, prop.entityTypePropertyId)}}
+        </td>
+    </tr>
+    <tr ng-hide="filteredProps.length">
+        <td colspan="2">
+            <small class="text-muted">Nothing to show&hellip;</small>
         </td>
     </tr>
     </tbody>
