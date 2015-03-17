@@ -24,7 +24,7 @@ angular.module('ooiInfo.prettify', [])
 
         /**
          * Generates a string representation of the object this rule applies to.
-         * @param {int|String} propertyValue
+         * @param {int|String} propertyValue the current value of the property for an object instance.
          * @param {int} entityTypeId
          * @param {int} propertyId
          * @return {String}
@@ -35,7 +35,7 @@ angular.module('ooiInfo.prettify', [])
 
         /**
          * Generates a string representation of the object this rule applies to in the context of tooltips.
-         * @param {int|String} propertyValue
+         * @param {int|String} propertyValue the current value of the property for an object instance.
          * @param {int} entityTypeId
          * @param {int} propertyId
          * @return {String}
@@ -45,39 +45,43 @@ angular.module('ooiInfo.prettify', [])
         };
 
         /**
-	 * Sets for which types of entities this rules applies to.
+         * Sets for which types of entities this rules applies to.
          * @param {int} entityTypeId
          * @return {Rule}
          */
         Rule.prototype.forEntityType = function (entityTypeId) { this.entityIds.push(entityTypeId); return this; };
 
         /**
-	 * Sets for which properties this rule applies to.
+         * Sets for which properties this rule applies to.
          * @param {int} propertyId
          * @return {Rule}
          */
         Rule.prototype.forProperty = function (propertyId) { this.propertyIds.push(propertyId); return this; };
 
         /**
-	 * Sets the callback that generates a string representation of object instances satisfying the preconditions.
+         * Sets the callback that generates a string representation of object instances satisfying the preconditions.
          * @param {Function} callback
          * @return {Rule}
          */
         Rule.prototype.thenDo = function (callback) { this.toStringCallback = callback; return this; };
 
         /**
-	 * Sets the callback that generates the title string representation of object instances satisfying the preconditions.
+         * Sets the callback that generates the title string representation of object instances satisfying the preconditions.
          * @param {Function} callback
          * @return {Rule}
          */
         Rule.prototype.useTitle = function (callback) { this.titleCallback = callback; return this; };
 
+        /**
+         * Creates a new, empty ruleset container.
+         * @constructor
+         */
         var Prettifier = function () {
             this.rules = [];
         };
 
         /**
-	 * Creates a new, blank rule.
+         * Creates a new, blank rule that will be automatically added to this ruleset.
          * @return {Rule}
          */
         Prettifier.prototype.rule = function () {
@@ -87,11 +91,11 @@ angular.module('ooiInfo.prettify', [])
         };
 
         /**
-	 * Generates a string representation of the object instance using the first rule matching its preconditions. If no rule applies, the propertyValue will be returned verbatim.
-         * @param {int|String} propertyValue
+         * Generates a string representation of the object instance using the first rule matching its preconditions. If no rule applies, the propertyValue will be returned verbatim.
+         * @param {int|String} propertyValue the current value of the property for an object instance.
          * @param {int} entityTypeId
          * @param {int} propertyId
-         * @return {*}
+         * @return {String}
          */
         Prettifier.prototype.toString = function (propertyValue, entityTypeId, propertyId) {
             for (var i = 0; i < this.rules.length; i++)
@@ -100,6 +104,13 @@ angular.module('ooiInfo.prettify', [])
             return propertyValue;
         };
 
+        /**
+         * Generates a tooltip representation of the object instance using the first rule matching its preconditions. If no rule applies, the propertyValue will be returned verbatim.
+         * @param {int|String} propertyValue the current value of the property for an object instance.
+         * @param {int} entityTypeId
+         * @param {int} propertyId
+         * @return {String}
+         */
         Prettifier.prototype.toTitle = function (propertyValue, entityTypeId, propertyId) {
             for (var i = 0; i < this.rules.length; i++)
                 if (this.rules[i].isApplicable(entityTypeId, propertyId) && this.rules[i].titleCallback != null)
