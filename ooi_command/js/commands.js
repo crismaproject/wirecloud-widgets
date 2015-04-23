@@ -86,7 +86,7 @@ angular.module('ooiCommand.commands', [])
             arguments: [
                 { displayName: 'Vehicle', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Vehicle,
                     isTargetAllowed: vehicleIsAvailable, multiple: true, display: vehicleDisplayName },
-                { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area }, // TODO: needs to be of area type INCIDENT?
+                { displayName: 'Rescue from', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Rescue to', targetType: 'ooi', targetRestrictedTo: OoiTypeId.Area },
                 { displayName: 'Automatic evac', targetType: 'option', options: [ 'No', 'Yes' ]},
                 { displayName: 'Automatic evac to', targetType: 'ooi', isTargetAllowed: function (ooi) {
