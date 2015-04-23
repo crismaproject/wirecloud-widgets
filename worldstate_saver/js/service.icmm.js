@@ -13,21 +13,27 @@ angular.module('worldStateSaver.icmm', ['worldStateSaver.wirecloud'])
             getNextId: function(resource) {
                 var deferred = $q.defer();
                 var promise = deferred.promise;
-                $http.get(this.icmm + '/CRISMA.' + resource + '?omitNullValues=true&limit=1000000')
-                    .success(function(data) {
-                        var id = 1;
-                        var ids = data['$collection']
-                            .forEach(function(x) {
-                                var ref = x['$ref'];
-                                var match = /\/(\d+)$/.exec(ref);
-                                if (match) {
-                                    var thisId = parseInt(match[1]);
-                                    if (thisId >= id) id = thisId + 1;
-                                }
-                            });
-                        deferred.resolve(id);
+                $http.get(this.icmm + '/nextId?class=' + resource)
+                    .success(function (data) {
+                        deferred.resolve(data.nextId);
                     })
-                    .error(function() { deferred.reject(); });
+                    .error(function () {
+                        // fallback strategy
+                        $http.get(this.icmm + '/CRISMA.' + resource + '?omitNullValues=true&limit=1000000')
+                            .success(function(data) {
+                                var id = 1;
+                                data['$collection'].forEach(function(x) {
+                                    var ref = x['$ref'];
+                                    var match = /\/(\d+)$/.exec(ref);
+                                    if (match) {
+                                        var thisId = parseInt(match[1]);
+                                        if (thisId >= id) id = thisId + 1;
+                                    }
+                                });
+                                deferred.resolve(id);
+                            })
+                            .error(function() { deferred.reject(); });
+                    });
                 return promise;
             },
 
