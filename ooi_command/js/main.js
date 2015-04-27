@@ -1,8 +1,9 @@
-angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
+angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'ooiCommand.directives'])
     .controller('OoiCommandCtrl', ['$scope', '$timeout', 'wirecloud', 'availableCommands', function($scope, $timeout, wirecloud, availableCommands) {
         $scope.oois = [];
         $scope.allObjects = [];
         $scope.ooiTypes = { };
+        $scope.ooiLookupTable = { };
         $scope.commandableEntityTypes = [];
         $scope.availableCommands = availableCommands;
         $scope.pendingCommand = null;
@@ -30,7 +31,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
         $scope.acceptsArgument = function(argumentSpec, argument) {
             var accept = true;
-            if (argumentSpec.targetType == 'ooi' || argumentSpec.targetType == 'point') {
+            if (argumentSpec.targetType == 'ooi' || argumentSpec.targetType == 'point' || argumentSpec.targetType == 'vehicle') {
                 accept =
                     (!argumentSpec.hasOwnProperty('targetRestrictedTo') || argument.entityTypeId == argumentSpec.targetRestrictedTo) &&
                     (!argumentSpec.hasOwnProperty('isTargetAllowed') || argumentSpec.isTargetAllowed(argument));
@@ -81,6 +82,12 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                                 $scope.pendingCommand.data[i] = $scope.pendingCommand.candidates[i][j];
                         }
                     }
+                } else if (argument.targetType == 'vehicle') {
+                    $scope.pendingCommand.candidates[i] = $scope.allObjects.filter(function (x) {
+                        return $scope.acceptsArgument(argument, x);
+                    }).map(function (x) {
+                        return $.extend({}, x, { selected: false });
+                    });
                 } else if (argument.targetType == 'number') {
                     $scope.pendingCommand.minimum = $scope.getInt(argument.minimum, 1);
                     $scope.pendingCommand.maximum = $scope.getInt(argument.maximum);
@@ -94,21 +101,30 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
         $scope.canExecutePendingCommand = function() {
             if (!$scope.pendingCommand) return false;
-            if ($scope.pendingCommand.hasOwnProperty('validate') && !$scope.pendingCommand.validate($scope.pendingCommand.data))
-                return false;
+            if ($scope.pendingCommand.hasOwnProperty('validate'))
+                return $scope.pendingCommand.validate($scope.pendingCommand.data);
             for (var i = 0; i < $scope.pendingCommand.data.length; i++)
                 if (!$scope.pendingCommand.arguments[i].hasOwnProperty('optional') &&
                     ($scope.pendingCommand.data[i] === '' || $scope.pendingCommand.data[i] === null)) return false;
             return true;
         };
 
+        $scope.updateTableSelectionArgments = function () {
+            for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
+                if ($scope.pendingCommand.arguments[i].targetType == 'vehicle')
+                    $scope.pendingCommand.data[i] = $scope.pendingCommand.candidates[i].filter(function (x) {
+                        return x.selected;
+                    });
+
+            console.log($scope.pendingCommand);
+        };
         $scope.executePendingCommand = function() {
             var command = $scope.pendingCommand;
             var data = $scope.pendingCommand.data;
             var oois = command.hasOwnProperty('entityTypeId') ? $scope.oois.filter(function (ooi) {
                 return ooi.entityTypeId == command.entityTypeId &&
                     (!command.hasOwnProperty('isAvailable') || command.isAvailable(ooi));
-            }) : [];
+            }) : []; // oois variable might actually no longer be relevant for the new command structure. TODO: refactor/remove
 
             var inject = function(root, key) {
                 if (root.hasOwnProperty(key))
@@ -128,13 +144,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 return root;
             };
 
-            /** DEPRECATED AND SHOULD NO LONGER BE USED. ALL COMMANDS SHOULD NOW ASSIGN THIS IN THE APPLY FUNCTION
-             *if (command.hasOwnProperty('setProperties'))
-             *    for (var key in command.setProperties)
-             *        inject(command.setProperties, key);
-             *if (command.hasOwnProperty('setGeometry'))
-             *    for (var key in command.setGeometry)
-             *        inject(command.setGeometry, key); */
             if (command.hasOwnProperty('log'))
                 inject(command, 'log');
 
@@ -194,6 +203,17 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 $scope.commandableEntityTypes.push(parseInt(c));
         });
 
+        $scope.lookupOOI = function(entityId, field) {
+            var returnValue = $scope.ooiLookupTable[entityId];
+            if (returnValue != null && field != null && returnValue.hasOwnProperty(field))
+                returnValue = returnValue[field];
+            return returnValue;
+        };
+
+        window.explain = function () {
+            console.log($scope.pendingCommand);
+        };
+
         /****************************************************************
          * WIRECLOUD BINDINGS                                           *
          ****************************************************************/
@@ -204,6 +224,9 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             var removed = $scope.oois.filter(function (x) { return oois.indexOfWhere(function (y) { return y.entityId == x.entityId; }) == -1 });
 
             $scope.oois = oois;
+            $scope.ooiLookupTable = null;
+
+            for (var ooi in oois) if (ooi.hasOwnProperty('entityId')) $scope.ooiLookupTable[ooi.entityId] = ooi;
 
             if (added.length)
                 itemsAdded(added);

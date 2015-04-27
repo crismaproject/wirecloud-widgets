@@ -12,6 +12,7 @@
     <script src="js/commands.js" type="text/javascript"></script>
     <script src="js/main.js" type="text/javascript"></script>
     <script src="js/wirecloud.js" type="text/javascript"></script>
+    <script src="js/directives.js" type="text/javascript"></script>
 </head>
 <body>
 
@@ -42,10 +43,13 @@
                     </div>
 
                     <div class="col-sm-9" ng-switch="arg.targetType">
+                        <vehicle-table ng-switch-when="vehicle" items="pendingCommand.candidates[i]" selected="pendingCommand.data[i]"></vehicle-table>
+
                         <div ng-switch-when="ooi">
                             <select ng-if="arg.multiple" id="pcArg{{i}}" ng-options="getEntityDisplayName(c, pendingCommand, arg) for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control" multiple></select>
                             <select ng-if="!arg.multiple" id="pcArg{{i}}" ng-options="getEntityDisplayName(c, pendingCommand, arg) for c in pendingCommand.candidates[i]" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control"></select>
                         </div>
+
                         <select ng-switch-when="option" id="pcArg{{i}}" ng-options="c for c in arg.options" ng-model="pendingCommand.data[i]" ng-required="!arg.optional" class="form-control"></select>
                         <div ng-switch-when="number">
                             <input type="number" min="{{arg.minimum}}" max="{{arg.maximum}}" ng-model="pendingCommand.data[i]" id="pcArg{{i}}" ng-required="!arg.optional" class="form-control">
@@ -53,12 +57,14 @@
                                 min. {{arg.minimum}}, max. {{arg.maximum}}
                             </span>
                         </div>
+
                         <div ng-switch-when="point" class="form-inline">
                             <div>
                                 <abbr title="Latitude">Lat.</abbr> <input type="number" min="-180" max="180" value="0" step="0.00001" class="form-control" ng-value="pendingCommand.data[i].lat" ng-required="!arg.optional">
                                 <abbr title="Longitude">Lon.</abbr> <input type="number" min="-90" max="90" value="0" step="0.00001" class="form-control" ng-value="pendingCommand.data[i].lon" ng-required="!arg.optional">
                             </div>
                         </div>
+
                         <div ng-switch-when="geometry">
                             <input type="hidden" ng-model="pendingCommand.data[i]" id="pcArg{{i}}" ng-required="!arg.optional">
                             <button type="button" class="btn btn-default" ng-enabled="awaitingGeometryForArgument == -1" ng-click="requestMapDraw(i)"
@@ -67,6 +73,7 @@
                                 <small ng-if="pendingCommand.data[i]" class="glyphicon glyphicon-ok"></small>
                             </button>
                         </div>
+
                         <div ng-switch-default class="text-danger">
                             <code>{{arg.targetType}}</code> is an unsupported argument type. Please correct the error in <code>js/commands.js</code>.
                         </div>

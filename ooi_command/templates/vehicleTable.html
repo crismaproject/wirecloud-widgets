@@ -1,0 +1,18 @@
+<table class="table table-condensed">
+    <thead>
+    <tr>
+        <th colspan="2">Vehicle</th>
+        <th>Activity</th>
+        <th>Station</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr ng-repeat="i in items">
+        <td><input type="checkbox" ng-model="i['$selected']" ng-change="updateSelected()"></td>
+        <td>{{i.entityName}}</td>
+        <td>?</td>
+        <td>?</td>
+    </tr>
+    </tbody>
+</table>
