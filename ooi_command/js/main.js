@@ -1,10 +1,30 @@
 angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'ooiCommand.directives'])
-    .controller('OoiCommandCtrl', ['$scope', '$timeout', 'wirecloud', 'availableCommands', function($scope, $timeout, wirecloud, availableCommands) {
+    .service('EntityNameProvider', function () {
+        return {
+            names: { },
+
+            clear: function () {
+                this.names = { };
+            },
+
+            set: function (key, value) {
+                if (typeof (key) !== 'integer') key = parseInt(key);
+                if (value == null)
+                    delete this[key];
+                else
+                    this.names[key] = value;
+            },
+
+            get: function (key) {
+                if (typeof (key) !== 'integer') key = parseInt(key);
+                return this.names[key];
+            }
+        }
+    })
+    .controller('OoiCommandCtrl', ['$scope', '$timeout', 'EntityNameProvider', 'wirecloud', 'availableCommands', function($scope, $timeout, nameProvider, wirecloud, availableCommands) {
         $scope.oois = [];
         $scope.allObjects = [];
         $scope.ooiTypes = { };
-        $scope.ooiLookupTable = { };
-        $scope.commandableEntityTypes = [];
         $scope.availableCommands = availableCommands;
         $scope.pendingCommand = null;
         $scope.mouseOverCommand = null;
@@ -15,14 +35,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'oo
 
         $scope.prettyOOIType = function(entityTypeId) {
             return $scope.ooiTypes.hasOwnProperty(entityTypeId) ? $scope.ooiTypes[entityTypeId].entityTypeName : 'Type #' + entityTypeId;
-        };
-
-        $scope.prettyOOI = function(entity) {
-            return entity.hasOwnProperty('entityName') ? entity.entityName : 'Entity #' + entity.entityId;
-        };
-
-        $scope.isCommandableEntity = function(ooi) {
-            return $scope.commandableEntityTypes.indexOf(ooi.entityTypeId) != -1;
         };
 
         $scope.showHelpFor = function(command) {
@@ -183,35 +195,11 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'oo
         $scope.getEntityDisplayName = function (ooi, command, argument) {
             return argument != null && argument.hasOwnProperty('display') && typeof (argument.display) === 'function' ?
                 argument.display(ooi, command, $scope) :
-                $scope.prettyOOI(ooi);
+                nameProvider.get(ooi.entityId);
         };
 
         $scope.getInt = function (value, fallback) {
             return typeof value === 'function' ? value($scope.allObjects) : value ? value : fallback;
-        };
-
-        /****************************************************************
-         * INTERNAL HOUSEKEEPING                                        *
-         ****************************************************************/
-        $scope.$watchCollection('availableCommands', function(commands) {
-            var commandable = { };
-            for (var i = 0; i < commands.length; i++)
-                if (commands[i].hasOwnProperty('entityTypeId'))
-                    commandable[commands[i].entityTypeId] = true;
-            $scope.commandableEntityTypes = [ ];
-            for (var c in commandable)
-                $scope.commandableEntityTypes.push(parseInt(c));
-        });
-
-        $scope.lookupOOI = function(entityId, field) {
-            var returnValue = $scope.ooiLookupTable[entityId];
-            if (returnValue != null && field != null && returnValue.hasOwnProperty(field))
-                returnValue = returnValue[field];
-            return returnValue;
-        };
-
-        window.explain = function () {
-            console.log($scope.pendingCommand);
         };
 
         /****************************************************************
@@ -220,30 +208,41 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'oo
         wirecloud.on('oois', function(oois) {
             oois = JSON.parse(oois);
 
-            var added = oois.filter(function (x) { return $scope.oois.indexOfWhere(function (y) { return y.entityId == x.entityId; })== -1 });
-            var removed = $scope.oois.filter(function (x) { return oois.indexOfWhere(function (y) { return y.entityId == x.entityId; }) == -1 });
+            $scope.$apply(function () {
+                var added, removed;
+                if ($scope.oois.length == 0) {
+                    // cold start; not much to do
+                    added = oois;
+                    removed = [];
+                } else {
+                    added = oois.filter(function (x) { return $scope.oois.indexOfWhere(function (y) { return y.entityId == x.entityId; })== -1 });
+                    removed = $scope.oois.filter(function (x) { return oois.indexOfWhere(function (y) { return y.entityId == x.entityId; }) == -1 });
+                }
 
-            $scope.oois = oois;
-            $scope.ooiLookupTable = null;
+                $scope.oois = oois;
 
-            for (var ooi in oois) if (ooi.hasOwnProperty('entityId')) $scope.ooiLookupTable[ooi.entityId] = ooi;
-
-            if (added.length)
-                itemsAdded(added);
-            if (removed.length)
-                itemsRemoved(removed);
-
-            $scope.$apply();
+                if (added.length)
+                    itemsAdded(added);
+                if (removed.length)
+                    itemsRemoved(removed);
+            });
         });
 
         wirecloud.on('oois_all', function(oois) {
-            $scope.allObjects = JSON.parse(oois);
-            $scope.$apply();
+            $scope.$apply(function () {
+                $scope.allObjects = JSON.parse(oois);
+
+                nameProvider.clear();
+                $scope.allObjects.forEach(function (ooi) {
+                    nameProvider.set(ooi.entityId, ooi.entityName);
+                });
+            });
         });
 
         wirecloud.on('ooiTypes', function(ooiTypes) {
-            $scope.ooiTypes = JSON.parse(ooiTypes).toDict('entityTypeId');
-            $scope.$apply();
+            $scope.$apply(function () {
+                $scope.ooiTypes = JSON.parse(ooiTypes).toDict('entityTypeId');
+            });
         });
 
         wirecloud.on('point', function(data) {
@@ -252,9 +251,10 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'oo
             data = typeof data === 'string' ? JSON.parse(data) : data;
             for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
                 if ($scope.pendingCommand.arguments[i].targetType == 'point') {
-                    $scope.pendingCommand.data[i] = {lat: data.lat, lon: data.lon};
-                    $scope.$apply();
-                    break;
+                    $scope.$apply(function () {
+                        $scope.pendingCommand.data[i] = {lat: data.lat, lon: data.lon};
+                        $scope.$apply();
+                    });
                 }
         });
 
@@ -265,13 +265,14 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'oo
                 data = JSON.parse(data);
             } catch (e) {}
 
-            for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
-                if ($scope.pendingCommand.arguments[i].targetType == 'geometry') {
-                    $scope.pendingCommand.data[i] = data;
-                    $scope.awaitingGeometryForArgument = -1;
-                    $scope.$apply();
-                    break;
-                }
+            $scope.$apply(function () {
+                for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
+                    if ($scope.pendingCommand.arguments[i].targetType == 'geometry') {
+                        $scope.pendingCommand.data[i] = data;
+                        $scope.awaitingGeometryForArgument = -1;
+                        break;
+                    }
+            });
         });
 
         $scope.requestMapDraw = function(requestedForArgumentIndex) {

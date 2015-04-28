@@ -26,27 +26,6 @@ function vehicleIsAvailable (ooi) {
     return property ? parseInt(property.entityPropertyValue) !== -1 : true;
 }
 
-function getRescueStationNameForVehicle(ooi, $scope) {
-    var rescueStation = ooiProperty(ooi, 313);
-    if (rescueStation) {
-        var rescueStationId = rescueStation.entityPropertyValue;
-        var rescueStationName = null;
-        for (var i = 0; rescueStationName == null && i < $scope.allObjects.length; i++)
-            if ($scope.allObjects[i].entityId == rescueStationId)
-                rescueStationName = $scope.allObjects[i].entityName;
-        return rescueStationName;
-    }
-    return null;
-}
-
-function vehicleDisplayName (ooi, command, $scope) {
-    var displayName = ooi.entityName;
-    var rescueStationName = getRescueStationNameForVehicle(ooi, $scope);
-    if (rescueStationName) displayName += ' (' + rescueStationName + ')';
-    return displayName;
-}
-
-
 angular.module('ooiCommand.commands', [])
     .constant('availableCommands', [
         {

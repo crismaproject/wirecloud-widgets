@@ -1,6 +1,10 @@
 .restrict-height {
     max-height: 240px;
-    overflow-y: auto;
+    overflow: auto;
+}
+
+@media screen and (max-width: 400px) {
+    .restrict-height { font-size: 80% }
 }
 
 .ico-cmd {
