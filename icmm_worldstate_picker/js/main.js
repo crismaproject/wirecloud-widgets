@@ -1,4 +1,4 @@
-angular.module('icmmWorldStatePickerApp', ['ngResource', 'angularBootstrapNavTree'])
+angular.module('icmmWorldStatePickerApp', ['ngResource', 'ya.treeview', 'ya.treeview.tpls', 'ngDialog'])
     .factory('wirecloud', function () {
         return {
             getPreference: function (name, fallback) {
@@ -28,93 +28,117 @@ angular.module('icmmWorldStatePickerApp', ['ngResource', 'angularBootstrapNavTre
                     }
                     console.log([wiringName, data]);
                 }
-            }
+            },
+
+			proxyFor: function (url) {
+				return typeof (MashupPlatform) === 'undefined' ? url : MashupPlatform.http.buildProxyURL(url);
+			}
         }
     })
     .factory('icmm', ['$http', '$resource', 'wirecloud', function ($http, $resource, wirecloud) {
-        var icmmUri = wirecloud.getPreference('icmm');
+		var icmmUri = "http://crisma.cismet.de/pilotEv2/staging/icmm_api";
+		var icmmUri = wirecloud.proxyFor(wirecloud.getPreference('icmm', icmmUri));
 		if (!icmmUri) {
             throw 'No ICMM API URI configured!';
         } else {
-			var level = wirecloud.getPreference('level');
+			var level = wirecloud.getPreference('level', 1);
 			if (!level || level < 1) {
 				level = 1;
 			}
-			var category = wirecloud.getPreference('category');
+			var category = wirecloud.getPreference('category', 1);
+			var leaves_only = wirecloud.getPreference('leaves_only', false);
 			var icmmWsUri = icmmUri + '/CRISMA.worldstates';
 			return $resource(icmmWsUri, null, {
 				query: {
 					method: 'GET',
 					isArray: true,
 					params: {
-						level: 3,
-						// fields: 'id, name, description, parentworldstate, childworldstates',
+						level: level,
+						fields: 'id, name, description, parentworldstate, childworldstates, ooiRepositorySimulationId',
 						deduplicate: false,
 						omitNullValues: false,
-						limit: 500
+						limit: 99999,
+						filter: (category == '' ? 'categories:.*' : 'categories:.*' + category + '.*') + (leaves_only == true ? ',childworldstates:\\[\\]' : '')
 					},
 					transformResponse: function (data) {
-						var col = JSON.parse(data).$collection;
 						var ret = [];
-						checkCategory = function(categories, cat) {
-							if (cat >= 0 && categories && categories.length > 0) {
-								for (var c = 0; c < categories.length; c++) {
-									if (categories[c].id == cat) {
-										return true;
-									}
-								}
-							}
-							return false;
-						};
-						getChildTree = function(parent, l, max) {
-							var ret = [];
-							if (l < max && parent.childworldstates != undefined && parent.childworldstates.length > 0) {
-								l++;
-								for (var j = 0; j < parent.childworldstates.length; j++) {
-									var child = null;
-									if (parent.childworldstates[j] !== null && parent.childworldstates[j].name) {
-										child = {
-											label: parent.childworldstates[j].name,
-											data: parent.childworldstates[j]
+						if (data != undefined && data != "") {
+							var col = JSON.parse(data).$collection;
+							checkCategory = function(categories, cat) {
+								if (cat >= 0 && categories && categories.length > 0) {
+									for (var c = 0; c < categories.length; c++) {
+										if (categories[c].id == cat) {
+											return true;
 										}
-										child.children = getChildTree(parent.childworldstates[j], l, max);
 									}
-									if (child) ret.push(child);
 								}
-							}
-							return ret;
-						};
-						if (category !== "" && category >= 0) {
-							// get all worldstates of the given category out of the list of worldstates:
-							var catWS = [];
-							for (var i = 0; i < col.length; i++) {
-								if (checkCategory(col[i].categories, category)) {
-									catWS.push(col[i]);
+								return false;
+							};
+							getChildTree = function(parent, l, max) {
+								var ret = [];
+								if (l < max && parent.childworldstates != undefined && parent.childworldstates.length > 0) {
+									l++;
+									for (var j = 0; j < parent.childworldstates.length; j++) {
+										var child = null;
+										if (parent.childworldstates[j] !== null && parent.childworldstates[j].name) {								
+											child = {
+												label: parent.childworldstates[j].name,
+												data: parent.childworldstates[j]
+											}
+											child.children = getChildTree(parent.childworldstates[j], l, max);
+										}
+										if (child) ret.push(child);
+									}
 								}
-							}
-							for (var i = 0; i < catWS.length; i++) {
-								// worldstate name must be specified
-								if (catWS[i].name) {
-									var res = {
-										label: catWS[i].name,
-										data: catWS[i]									
-									};									
-									res.children = getChildTree(catWS[i], 1, level);
-									ret.push(res);
+								if (ret.length === 0) {
+									ret = null;
 								}
-							}
-						} else { // if no category is defined, all categories are taken
-							for (var i = 0; i < col.length; i++) {
-								// worldstate name must be specified
-								if (col[i].name) {
-									var res = {
-										label: col[i].name,
-										data: col[i]									
-									};									
-									res.children = getChildTree(col[i], 1, level);
-									ret.push(res);
+								return ret;
+							};
+							
+							compare = function (a,b) {
+							  if (a.ooiRepositorySimulationId < b.ooiRepositorySimulationId)
+								 return -1;
+							  if (a.ooiRepositorySimulationId > b.ooiRepositorySimulationId)
+								return 1;
+							  return 0;
+							};
+							col.sort(compare);
+							/*
+							if (category !== "" && category >= 0) {
+								// get all worldstates of the given category out of the list of worldstates:
+								var catWS = [];
+								for (var i = 0; i < col.length; i++) {
+									if (checkCategory(col[i].categories, category)) {
+										catWS.push(col[i]);
+									}
 								}
-							}
+								for (var i = 0; i < catWS.length; i++) {
+									// worldstate name must be specified
+									if (catWS[i].name) {
+										var res = {
+											label: catWS[i].name,
+											data: catWS[i]									
+										};									
+										res.children = getChildTree(catWS[i], 1, level);
+										ret.push(res);
+									}
+								}
+							} else { // if no category is defined, all categories are taken
+							*/
+								for (var i = 0; i < col.length; i++) {
+									// worldstate name must be specified
+									if (col[i].name) {
+										var simulationString = col[i].ooiRepositorySimulationId != undefined ? 'Simulation ' +  col[i].ooiRepositorySimulationId : '';
+										var res = {
+											label: simulationString + ': ' + col[i].name,
+											data: col[i]									
+										};									
+										res.children = getChildTree(col[i], 1, level);
+										ret.push(res);
+									}
+								}
+//							}
 						}
 						return ret;
 					}
@@ -122,12 +146,39 @@ angular.module('icmmWorldStatePickerApp', ['ngResource', 'angularBootstrapNavTre
 			});
 		}
     }])
-    .controller('ICMMWorldStatePickerApp', ['$scope', 'icmm', 'wirecloud', function ($scope, icmm, wirecloud) {
+    .controller('ICMMWorldStatePickerApp', ['$scope', 'icmm', 'wirecloud', 'ngDialog', function ($scope, icmm, wirecloud, ngDialog) {
+		$scope.context = {
+			selectedNodes: []
+		};
+
+		$scope.options = {
+			onSelect: function($event, node, context) {
+				var multi = wirecloud.getPreference('multiselect', true);
+				if (multi == true && $event.ctrlKey) {
+					var idx = context.selectedNodes.indexOf(node);
+					if (context.selectedNodes.indexOf(node) === -1) {
+						context.selectedNodes.push(node);
+					} else {
+						context.selectedNodes.splice(idx, 1);
+					}
+				} else { 
+					context.selectedNodes = [node];
+					wirecloud.send('worldstate', node.$model.data);
+				}
+				var ws_list = [];
+				for (var i = 0; i < context.selectedNodes.length; i++) {
+					var ws = context.selectedNodes[i];
+					ws_list.push(ws.$model.data.id);
+				}
+				wirecloud.send('worldstate_list', ws_list);
+			}
+		};
+
 		$scope.filter_term = "";
         $scope.isRefreshingWorldstates = false;
 
         $scope.treedata = [];
-        $scope.filtered_treedata = [];
+        $scope.model = [];
 		
 		$scope.treehandler = function(branch) {
 			$scope.selectedWorldState = branch.data;
@@ -139,15 +190,17 @@ angular.module('icmmWorldStatePickerApp', ['ngResource', 'angularBootstrapNavTre
             icmm.query()
                 .$promise.then(function (list) {
                     $scope.treedata = list;
-                    $scope.filtered_treedata = list;
+                    $scope.model = list;
                     if (list.length) {
-                        $scope.selectedWorldState = $scope.filtered_treedata[0].data;
+                        $scope.selectedWorldState = $scope.model[0].data;
                         if (list.length > 1)
                             $('#worldStateInput').focus();
 
                         $scope.isRefreshingWorldstates = false;
                     }
-                });
+                }, function (error) {
+					ngDialog.open({template:"Can not access ICMM service via given URL:\n" + wirecloud.getPreference('icmm', icmmUri), plain:true});
+				});
         };
 
         $scope.filterTree = function (tree, filter) {
@@ -171,14 +224,14 @@ angular.module('icmmWorldStatePickerApp', ['ngResource', 'angularBootstrapNavTre
 			if ($scope.filter_term == undefined || $scope.filter_term == '') {
 				$scope.refreshWorldStates();
 			} else {
-				$scope.filtered_treedata = angular.copy($scope.treedata);
-				for (var i = 0; i < $scope.filtered_treedata.length; i++) {
-					if ($scope.filtered_treedata[i].children && $scope.filtered_treedata[i].children.length > 0) {
-						$scope.filterTree($scope.filtered_treedata[i], $scope.filter_term);
+				$scope.model = angular.copy($scope.treedata);
+				for (var i = 0; i < $scope.model.length; i++) {
+					if ($scope.model[i].children && $scope.model[i].children.length > 0) {
+						$scope.filterTree($scope.model[i], $scope.filter_term);
 					}
 					else {
-						if (($scope.filtered_treedata[i].label.toUpperCase()).indexOf($scope.filter_term.toUpperCase()) == -1) {
-							$scope.filtered_treedata.remove($scope.filtered_treedata[i]);
+						if (($scope.model[i].label.toUpperCase()).indexOf($scope.filter_term.toUpperCase()) == -1) {
+							$scope.model.remove($scope.model[i]);
 							i--;
 						}				
 					}

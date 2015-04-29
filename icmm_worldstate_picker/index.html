@@ -1,43 +1,28 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="icmmWorldStatePickerApp">
-<head>
-    <title>ICMM World State Picker</title>
- 	<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-    <link href="css/abn_tree.css" rel="stylesheet">
-    <script src="js/jquery-2.0.3.min.js" type="text/javascript"></script>
-    <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="angular-1.2.13/angular.min.js" type="text/javascript"></script>
-    <script src="angular-1.2.13/angular-resource.min.js" type="text/javascript"></script>
-    <script src="angular-1.2.13/angular-animate.min.js" type="text/javascript"></script>
-    <script src="js/main.js" type="text/javascript"></script>
-    <script src="js/abn_tree_directive.js" type="text/javascript"></script>
-</head>
-<body ng-controller="ICMMWorldStatePickerApp">
+	<meta charset="utf-8"/>
 
-<div class="container-fluid">
-    <form class="form-horizontal">
-<!--
-        <div class="form-group">
-            <div class="col-sm-6">
-                <div class="input-group">
-					<input id="filter-term" ng-model="filter_term" type="text" class="form-control">
-					<span class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="filterWorldStates()">
-                            <i class="glyphicon glyphicon-filter"></i>
-                        </button>
-                    </span>
-                </div>
-            </div>
-        </div>
- -->
-       <div class="form-group">
-            <div class="col-sm-6">
-				<div class="input-group">
-					<abn-tree id="worldstateTree" tree-data="filtered_treedata" icon-leaf="glyphicon glyphicon-globe" icon-expand="glyphicon glyphicon-collapse-down" icon-collapse="glyphicon glyphicon-collapse-up" on-select="treehandler(branch)" expand-level="1"></abn-tree>
-				</div>
-            </div>
-        </div>
-    </form>
-</div>
-</body>
+	<head>
+		<title>ICMM World State Picker</title>
+		<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="libs/angular-ya-treeview/css/ya-treeview.css">
+		<link rel="stylesheet" href="libs/angular-ya-treeview/css/style.css">
+		<link rel="stylesheet" href="libs/ngDialog/css/ngDialog.css">
+		<script src="libs/jquery/js/jquery-2.1.3.min.js" type="text/javascript"></script>
+		<script src="libs/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+		<script src="libs/angular-1.3.14/angular.min.js" type="text/javascript"></script>
+		<script src="libs/angular-1.3.14/angular-resource.min.js" type="text/javascript"></script>
+		<script src="libs/angular-1.3.14/angular-animate.min.js" type="text/javascript"></script>
+		<script src="libs/angular-ya-treeview/js/ya-treeview-tpls.min.js"></script>
+		<script src="libs/ngDialog/js/ngDialog.min.js"></script>
+		<script src="js/main.js" type="text/javascript"></script>
+	</head>
+
+	<body ng-controller="ICMMWorldStatePickerApp">
+		<div class="container-fluid">
+					<div ya-treeview ya-id="myTree" ya-model="model" ya-options="options" ya-context="context">
+						<span ng-class="{selected: context.selectedNodes.indexOf(node) > -1}">{{ node.$model.label }}</span>
+					</div>
+		</div>
+	</body>
 </html>
