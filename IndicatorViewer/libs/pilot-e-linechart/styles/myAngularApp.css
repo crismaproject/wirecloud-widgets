@@ -1,0 +1,8 @@
+/*
+ * The 'styles' folder contains all the css files that will automagically be processed during the build process.
+ */
+body {
+    background-color: gainsboro;
+    background-image: url('../images/myImage.png');
+    background-repeat: no-repeat;
+}

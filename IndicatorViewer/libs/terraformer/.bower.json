@@ -1,0 +1,24 @@
+{
+  "name": "terraformer",
+  "version": "1.0.4",
+  "main": "terraformer.min.js",
+  "ignore": [
+    "docs",
+    "examples",
+    "spec",
+    "versions",
+    "source",
+    "Gemfile",
+    "config.rb"
+  ],
+  "homepage": "https://github.com/Esri/Terraformer",
+  "_release": "1.0.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.4",
+    "commit": "c0f650b5fb85ce0f6fa7879d6d5e8056da03406d"
+  },
+  "_source": "git://github.com/Esri/Terraformer.git",
+  "_target": "~1.0.0",
+  "_originalSource": "terraformer"
+}

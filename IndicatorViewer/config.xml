@@ -5,7 +5,7 @@
         <Vendor>AIT</Vendor>
         <Name>indicator_view</Name>
         <DisplayName>CRISMA Indicator View</DisplayName>
-        <Version>0.1.0.8</Version>
+        <Version>0.1.3.2</Version>
         <Author>Maria Egly</Author>
         <Mail>maria.egly@ait.ac.at</Mail>
         <Description>
@@ -24,9 +24,11 @@
         <Preference name="showTree" type="boolean" description="Check this item if the worldstate tree shall be displayed" label="Display Worldstate Tree"/>
         <Preference name="showTimeline" type="boolean" description="Check this item if the timeline indicators shall be displayed" label="Display Timeline"/>
         <Preference name="showChart" type="boolean" description="Check this item if the histogram indicators shall be displayed" label="Display Chart"/>
+        <Preference name="showLinechart" type="boolean" description="Check this item if the Pilot E linechart shall be displayed" label="Display Linechart"/>
     </Platform.Preferences>
 
     <Platform.Wiring>
+        <InputEndpoint name="indicator_filter" type="text" label="Indicator Filter" description="Stringified array of indicators to be visualized in the desired order." friendcode="indicator_filter"/>
         <InputEndpoint name="basic_worldstate" type="text" label="Basic World State" description="The root world state for the tree" friendcode="basic_worldstate"/>
         <OutputEndpoint name="selected_indicators" type="text" label="Selected Indicators" description="The indicators selected by the user" friendcode="selected_indicators"/>
         <OutputEndpoint name="selected_worldstates" type="text" label="Selected World States" description="The world states selected by the user" friendcode="selected_worldstates"/>

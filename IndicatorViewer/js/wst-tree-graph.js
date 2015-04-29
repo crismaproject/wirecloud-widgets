@@ -75,7 +75,7 @@ WstApp.directive ('treeGraph', function ($parse) {
 		var rows = 0;
 		var minTime = null;
 		var maxTime = null;
-		var parseDate = d3.time.format.iso.parse; // d3.time.format("%Y-%m-%dT%H:%M:%S").parse;
+		var parseDate = d3.time.format.iso.parse; // d3.time.format("%Y-%m-%dT%H:%M:%SZ").parse; sample:2015-02-03T18:49:02Z
 		var nodes = [];
 		var links = [];
 		visit (null, scope.data, 
@@ -107,7 +107,7 @@ WstApp.directive ('treeGraph', function ($parse) {
 		// size of the diagram
 		// height: rows+1 rows, each roomAboveNode high (needed for the text); 15: x-axis
 		var size = { width:+options.width, height: (rows + 1) * options.roomAboveNode + 15}; 
-		var margin = {top: 20, right: 20, bottom: 30, left: 50};
+		var margin = {top: 20, right: 150, bottom: 30, left: 50};
 
 		var x = d3.time.scale()
 		    .range([0, size.width]);
@@ -182,7 +182,7 @@ WstApp.directive ('treeGraph', function ($parse) {
 
 		nodeGroup.append("svg:text")
 		    .attr("text-anchor", "start")
-		    .attr("transform", "rotate(-90)")
+		    .attr("transform", "rotate(-30)")
 		    .attr("dy", options.fontSize / 2)
 		    .attr("dx", options.nodeRadius + 7)
 		    .text(function(d)
