@@ -26,7 +26,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'oo
         $scope.allObjects = [];
         $scope.ooiTypes = { };
         $scope.availableCommands = availableCommands;
-        $scope.pendingCommand = null;
+        $scope.pendingCommand = { candidates: [], data: [] };
         $scope.mouseOverCommand = null;
         $scope.areaSequenceId = 1;
         $scope.awaitingGeometryForArgument = -1;
@@ -98,7 +98,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'oo
                     $scope.pendingCommand.candidates[i] = $scope.allObjects.filter(function (x) {
                         return $scope.acceptsArgument(argument, x);
                     }).map(function (x) {
-                        return $.extend({}, x, { selected: false });
+                        return $.extend({}, x, { '$selected': false });
                     });
                 } else if (argument.targetType == 'number') {
                     $scope.pendingCommand.minimum = $scope.getInt(argument.minimum, 1);

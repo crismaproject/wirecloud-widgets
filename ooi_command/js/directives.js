@@ -5,10 +5,11 @@ angular.module('ooiCommand.directives', [])
             replace: true,
             scope: {
                 items: '=items',
-                selected: '=selected'
+                selected: '=selectedItems'
             },
             templateUrl: 'templates/vehicleTable.html',
             controller: [ '$scope', 'EntityNameProvider', function($scope, nameProvider) {
+                $scope.selected = [];
                 $scope.nameProvider = nameProvider;
 
                 $scope.updateSelected = function () {
