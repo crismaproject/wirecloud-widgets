@@ -1,0 +1,20 @@
+<div class="restrict-height">
+    <table class="table table-condensed table-vehicles">
+        <thead>
+        <tr>
+            <th colspan="2">Name</th>
+            <th>Activity</th>
+            <th>Station</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr ng-repeat="i in items" class="vehicle-state-{{cssClassFor(i)}}">
+            <td><input type="checkbox" ng-model="i['$selected']" ng-change="updateSelected()"></td>
+            <td class="vehicle-name">{{i.entityName}}</td>
+            <td class="vehicle-state">{{activityFor(i)}}</td>
+            <td class="vehicle-station">{{stationNameFor(i)}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

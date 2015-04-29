@@ -1,6 +1,10 @@
 .restrict-height {
     max-height: 240px;
-    overflow-y: auto;
+    overflow: auto;
+}
+
+@media screen and (max-width: 400px) {
+    .restrict-height { font-size: 80% }
 }
 
 .ico-cmd {
@@ -38,6 +42,18 @@
     -webkit-box-shadow: 0 0 7px 0 rgba(250, 198, 135, 0.5);
     -moz-box-shadow:    0 0 7px 0 rgba(250, 198, 135, 0.5);
     box-shadow:         0 0 7px 0 rgba(250, 198, 135, 0.5);
+}
+
+/* vehicleTable.html row styles */
+.vehicle-state-idle {
+    color: #207420;
+    background-color: #e1f5e1;
+}
+
+.vehicle-state-evacuate,
+.vehicle-state-treat {
+    color: #744d28;
+    background-color: #f5edd4;
 }
 
 

@@ -1,9 +1,30 @@
-angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
-    .controller('OoiCommandCtrl', ['$scope', '$timeout', 'wirecloud', 'availableCommands', function($scope, $timeout, wirecloud, availableCommands) {
+angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'ooiCommand.directives'])
+    .service('EntityNameProvider', function () {
+        return {
+            names: { },
+
+            clear: function () {
+                this.names = { };
+            },
+
+            set: function (key, value) {
+                if (typeof (key) !== 'integer') key = parseInt(key);
+                if (value == null)
+                    delete this[key];
+                else
+                    this.names[key] = value;
+            },
+
+            get: function (key) {
+                if (typeof (key) !== 'integer') key = parseInt(key);
+                return this.names[key];
+            }
+        }
+    })
+    .controller('OoiCommandCtrl', ['$scope', '$timeout', 'EntityNameProvider', 'wirecloud', 'availableCommands', function($scope, $timeout, nameProvider, wirecloud, availableCommands) {
         $scope.oois = [];
         $scope.allObjects = [];
         $scope.ooiTypes = { };
-        $scope.commandableEntityTypes = [];
         $scope.availableCommands = availableCommands;
         $scope.pendingCommand = null;
         $scope.mouseOverCommand = null;
@@ -16,21 +37,13 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             return $scope.ooiTypes.hasOwnProperty(entityTypeId) ? $scope.ooiTypes[entityTypeId].entityTypeName : 'Type #' + entityTypeId;
         };
 
-        $scope.prettyOOI = function(entity) {
-            return entity.hasOwnProperty('entityName') ? entity.entityName : 'Entity #' + entity.entityId;
-        };
-
-        $scope.isCommandableEntity = function(ooi) {
-            return $scope.commandableEntityTypes.indexOf(ooi.entityTypeId) != -1;
-        };
-
         $scope.showHelpFor = function(command) {
             $scope.mouseOverCommand = command;
         };
 
         $scope.acceptsArgument = function(argumentSpec, argument) {
             var accept = true;
-            if (argumentSpec.targetType == 'ooi' || argumentSpec.targetType == 'point') {
+            if (argumentSpec.targetType == 'ooi' || argumentSpec.targetType == 'point' || argumentSpec.targetType == 'vehicle') {
                 accept =
                     (!argumentSpec.hasOwnProperty('targetRestrictedTo') || argument.entityTypeId == argumentSpec.targetRestrictedTo) &&
                     (!argumentSpec.hasOwnProperty('isTargetAllowed') || argumentSpec.isTargetAllowed(argument));
@@ -81,6 +94,12 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                                 $scope.pendingCommand.data[i] = $scope.pendingCommand.candidates[i][j];
                         }
                     }
+                } else if (argument.targetType == 'vehicle') {
+                    $scope.pendingCommand.candidates[i] = $scope.allObjects.filter(function (x) {
+                        return $scope.acceptsArgument(argument, x);
+                    }).map(function (x) {
+                        return $.extend({}, x, { selected: false });
+                    });
                 } else if (argument.targetType == 'number') {
                     $scope.pendingCommand.minimum = $scope.getInt(argument.minimum, 1);
                     $scope.pendingCommand.maximum = $scope.getInt(argument.maximum);
@@ -94,21 +113,30 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
 
         $scope.canExecutePendingCommand = function() {
             if (!$scope.pendingCommand) return false;
-            if ($scope.pendingCommand.hasOwnProperty('validate') && !$scope.pendingCommand.validate($scope.pendingCommand.data))
-                return false;
+            if ($scope.pendingCommand.hasOwnProperty('validate'))
+                return $scope.pendingCommand.validate($scope.pendingCommand.data);
             for (var i = 0; i < $scope.pendingCommand.data.length; i++)
                 if (!$scope.pendingCommand.arguments[i].hasOwnProperty('optional') &&
                     ($scope.pendingCommand.data[i] === '' || $scope.pendingCommand.data[i] === null)) return false;
             return true;
         };
 
+        $scope.updateTableSelectionArgments = function () {
+            for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
+                if ($scope.pendingCommand.arguments[i].targetType == 'vehicle')
+                    $scope.pendingCommand.data[i] = $scope.pendingCommand.candidates[i].filter(function (x) {
+                        return x.selected;
+                    });
+
+            console.log($scope.pendingCommand);
+        };
         $scope.executePendingCommand = function() {
             var command = $scope.pendingCommand;
             var data = $scope.pendingCommand.data;
             var oois = command.hasOwnProperty('entityTypeId') ? $scope.oois.filter(function (ooi) {
                 return ooi.entityTypeId == command.entityTypeId &&
                     (!command.hasOwnProperty('isAvailable') || command.isAvailable(ooi));
-            }) : [];
+            }) : []; // oois variable might actually no longer be relevant for the new command structure. TODO: refactor/remove
 
             var inject = function(root, key) {
                 if (root.hasOwnProperty(key))
@@ -128,13 +156,6 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 return root;
             };
 
-            /** DEPRECATED AND SHOULD NO LONGER BE USED. ALL COMMANDS SHOULD NOW ASSIGN THIS IN THE APPLY FUNCTION
-             *if (command.hasOwnProperty('setProperties'))
-             *    for (var key in command.setProperties)
-             *        inject(command.setProperties, key);
-             *if (command.hasOwnProperty('setGeometry'))
-             *    for (var key in command.setGeometry)
-             *        inject(command.setGeometry, key); */
             if (command.hasOwnProperty('log'))
                 inject(command, 'log');
 
@@ -174,7 +195,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         $scope.getEntityDisplayName = function (ooi, command, argument) {
             return argument != null && argument.hasOwnProperty('display') && typeof (argument.display) === 'function' ?
                 argument.display(ooi, command, $scope) :
-                $scope.prettyOOI(ooi);
+                nameProvider.get(ooi.entityId);
         };
 
         $scope.getInt = function (value, fallback) {
@@ -182,45 +203,46 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
         };
 
         /****************************************************************
-         * INTERNAL HOUSEKEEPING                                        *
-         ****************************************************************/
-        $scope.$watchCollection('availableCommands', function(commands) {
-            var commandable = { };
-            for (var i = 0; i < commands.length; i++)
-                if (commands[i].hasOwnProperty('entityTypeId'))
-                    commandable[commands[i].entityTypeId] = true;
-            $scope.commandableEntityTypes = [ ];
-            for (var c in commandable)
-                $scope.commandableEntityTypes.push(parseInt(c));
-        });
-
-        /****************************************************************
          * WIRECLOUD BINDINGS                                           *
          ****************************************************************/
         wirecloud.on('oois', function(oois) {
             oois = JSON.parse(oois);
 
-            var added = oois.filter(function (x) { return $scope.oois.indexOfWhere(function (y) { return y.entityId == x.entityId; })== -1 });
-            var removed = $scope.oois.filter(function (x) { return oois.indexOfWhere(function (y) { return y.entityId == x.entityId; }) == -1 });
+            $scope.$apply(function () {
+                var added, removed;
+                if ($scope.oois.length == 0) {
+                    // cold start; not much to do
+                    added = oois;
+                    removed = [];
+                } else {
+                    added = oois.filter(function (x) { return $scope.oois.indexOfWhere(function (y) { return y.entityId == x.entityId; })== -1 });
+                    removed = $scope.oois.filter(function (x) { return oois.indexOfWhere(function (y) { return y.entityId == x.entityId; }) == -1 });
+                }
 
-            $scope.oois = oois;
+                $scope.oois = oois;
 
-            if (added.length)
-                itemsAdded(added);
-            if (removed.length)
-                itemsRemoved(removed);
-
-            $scope.$apply();
+                if (added.length)
+                    itemsAdded(added);
+                if (removed.length)
+                    itemsRemoved(removed);
+            });
         });
 
         wirecloud.on('oois_all', function(oois) {
-            $scope.allObjects = JSON.parse(oois);
-            $scope.$apply();
+            $scope.$apply(function () {
+                $scope.allObjects = JSON.parse(oois);
+
+                nameProvider.clear();
+                $scope.allObjects.forEach(function (ooi) {
+                    nameProvider.set(ooi.entityId, ooi.entityName);
+                });
+            });
         });
 
         wirecloud.on('ooiTypes', function(ooiTypes) {
-            $scope.ooiTypes = JSON.parse(ooiTypes).toDict('entityTypeId');
-            $scope.$apply();
+            $scope.$apply(function () {
+                $scope.ooiTypes = JSON.parse(ooiTypes).toDict('entityTypeId');
+            });
         });
 
         wirecloud.on('point', function(data) {
@@ -229,9 +251,10 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
             data = typeof data === 'string' ? JSON.parse(data) : data;
             for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
                 if ($scope.pendingCommand.arguments[i].targetType == 'point') {
-                    $scope.pendingCommand.data[i] = {lat: data.lat, lon: data.lon};
-                    $scope.$apply();
-                    break;
+                    $scope.$apply(function () {
+                        $scope.pendingCommand.data[i] = {lat: data.lat, lon: data.lon};
+                        $scope.$apply();
+                    });
                 }
         });
 
@@ -242,13 +265,14 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands'])
                 data = JSON.parse(data);
             } catch (e) {}
 
-            for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
-                if ($scope.pendingCommand.arguments[i].targetType == 'geometry') {
-                    $scope.pendingCommand.data[i] = data;
-                    $scope.awaitingGeometryForArgument = -1;
-                    $scope.$apply();
-                    break;
-                }
+            $scope.$apply(function () {
+                for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
+                    if ($scope.pendingCommand.arguments[i].targetType == 'geometry') {
+                        $scope.pendingCommand.data[i] = data;
+                        $scope.awaitingGeometryForArgument = -1;
+                        break;
+                    }
+            });
         });
 
         $scope.requestMapDraw = function(requestedForArgumentIndex) {
