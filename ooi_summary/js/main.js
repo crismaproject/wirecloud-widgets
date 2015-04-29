@@ -11,6 +11,10 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
             //{ name: 'Hospital 1', free: 4, total: 90, healthIncrease: 1 }
         ];
 
+        $scope.isValidHospital = function (hospital) {
+            return hospital.name && hospital.total && hospital.free;
+        };
+
         /****************************************************************
          * WIRECLOUD BINDINGS                                           *
          ****************************************************************/

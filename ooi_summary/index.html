@@ -32,7 +32,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="area in areas">
+                <tr ng-repeat="area in areas | orderBy:'name' ">
                     <th>{{area.name}}</th>
                     <th>{{area.green+area.yellow+area.red}}</th>
                     <td class="green">{{area.green}}</td>
@@ -52,7 +52,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="station in stations">
+                <tr ng-repeat="station in stations | orderBy:'name'">
                     <th>{{station.name}}</th>
                     <td ng-repeat="resourceState in resourceStates">{{station[resourceState]}}</td>
                 </tr>
@@ -71,7 +71,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="hospital in hospitals">
+                <tr ng-repeat="hospital in hospitals | filter: isValidHospital | orderBy: 'name'">
                     <th>{{hospital.name||'?'}}</th>
                     <td>{{hospital.free||'?'}}</td>
                     <td>{{hospital.total||'?'}}</td>
