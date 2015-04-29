@@ -44,6 +44,18 @@
     box-shadow:         0 0 7px 0 rgba(250, 198, 135, 0.5);
 }
 
+/* vehicleTable.html row styles */
+.vehicle-state-idle {
+    color: #207420;
+    background-color: #e1f5e1;
+}
+
+.vehicle-state-evacuate,
+.vehicle-state-treat {
+    color: #744d28;
+    background-color: #f5edd4;
+}
+
 
 /* VALIDATION STYLES */
 input.ng-invalid.ng-dirty,
