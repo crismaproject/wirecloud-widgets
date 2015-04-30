@@ -56,3 +56,10 @@ div.indicator-bars-tooltip {
 .indicator-lifeIndicator-green {
     fill: green;
 }
+.legend {
+    font: 11px sans-serif;
+} 
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}

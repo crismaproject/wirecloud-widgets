@@ -22,7 +22,6 @@ indicator-interval {
   padding: 3px;
   margin: 5px;
   color: white;
-  fill: black;
 }
 
 .indicator-text-selected {
@@ -46,13 +45,16 @@ indicator-interval {
 }
 
 .indicator-interval {
-  stroke: #b2b2b2;
-  fill: #b2b2b2;
 }
 
 .indicator-interval-selected {
   stroke: #CC0000;
   fill: #CC0000;
+}
+
+.indicator-timestamp {
+  stroke: #CC0000;
+  stroke-width: 2;
 }
 
 .indicator-interval-tooltip {   

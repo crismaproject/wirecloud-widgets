@@ -26,35 +26,58 @@
   <title>Tree Viewer</title>
   <link rel="stylesheet" href="css/app.css">
   <link rel="stylesheet" href="css/bootstrap.css">
-  <script src="libs/angular-1.2.13/angular.js"></script>
-  <script src="libs/angular-1.2.13/angular-resource.min.js"></script>
-  <script src="libs/moment.min.js"></script>
-  <script src="libs/jquery-2.0.3.min.js"></script>
-  <script src="libs/spin.min.js"></script>
-  <script src="libs/jquery.spin.js"></script>
-  <script src="libs/d3.v3/d3.v3.js" charset="utf-8"></script>
   <link rel="stylesheet" href="css/wst-tree.css">
   <link rel="stylesheet" href="css/wst-indicator-bars.css">
   <link rel="stylesheet" href="css/wst-indicator-intervals.css">
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="libs/nvd3/nv.d3.css" type="text/css"/>
+  <link rel="stylesheet" href="libs/pilot-e-linechart/styles/pilot-e-line-chart-widget.css">
+  
+  <!--[if lt IE 9]>
+    <script src="libs/es5-shim/es5-shim.js"></script>
+    <script src="libs/json3/lib/json3.min.js"></script>
+  <![endif]-->
+
+  <!-- angular -->
+  <script src="libs/angular-1.2.13/angular.js"></script>
+  <script src="libs/angular-1.2.13/angular-resource.min.js"></script>
+  <script src="libs/moment.min.js"></script>
+  <!-- jquery -->
+  <script src="libs/jquery-2.0.3.min.js"></script>
+  <script src="libs/spin.min.js"></script>
+  <script src="libs/jquery.spin.js"></script>
+  <!-- d3 -->
+  <script src="libs/d3.v3/d3.v3.js" charset="utf-8"></script>
+  <script src="libs/d3/d3.js" type="text/javascript"></script>
+  <script src="libs/nvd3/nv.d3.js" type="text/javascript"></script>
+  <script src="libs/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js" type="text/javascript"></script>
+  <!-- bootstrap -->
+  <script src="bootstrap/js/bootstrap.min.js"></script>
+  <!-- json3 -->
+  <script src="libs/json3/lib/json3.js" type="text/javascript"></script>
+  <!-- terraformer -->
+  <script src="libs/terraformer/terraformer.js" type="text/javascript"></script>
+  <script src="libs/terraformer-wkt-parser/terraformer-wkt-parser.js" type="text/javascript"></script>
+  <!-- CRISMA Indicator Viewer -->
   <script src="js/wstControllers.js"></script>
   <script src="js/wst-tree-graph.js"></script>
   <script src="js/wst-tree-data.js"></script>
   <script src="js/wst-indicator-timeIntervals.js"></script>
   <script src="js/wst-indicator-bars.js"></script>
-  <!-- bootstrap -->
-  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-  <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
-  <script src="bootstrap/js/bootstrap.min.js"></script>
+  <!-- CRISMA pilot-e-linechart -->
+  <script src="libs/pilot-e-linechart/scripts/pilot-e-line-chart-widget.js" type="text/javascript"></script>
+  <script src="libs/pilot-e-linechart/scripts/pilot-e-line-chart-widget-tpl.js" type="text/javascript"></script>
 </head>
 
 <body ng-controller="treeCtrl">
 
 <div>
-    <table class="table">
-    <tr ng-show="showGroupSelect">
-	  <td>Group indicators by:</td>
-	  <td><input type="radio" ng-model="groupIndicatorsBy" value="worldstate"> WorldState <input type="radio" ng-model="groupIndicatorsBy" value="indicator"> Indicator</td>
-    </tr>
+    <table class="table" ng-show="showGroupSelect">
+		<tr >
+		  <td>Group indicators by:</td>
+		  <td><input type="radio" ng-model="groupIndicatorsBy" value="worldstate"> WorldState <input type="radio" ng-model="groupIndicatorsBy" value="indicator"> Indicator</td>
+		</tr>
     </table>
     <table class="table">
       <tr ng-show="showTreeGraph">
@@ -64,7 +87,10 @@
 		<td><indicator-time-intervals indicator-data="indicators" on-selection="selectIndicators(selection)" width="960" min-time="minTime" max-time="maxTime" group-indicators-by="groupIndicatorsBy"></indicator-time-intervals></td>
       </tr>
       <tr ng-show="showIndicatorBars">
-		<td><indicator-bars indicator-data="indicators2" group-indicators-by="groupIndicatorsBy" width="960" height="160"></indicator-bars></td>
+		<td><indicator-bars indicator-data="indicators2" group-indicators-by="groupIndicatorsBy"></indicator-bars></td>
+      </tr>
+      <tr ng-show="showLinechart">
+		<td><pilot-e-linechart height="500" worldstate-id="worldstateId"></pilot-e-linechart></td>
       </tr>
     </table>
  </div>   

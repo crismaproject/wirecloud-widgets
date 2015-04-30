@@ -69,22 +69,44 @@ WstApp.directive ('indicatorBars', function ($parse) {
 	    scope.$watch ('groupBy', function (newVal, oldVal) {
 			console.log ('change groupBy ' + JSON.stringify (oldVal) + ' --> ' + JSON.stringify (newVal));
 			if (newVal === oldVal) { return; }
-			rearrange();
+//			rearrange();
+			redraw();
 	    });
 
-	    var margin = {top: 20, right: 20, bottom: 30, left: 40};
+	    var margin = {top: 20, right: 20, bottom: 100, left: 40};
 	    var width, height;
 	    var svg, x0, x1, y, color, groups, bars, legend, xAxisSvg;
+		var legend_rect_width = 18;
+		var legend_padding = 6;
+		var legend_row_height = 20;
 
 	    function redraw () {
 		graph.select('svg').remove();
 		// just remove the whole graph and return if no indicator data has to be displayed:
 		if (data.length == 0) { return; }
-		width = options.width - margin.left - margin.right,
+		
+		// calculate the maximum width of the legend text labels
+		var legend_width = 0;
+		var textwidth = 0;
+		for (var i = 0; i < data_wss.length; i++) {
+			textwidth = getTextWidth(data_wss_names[data_wss[i]], "11px sans-serif");
+			if (textwidth > legend_width) {
+				legend_width = textwidth;
+			}
+		}
+		for (var i = 0; i < data_inds.length; i++) {
+			textwidth = getTextWidth(data_inds_names[data_inds[i]], "11px sans-serif");
+			if (textwidth > legend_width) {
+				legend_width = textwidth;
+			}
+		}
+		legend_width = legend_width + legend_rect_width + legend_padding;
+		
+		width = options.width - margin.left - margin.right;
 		height = options.height - margin.top - margin.bottom;
 
 		x0 = d3.scale.ordinal()
-		    .rangeRoundBands([0, width - 150], .1);
+		    .rangeRoundBands([0, width - legend_width], .1);
 
 		x1 = d3.scale.ordinal();
 
@@ -112,17 +134,23 @@ WstApp.directive ('indicatorBars', function ($parse) {
 		    .attr("class", "container")
 		    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
 		color.domain (scope.groupBy === "worldstate" ? data_inds : data_wss);
 		x0.domain    (scope.groupBy === "worldstate" ? data_wss : data_inds);
 		x1.domain    (scope.groupBy === "worldstate" ? data_inds : data_wss)
 		    .rangeRoundBands([0, x0.rangeBand()]);
 		y.domain([0, d3.max(data, function(d) { return d.max; }) ]);
 
-		xAxisSvg = svg.append("g")
+ 		xAxisSvg = svg.append("g")
 		    .attr("class", "x axis")
 		    .attr("transform", "translate(0," + height + ")")
-		    .call(xAxis);
+		    .call(xAxis)
+			.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", function(d) {
+                return "rotate(-30)" 
+                });
 
 		svg.append("g")
 		    .attr("class", "y axis")
@@ -171,23 +199,23 @@ WstApp.directive ('indicatorBars', function ($parse) {
 		    .data((scope.groupBy === "worldstate" ? data_inds : data_wss).slice().reverse())
 		    .enter().append("g")
 		    .attr("class", "legend")
-		    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+		    .attr("transform", function(d, i) { return "translate(0," + i * legend_row_height + ")"; });
 
 		legend.append("rect")
-		    .attr("x", width - 18)
-		    .attr("width", 18)
-		    .attr("height", 18)
+		    .attr("x", width - legend_rect_width)
+		    .attr("width", legend_rect_width)
+		    .attr("height", legend_rect_width)
 		    .style("fill", color);
 
 		legend.append("text")
-		    .attr("x", width - 24)
+		    .attr("x", width - legend_rect_width - legend_padding)
 		    .attr("y", 9)
 		    .attr("dy", ".35em")
 		    .style("text-anchor", "end")
 		    .text(function(d) { return scope.groupBy === "worldstate" ? data_inds_names[d] : data_wss_names[d]; });
 
 	    };
-
+/*
 	    function rearrange () {
 
 		//console.log ('data_inds_names = ' + JSON.stringify (data_inds_names));
@@ -219,7 +247,14 @@ WstApp.directive ('indicatorBars', function ($parse) {
 		    .style("stroke", function(d) { return color(scope.groupBy === "worldstate" ? d.iId : d.wsId); })
 
 		xAxisSvg
-		    .call(xAxis);
+		    .call(xAxis)
+			.selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", function(d) {
+                return "rotate(-30)" 
+                });
 
 		legend = svg.selectAll(".legend")
 		    .data((scope.groupBy === "worldstate" ? data_inds : data_wss).slice().reverse())
@@ -241,7 +276,7 @@ WstApp.directive ('indicatorBars', function ($parse) {
 		    .text(function(d) { return scope.groupBy === "worldstate" ? data_inds_names[d] : data_wss_names[d]; });
 
 	    }
-
+*/
 
 	    function buildDataset () {
 		data = [];
@@ -381,6 +416,23 @@ WstApp.directive ('indicatorBars', function ($parse) {
 		data_inds_names = indsn;
 		console.log ('buildDataset: data = ' + JSON.stringify (data));
 	    };
+		
+		/**
+		 * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
+		 * 
+		 * @param {String} text The text to be rendered.
+		 * @param {String} font The css font descriptor that text is to be rendered with (e.g. "bold 14px verdana").
+		 * 
+		 * @see http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
+		 */
+		function getTextWidth(text, font) {
+			// re-use canvas object for better performance
+			var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+			var context = canvas.getContext("2d");
+			context.font = font;
+			var metrics = context.measureText(text);
+			return metrics.width;
+		};
 
         }
     };
