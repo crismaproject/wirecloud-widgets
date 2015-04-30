@@ -1,0 +1,18 @@
+.ya-treeview {
+  font-size: 12px;
+}
+.ya-treeview li {
+  padding-left: 10px;
+}
+.ya-treeview a {
+  padding: 0;
+  margin: 4;
+  font-size: 12px;
+  outline: none;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+.ya-treeview .node .node-content {
+  padding-left: 2px;
+  margin-left: 12px;
+}

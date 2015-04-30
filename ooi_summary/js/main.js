@@ -7,6 +7,13 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
             //{ name: 'Station 1', ready: 2, reloading: 0, treatment: 2, rescue: 1, evacuation: 8 }
         ];
         $scope.resourceStates = [ ];
+        $scope.hospitals = [
+            //{ name: 'Hospital 1', free: 4, total: 90, healthIncrease: 1 }
+        ];
+
+        $scope.isValidHospital = function (hospital) {
+            return hospital.name && hospital.total && hospital.free;
+        };
 
         /****************************************************************
          * WIRECLOUD BINDINGS                                           *
@@ -20,6 +27,7 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
 
             countPatientStatus(oois, nameMap);
             countResourceUsage(oois, nameMap);
+            countHospitals(oois, nameMap);
 
             $scope.$apply();
         });
@@ -62,7 +70,26 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
         }
 
         function countPatientStatus(oois, ooiNameMap) {
-            var areaPatientsMap = {}; // map area ID -> patient status
+            var ambulanceGroup = oois
+                .filter(function (x) { return x.entityTypeId == 7; })
+                .map(function (x) { return x.entityId; });
+            var hospitalGroup = oois
+                .filter(function (x) { return x.entityTypeId == 9; })
+                .map(function (x) { return x.entityId; });
+
+            var areaPatientsMap = { // map area ID -> patient status
+                'Ambulance': {
+                    green: 0,
+                    yellow: 0,
+                    red: 0
+                },
+                'Hospital': {
+                    green: 0,
+                    yellow: 0,
+                    red: 0
+                }
+            };
+
             oois
                 .filter(function (x) { return x.entityTypeId == 10; })
                 .forEach(function (x) {
@@ -76,6 +103,12 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
                                 break;
                             case 45:// patient prop ID 45 is place id
                                 areaId = parseInt(y.entityPropertyValue);
+                                if (ambulanceGroup.indexOf(areaId) != -1)
+                                    areaId = 'Ambulance';
+                                else if (hospitalGroup.indexOf(areaId) != -1)
+                                    areaId = 'Hospital';
+                                else
+                                    areaId = ooiNameMap[areaId];
                                 break;
                             case 476:// prop id 476: Patient-Is-Exposed
                                 isExposed = y.entityPropertyValue;
@@ -102,8 +135,30 @@ angular.module('ooiSummary', ['ooiSummary.wirecloud'])
             var areas = [];
             for (var areaId in areaPatientsMap) {
                 var value = areaPatientsMap[areaId];
-                areas.push({name: ooiNameMap[areaId], green: value.green, yellow: value.yellow, red: value.red});
+                areas.push({name: areaId, green: value.green, yellow: value.yellow, red: value.red});
             }
             $scope.areas = areas;
+        }
+
+        function countHospitals(oois, nameMap) {
+            $scope.hospitals = oois
+                .filter(function (x) { return x.entityTypeId == 9; })
+                .map(function (x) {
+                    var hospital = { name: nameMap[x.entityId], free: null, total: null, healthIncrease: null };
+                    x.entityInstancesProperties.forEach(function (y) {
+                        switch (y.entityTypePropertyId) {
+                            case 38:
+                                hospital.total = parseInt(y.entityPropertyValue);
+                                break;
+                            case 39:
+                                hospital.free = parseInt(y.entityPropertyValue);
+                                break;
+                            case 40:
+                                hospital.healthIncrease = parseFloat(y.entityPropertyValue);
+                                break;
+                        }
+                    });
+                    return hospital;
+                });
         }
     }]);

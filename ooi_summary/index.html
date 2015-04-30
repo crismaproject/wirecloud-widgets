@@ -2,32 +2,39 @@
 <html ng-app="ooiSummary" lang="en">
 <head>
     <title>Object of Interest commands</title>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
     <script src="//code.jquery.com/jquery-2.1.3.min.js" type="text/javascript"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js" type="text/javascript"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js" type="text/javascript"></script>
     <script src="js/main.js" type="text/javascript"></script>
     <script src="js/wirecloud.js" type="text/javascript"></script>
 </head>
 <body>
 
-<div class="container-fluid" ng-controller="OoiSummaryCtrl">
-    <div class="row">
-        <div class="col-sm-6">
-            <table class="table table-condensed table-bordered">
-                <caption>Patient status</caption>
+<div role="tabpanel" ng-controller="OoiSummaryCtrl">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#patient-status" role="tab" data-toggle="tab">Patients</a></li>
+        <li role="presentation"><a href="#resource-status" role="tab" data-toggle="tab">Resources</a></li>
+        <li role="presentation"><a href="#hospital-status" role="tab" data-toggle="tab">Hospitals</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="patient-status">
+            <table class="table table-condensed">
                 <thead>
                 <tr>
                     <th></th>
+                    <th>Total</th>
                     <th class="green">Green</th>
                     <th class="yellow">Yellow</th>
                     <th class="red">Red</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="area in areas">
+                <tr ng-repeat="area in areas | orderBy:'name' ">
                     <th>{{area.name}}</th>
+                    <th>{{area.green+area.yellow+area.red}}</th>
                     <td class="green">{{area.green}}</td>
                     <td class="yellow">{{area.yellow}}</td>
                     <td class="red">{{area.red}}</td>
@@ -36,9 +43,8 @@
             </table>
         </div>
 
-        <div class="col-sm-6">
-            <table class="table table-condensed table-bordered">
-                <caption>Resource status</caption>
+        <div role="tabpanel" class="tab-pane" id="resource-status">
+            <table class="table table-condensed">
                 <thead>
                 <tr>
                     <th>Station</th>
@@ -46,9 +52,30 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="station in stations">
+                <tr ng-repeat="station in stations | orderBy:'name'">
                     <th>{{station.name}}</th>
                     <td ng-repeat="resourceState in resourceStates">{{station[resourceState]}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="hospital-status">
+            <table class="table table-condensed">
+                <thead>
+                <tr>
+                    <th>Hospital</th>
+                    <th>free</th>
+                    <th>total</th>
+                    <th>health increase</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="hospital in hospitals | filter: isValidHospital | orderBy: 'name'">
+                    <th>{{hospital.name||'?'}}</th>
+                    <td>{{hospital.free||'?'}}</td>
+                    <td>{{hospital.total||'?'}}</td>
+                    <td>{{hospital.healthIncrease||'?'}} %</td>
                 </tr>
                 </tbody>
             </table>

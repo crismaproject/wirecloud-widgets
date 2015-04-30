@@ -1,4 +1,5 @@
 table { font-size: 80% }
+td.num { text-align: right }
 
 thead .green { background-color: rgb(149, 228, 122) }
 thead .yellow { background-color: rgb(251, 255, 150) }

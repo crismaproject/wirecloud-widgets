@@ -130,7 +130,7 @@ WstApp.directive ('indicatorTimeIntervals', function ($parse) {
 					.append("g")
 					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 					
-				x.domain ([minTime, maxTime]).nice();
+				x.domain ([minTime, maxTime]).nice(); //.nice();
 				y.domain ([0, data.length - 1]);
 
 		// data = [{"id":"timeIntervalsTest","name":"Just some test data","description":"List of time intervals","worldstates":[59,81],"type":"timeintervals","data":{"intervals":[{"startTime":"2012-01-01T12:19:00.000","endTime":"2012-01-01T12:24:00.000","startt":"2012-01-01T11:19:00.000Z","endt":"2012-01-01T11:24:00.000Z"},{"startTime":"2012-01-01T12:41:00.000","endTime":"2012-01-01T12:45:00.000","startt":"2012-01-01T11:41:00.000Z","endt":"2012-01-01T11:45:00.000Z"}],"cssClass":"indicators-timeIntervallsTest","linewidth":2,"yws":0,"yind":0},"worldstate":"82"}]"
@@ -142,19 +142,34 @@ WstApp.directive ('indicatorTimeIntervals', function ($parse) {
 					.attr("class", "indicator-intervals")
 					.attr("transform", function (d) {return "translate(0, " + y(scope.groupBy === "worldstate" ? d.data.yws : d.data.yind) +")"});
 
+				var defaultColor = "#b2b2b2";
 				var txt = indicator
 					.append ("text")
 					.attr("class", "indicator-text")
+					.attr("fill", function(d){
+						if (d.data.color != undefined) {
+							return d.data.color;
+						} else {
+							return defaultColor;						
+						}
+					})
 					.attr("dy", options.fontSize)
 					.attr("x", 0)
 					.attr("id", function(d) {
 						return d.id;
 					})
-					.text (function (d) { return d.name + ":" })
+					.text (function (d) { 
+						if (d.displayText != undefined) {
+							return d.displayText + ":"; 
+						} else {
+							return d.name + ":"; 
+						}
+					})
 					.on("click", function(d) { 
-						selectIndicator (d.id, d3.event.shiftKey, d3.event.ctrlKey);
+						if (d.data.enabled == undefined || d.data.enabled == true) {
+							selectIndicator (d.id, d3.event.shiftKey, d3.event.ctrlKey);
+						}
 					});
-				
 				var intervals = indicator.selectAll(".line")
 					.data (function (d) { 
 						return d.data.intervals;
@@ -162,6 +177,20 @@ WstApp.directive ('indicatorTimeIntervals', function ($parse) {
 					.enter()
 					.append("line")
 					.attr("class", "indicator-interval")
+					.attr("stroke", function(d){
+						if (d.color != undefined) {
+							return d.color;
+						} else {
+							return defaultColor;						
+						}
+					})
+					.attr("fill", function(d){
+						if (d.color != undefined) {
+							return d.color;
+						} else {
+							return defaultColor;
+						}
+					})
 					.attr("x1", function(d) { 
 						return x(d.startt); 
 					})
@@ -187,9 +216,11 @@ WstApp.directive ('indicatorTimeIntervals', function ($parse) {
 							.style("opacity", 0);   
 					})
 					.on("click", function(d) {
-						selectIndicator (d.id, d3.event.shiftKey, d3.event.ctrlKey);
+						if (d.enabled == undefined || d.enabled == true) {
+							selectIndicator (d.id, d3.event.shiftKey, d3.event.ctrlKey);
+						}
 					});
-					
+				
 				var durations = indicator.selectAll(".text")
 					.data (function (d) { 
 						return d.data.intervals;
@@ -204,11 +235,13 @@ WstApp.directive ('indicatorTimeIntervals', function ($parse) {
 					.attr("dy", options.fontSize)
 					.attr("text-anchor", "middle")
 					.text(function(d) {
-						var diff = ((d.endt.getTime() - d.startt.getTime()) / 1000) / 60;
-						return (diff + " min");
+						var diff = ((d.endt.getTime() - d.startt.getTime()) / 1000) / 60;						
+						return ((Math.round(diff)) + " min");
 					})
 					.on("click", function(d) { 
-						selectIndicator (d.id, d3.event.shiftKey, d3.event.ctrlKey);
+						if (d.enabled == undefined || d.enabled == true) {
+							selectIndicator (d.id, d3.event.shiftKey, d3.event.ctrlKey);
+						}
 					});
 
 				svg.append("g")
@@ -228,8 +261,7 @@ WstApp.directive ('indicatorTimeIntervals', function ($parse) {
 						.attr("x2", x(indTime))
 						.attr("y1", y.range()[0] - 10)
 						.attr("y2", y.range()[1] + (25 * linePosition))
-						.attr("stroke", "#CC0000")
-						.attr("stroke-width", 2);	
+						.attr("class", "indicator-timestamp");
 					svg.append("text")
 						.attr("x", x(indTime) - 50)
 						.attr("y", size.height + margin.top + (15 * linePosition))
@@ -241,6 +273,7 @@ WstApp.directive ('indicatorTimeIntervals', function ($parse) {
 			}
 
 			function rearrange () {
+				if (!scope.showTimeline) return;
 				indicator
 					.transition()        
 					.duration(500)
@@ -326,10 +359,11 @@ WstApp.directive ('indicatorTimeIntervals', function ($parse) {
 						if (!calculatedMaxTime || calculatedMaxTime < n.endt) {
 							calculatedMaxTime = n.endt;
 						}
-						// n.color = indicators[i].data.color;
+						n.color = indicators[i].data.color;
 						n.cssClass = indicators[i].data.cssClass ? indicators[i].data.cssClass : "indicator-" + indicators[i].id;
 						n.id = indicators[i].id;
 						n.name = indicators[i].name;
+						n.enabled = indicators[i].data.enabled;
 					}
 				}
 				data = indicators;

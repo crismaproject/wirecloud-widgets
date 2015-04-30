@@ -1,6 +1,6 @@
 // see http://codepen.io/odiseo42/pen/bCwkv
 
-var WstApp = angular.module ('wstApp', ['ngResource']);
+var WstApp = angular.module ('wstApp', ['ngResource', 'eu.crismaproject.pilotE.linechart']);
 
 WstApp.factory('wirecloud', function () {
         return {
@@ -53,7 +53,8 @@ WstApp.factory('wirecloud', function () {
 						fields: 'id, name, description, parentworldstate, childworldstates, worldstatedata, simulatedTime, created, categories, actualaccessinfo',
 						deduplicate: true,
 						omitNullValues: false,
-						limit: 500
+						limit: 500,
+						level: 4
 					},
 					transformResponse: function (data) {
 						if (data === null) {
@@ -80,12 +81,14 @@ WstApp.factory('wirecloud', function () {
 	$scope.showTreeGraph = wirecloud.getPreference('showTree');
 	$scope.showTimeline = wirecloud.getPreference('showTimeline');
 	$scope.showIndicatorBars = wirecloud.getPreference('showChart');
+	$scope.showLinechart = wirecloud.getPreference('showLinechart');
 	$scope.showGroupSelect = wirecloud.getPreference('showGroupBy');
 
     $scope.worldStateList = [];
     $scope.baselines = [];
     $scope.baseline = null;
     $scope.baselineSelected = 0;
+	$scope.worldstateId = 0;
 
     $scope.treeData = {};
     $scope.selectedWorldStates = []; // list of ids
@@ -208,19 +211,47 @@ WstApp.factory('wirecloud', function () {
 				if ($scope.worldStateList[i].id === wsid) {
 					// get array of worldstatedata
 					var wsData = $scope.worldStateList[i].worldstatedata;
-					var values = [];
+					var valuesUnsorted = [];
 					for (var j = 0; j < wsData.length; j++) {
 						// check category of wsData item
 						if (wsData[j].categories && wsData[j].categories.length > 0) {
 							for (var k = 0; k < wsData[j].categories.length; k++) {
 								if (wsData[j].categories[k].id === 4) {
 									// icmm indicator
-									values.push(JSON.parse(wsData[j].actualaccessinfo));
+									var indicatorObject = JSON.parse(wsData[j].actualaccessinfo);
+									if ($scope.indicatorFilter != undefined) {
+										for (var i = 0; i < $scope.indicatorFilter.length; i++) {
+											if ($scope.indicatorFilter[i].id == indicatorObject.id) {
+												valuesUnsorted.push(indicatorObject);
+											}
+										}
+									} else {
+										valuesUnsorted.push(indicatorObject);
+									}
 								}
 							}
 						}
 					}
-					tmpIndicators[wsid] = values;
+					if (valuesUnsorted.length > 0) {
+						var values = [];
+						if ($scope.indicatorFilter != undefined) {
+							// sort values according to filter:
+							for (var i = 0; i < $scope.indicatorFilter.length; i++) {
+								for (var j = 0; j < valuesUnsorted.length; j++) {
+									if (valuesUnsorted[j].id == $scope.indicatorFilter[i].id) {
+										values.push(valuesUnsorted[j]);
+										var k = values.length-1;
+										values[k].data.color = $scope.indicatorFilter[i].color;
+										values[k].data.enabled = $scope.indicatorFilter[i].enabled;
+										values[k].displayText = $scope.indicatorFilter[i].displayText;
+									}
+								}
+							}							
+						} else{
+							values = valuesUnsorted;
+						}
+						tmpIndicators[wsid] = values;
+					}
 					$scope.loadIndicatorValues (wsIds, index + 1);
 				}
 			}
@@ -241,15 +272,40 @@ WstApp.factory('wirecloud', function () {
 
 
     $scope.test = function () {
-	console.log ("test: selectedWorldStates: " + JSON.stringify ($scope.selectedWorldStates));
-	console.log ("test: minTime: " + JSON.stringify ($scope.minTime));
-	console.log ("test: maxTime: " + JSON.stringify ($scope.maxTime));
-	// $scope.indicators = testIndicators;
-	console.log ("test: groupIndicatorsByWorldstate: " + $scope.groupIndicatorsByWorldstate);
+		console.log ("test: selectedWorldStates: " + JSON.stringify ($scope.selectedWorldStates));
+		console.log ("test: minTime: " + JSON.stringify ($scope.minTime));
+		console.log ("test: maxTime: " + JSON.stringify ($scope.maxTime));
+		// $scope.indicators = testIndicators;
+		console.log ("test: groupIndicatorsByWorldstate: " + $scope.groupIndicatorsByWorldstate);
     };
+	
+	wirecloud.on('indicator_filter', function (filter) {
+		$scope.indicatorFilter = JSON.parse(filter);
+	});
+	
 	wirecloud.on('basic_worldstate', function (base_ws) {
 		$scope.baseline = JSON.parse(base_ws);
+		$scope.worldstateId = $scope.baseline.id;
+//		$scope.$apply();
 		$scope.loadWorldStates();
 	});
 
-}]);
+}]).config(
+    [
+        '$provide',
+        function ($provide) {
+            'use strict';
+
+            var mashupPlatform;
+
+            if (typeof MashupPlatform === 'undefined') {
+                console.log('mashup platform not available');
+            } else {
+                // enable minification
+                mashupPlatform = MashupPlatform;
+				var url = mashupPlatform.prefs.get('icmm');
+                $provide.constant('ICMM_API', mashupPlatform.http.buildProxyURL(url));
+            }
+        }
+    ]
+);
