@@ -10,7 +10,7 @@
 
         <tbody>
         <tr ng-repeat="i in items" class="vehicle-state-{{cssClassFor(i)}}">
-            <td><input type="checkbox" ng-model="i['$selected']" ng-change="updateSelected()"></td>
+            <td><input type="checkbox" ng-model="i.selected"></td>
             <td class="vehicle-name">{{i.entityName}}</td>
             <td class="vehicle-state">{{activityFor(i)}}</td>
             <td class="vehicle-station">{{stationNameFor(i)}}</td>

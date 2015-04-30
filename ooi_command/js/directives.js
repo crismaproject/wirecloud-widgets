@@ -3,20 +3,10 @@ angular.module('ooiCommand.directives', [])
         return {
             restrict: 'E',
             replace: true,
-            scope: {
-                items: '=items',
-                selected: '=selectedItems'
-            },
+            scope: { items: '=items' },
             templateUrl: 'templates/vehicleTable.html',
             controller: [ '$scope', 'EntityNameProvider', function($scope, nameProvider) {
-                $scope.selected = [];
                 $scope.nameProvider = nameProvider;
-
-                $scope.updateSelected = function () {
-                    $scope.selected = $scope.items
-                        .filter(function (x) { return x.hasOwnProperty('$selected') && x['$selected']; })
-                    ;
-                };
 
                 $scope.stationNameFor = function (ooi) {
                     var rescueStation = ooiProperty(ooi, 313);

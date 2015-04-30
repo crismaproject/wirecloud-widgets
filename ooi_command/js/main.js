@@ -98,7 +98,7 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'oo
                     $scope.pendingCommand.candidates[i] = $scope.allObjects.filter(function (x) {
                         return $scope.acceptsArgument(argument, x);
                     }).map(function (x) {
-                        return $.extend({}, x, { '$selected': false });
+                        return $.extend({}, x, { selected: false });
                     });
                 } else if (argument.targetType == 'number') {
                     $scope.pendingCommand.minimum = $scope.getInt(argument.minimum, 1);
@@ -122,15 +122,17 @@ angular.module('ooiCommand', ['ooiCommand.wirecloud', 'ooiCommand.commands', 'oo
         };
 
         $scope.updateTableSelectionArgments = function () {
+            if (!$scope.pendingCommand || !$scope.pendingCommand.arguments || !$scope.pendingCommand.candidates) return;
             for (var i = 0; i < $scope.pendingCommand.arguments.length; i++)
                 if ($scope.pendingCommand.arguments[i].targetType == 'vehicle')
                     $scope.pendingCommand.data[i] = $scope.pendingCommand.candidates[i].filter(function (x) {
                         return x.selected;
                     });
-
-            console.log($scope.pendingCommand);
         };
+
         $scope.executePendingCommand = function() {
+            $scope.updateTableSelectionArgments();
+
             var command = $scope.pendingCommand;
             var data = $scope.pendingCommand.data;
             var oois = command.hasOwnProperty('entityTypeId') ? $scope.oois.filter(function (ooi) {
